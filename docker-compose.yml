@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: asisto
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: asito_development
+    volumes:
+      - asisto_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  asisto_postgres_data:

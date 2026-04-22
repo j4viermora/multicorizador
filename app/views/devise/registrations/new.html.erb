@@ -1,0 +1,77 @@
+<div class="flex h-screen overflow-hidden">
+
+  <%# ── Left Hero Panel (3/4) ── %>
+  <div class="hidden lg:flex lg:w-3/4 relative flex-col justify-between p-14 overflow-hidden bg-linear-to-br from-[#0d0b1e] via-[#2d1b69] to-[#1e3a5f]">
+
+    <div class="absolute -top-24 -left-20 w-md h-112 rounded-full bg-purple-500/20 blur-3xl animate-pulse"></div>
+    <div class="absolute -bottom-16 right-10 w-80 h-80 rounded-full bg-blue-400/20 blur-3xl animate-pulse [animation-delay:2s]"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-pink-400/10 blur-3xl animate-pulse [animation-delay:4s]"></div>
+
+    <div class="relative z-10">
+      <span class="font-sans text-white/90 text-xs tracking-[0.35em] uppercase">ASISTO</span>
+    </div>
+
+    <div class="relative z-10">
+      <p class="font-sans text-white/35 text-xs tracking-[0.2em] uppercase mb-5">Comienza hoy</p>
+      <h1 class="font-serif text-6xl text-white font-light leading-tight mb-6">
+        Crea tu cuenta<br><em>gratuita</em>
+      </h1>
+      <p class="font-sans text-white/40 text-sm font-light leading-relaxed max-w-md">
+        Únete y descubre una nueva forma de gestionar tus tareas y proyectos con inteligencia.
+      </p>
+      <div class="flex items-center gap-3 mt-10">
+        <div class="w-10 h-px bg-white/25"></div>
+        <div class="w-1.5 h-1.5 rounded-full bg-white/30"></div>
+        <div class="w-4 h-px bg-white/15"></div>
+      </div>
+    </div>
+  </div>
+
+  <%# ── Right Form Panel (1/4) ── %>
+  <div class="w-full lg:w-1/4 flex flex-col justify-center bg-base-100 px-10 overflow-y-auto">
+
+    <div class="lg:hidden mb-10">
+      <span class="font-sans text-xs tracking-[0.35em] uppercase text-base-content">ASISTO</span>
+    </div>
+
+    <div class="mb-8">
+      <h2 class="font-serif text-3xl font-light text-base-content mb-1">Crear cuenta</h2>
+      <p class="font-sans text-xs text-base-content/40">Completa tus datos para registrarte</p>
+    </div>
+
+    <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+      <%= render "devise/shared/error_messages", resource: resource %>
+
+      <div class="flex flex-col gap-5">
+
+        <label class="form-control w-full">
+          <%= f.label :email, "Correo electrónico", class: "label label-text text-xs uppercase tracking-widest text-base-content/40" %>
+          <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "nombre@correo.com", class: "input input-bordered w-full" %>
+        </label>
+
+        <label class="form-control w-full">
+          <%= f.label :password, "Contraseña", class: "label label-text text-xs uppercase tracking-widest text-base-content/40" %>
+          <%= f.password_field :password, autocomplete: "new-password", placeholder: "••••••••", class: "input input-bordered w-full" %>
+          <% if @minimum_password_length %>
+            <div class="label">
+              <span class="label-text-alt text-base-content/30">Mínimo <%= @minimum_password_length %> caracteres</span>
+            </div>
+          <% end %>
+        </label>
+
+        <label class="form-control w-full">
+          <%= f.label :password_confirmation, "Confirmar contraseña", class: "label label-text text-xs uppercase tracking-widest text-base-content/40" %>
+          <%= f.password_field :password_confirmation, autocomplete: "new-password", placeholder: "••••••••", class: "input input-bordered w-full" %>
+        </label>
+
+        <%= f.submit "Crear cuenta →", class: "btn btn-neutral w-full mt-2 text-xs tracking-widest uppercase" %>
+
+      </div>
+    <% end %>
+
+    <div class="mt-8 pt-6 border-t border-base-200 flex flex-col gap-2">
+      <%= render "devise/shared/links" %>
+    </div>
+
+  </div>
+</div>
