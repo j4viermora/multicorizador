@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_10_033026) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_10_073832) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -193,6 +193,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_10_033026) do
     t.string "producer_commission_currency", default: "USD", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "company_id", null: false
+    t.index ["company_id"], name: "index_quote_results_on_company_id"
     t.index ["insurance_plan_id"], name: "index_quote_results_on_insurance_plan_id"
     t.index ["provider_id"], name: "index_quote_results_on_provider_id"
     t.index ["quote_id"], name: "index_quote_results_on_quote_id"
@@ -270,6 +272,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_10_033026) do
   add_foreign_key "producer_invoice_policies", "producer_invoices"
   add_foreign_key "producer_invoices", "companies"
   add_foreign_key "producer_invoices", "users", column: "producer_id"
+  add_foreign_key "quote_results", "companies"
   add_foreign_key "quote_results", "insurance_plans"
   add_foreign_key "quote_results", "providers"
   add_foreign_key "quote_results", "quotes"
