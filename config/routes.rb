@@ -30,6 +30,8 @@ Rails.application.routes.draw do
 
   resources :webhooks, only: [:create], param: :provider_slug
 
+  get "account/pending", to: "account#pending", as: :account_pending
+
   get "up" => "rails/health#show", as: :rails_health_check
 
   root "home#index"

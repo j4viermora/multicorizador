@@ -1,0 +1,63 @@
+<% content_for :full_screen, true %>
+
+<div class="flex h-screen overflow-hidden">
+
+  <%# ── Left Hero Panel (3/4) ── %>
+  <div class="hidden lg:flex lg:w-3/4 relative flex-col justify-between p-14 overflow-hidden bg-linear-to-br from-[#0d0b1e] via-[#2d1b69] to-[#1e3a5f]">
+
+    <div class="absolute -top-24 -left-20 w-md h-112 rounded-full bg-purple-500/20 blur-3xl animate-pulse"></div>
+    <div class="absolute -bottom-16 right-10 w-80 h-80 rounded-full bg-blue-400/20 blur-3xl animate-pulse [animation-delay:2s]"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-pink-400/10 blur-3xl animate-pulse [animation-delay:4s]"></div>
+
+    <div class="relative z-10">
+      <span class="font-sans text-white/90 text-xs tracking-[0.35em] uppercase">ASISTO</span>
+    </div>
+
+    <div class="relative z-10">
+      <p class="font-sans text-white/35 text-xs tracking-[0.2em] uppercase mb-5">Registro exitoso</p>
+      <h1 class="font-serif text-6xl text-white font-light leading-tight mb-6">
+        Cuenta en<br><em>verificación</em>
+      </h1>
+      <p class="font-sans text-white/40 text-sm font-light leading-relaxed max-w-md">
+        Estamos revisando tu información para activar tu cuenta lo antes posible.
+      </p>
+      <div class="flex items-center gap-3 mt-10">
+        <div class="w-10 h-px bg-white/25"></div>
+        <div class="w-1.5 h-1.5 rounded-full bg-white/30"></div>
+        <div class="w-4 h-px bg-white/15"></div>
+      </div>
+    </div>
+  </div>
+
+  <%# ── Right Panel (1/4) ── %>
+  <div class="w-full lg:w-1/4 flex flex-col justify-center bg-base-100 px-10 overflow-y-auto">
+
+    <div class="lg:hidden mb-10">
+      <span class="font-sans text-xs tracking-[0.35em] uppercase text-base-content">ASISTO</span>
+    </div>
+
+    <div class="text-center lg:text-left">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-warning/10 mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        </svg>
+      </div>
+
+      <h2 class="font-serif text-3xl font-light text-base-content mb-3">Tu cuenta está en proceso de verificación</h2>
+
+      <p class="font-sans text-sm text-base-content/50 leading-relaxed mb-6">
+        Hemos recibido tu registro correctamente. Nuestro equipo revisará tu información y te contactaremos por correo electrónico cuando tu cuenta esté activa.
+      </p>
+
+      <div class="bg-base-200/50 rounded-box p-4 mb-8">
+        <p class="font-sans text-xs text-base-content/40 uppercase tracking-widest mb-2">Tu correo registrado</p>
+        <p class="font-sans text-sm text-base-content font-medium"><%= current_user&.email %></p>
+      </div>
+
+      <div class="flex flex-col gap-3">
+        <%= button_to "Cerrar sesión", destroy_user_session_path, method: :delete, class: "btn btn-neutral w-full text-xs tracking-widest uppercase" %>
+      </div>
+    </div>
+
+  </div>
+</div>
