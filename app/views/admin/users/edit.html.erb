@@ -1,15 +1,40 @@
 <h1 class="text-3xl font-bold mb-6">Editar Productor</h1>
 
-<%= simple_form_for [:admin, @user], html: { class: "bg-base-100 p-6 rounded-box shadow max-w-lg" } do |f| %>
-  <div class="mb-4">
-    <p class="font-semibold"><%= @user.full_name %></p>
-    <p class="text-sm text-gray-500"><%= @user.email %></p>
+<%= simple_form_for [:admin, @user], html: { class: "space-y-6 max-w-lg" } do |f| %>
+  <div class="bg-base-100 p-6 rounded-box shadow">
+    <h2 class="text-lg font-semibold mb-4">Datos del productor</h2>
+
+    <div class="mb-4">
+      <p class="font-semibold"><%= @user.full_name %></p>
+      <p class="text-sm text-base-content/60"><%= @user.email %></p>
+    </div>
+
+    <%= f.input :status, collection: User.statuses.keys, include_blank: false %>
+    <%= f.input :first_name %>
+    <%= f.input :last_name %>
+    <%= f.input :phone %>
   </div>
 
-  <%= f.input :status, collection: User.statuses.keys, include_blank: false %>
-  <%= f.input :first_name %>
-  <%= f.input :last_name %>
-  <%= f.input :phone %>
+  <% if @user.company %>
+    <div class="bg-base-100 p-6 rounded-box shadow">
+      <h2 class="text-lg font-semibold mb-4">Empresa</h2>
+
+      <%= f.simple_fields_for :company do |c| %>
+        <%= c.input :name, label: "Nombre de la empresa" %>
+        <%= c.input :slug, label: "Slug (URL pública)", hint: "Solo letras minúsculas, números y guiones. Ej: viajes-garcia" %>
+        <%= c.input :currency, label: "Moneda", collection: %w[ARS USD UYU CLP BRL], include_blank: false %>
+      <% end %>
+
+      <% if @user.company.slug.present? %>
+        <div class="mt-3 flex items-center gap-2 text-sm">
+          <span class="text-base-content/60">URL pública:</span>
+          <%= link_to public_landing_url(slug: @user.company.slug), target: "_blank", class: "link link-primary font-mono" do %>
+            /cotizar/<%= @user.company.slug %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
 
   <div class="flex gap-2">
     <%= f.button :submit, "Actualizar", class: "btn btn-primary" %>

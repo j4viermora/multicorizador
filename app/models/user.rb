@@ -5,6 +5,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   belongs_to :company, optional: true
+  accepts_nested_attributes_for :company
 
   enum :role, { producer: 0, super_admin: 1 }
   enum :status, { pending: 0, active: 1, suspended: 2 }

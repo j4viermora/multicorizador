@@ -10,7 +10,9 @@ Rails.application.routes.draw do
     resources :providers
     resources :insurance_plans
     resources :commission_contracts
-    resources :users, only: [:index, :show, :edit, :update]
+    resources :users, only: [:index, :show, :edit, :update] do
+      member { patch :approve }
+    end
     resources :finances, only: [:index]
     resources :platform_invoices
   end
