@@ -25,6 +25,9 @@ bin/brakeman
 
 # Database
 bin/rails db:create db:migrate db:seed
+
+# Create super admin
+bin/rails admin:create EMAIL=admin@example.com PASSWORD=secret
 ```
 
 ## Skills
@@ -90,7 +93,7 @@ Solid Queue (DB-backed), started as a separate process in `Procfile.dev`. In pro
 
 Propshaft (assets) + Importmap (JS) + TailwindCSS 4 + DaisyUI + Hotwire (Turbo + Stimulus). No Node/webpack build step — CSS is compiled by `bin/rails tailwindcss:watch`.
 
-**Forms:** `simple_form` gem.
+**Forms:** `simple_form` gem with DaisyUI wrappers. **ALWAYS use `simple_form_for` and `f.input`** — never use raw `form_for`, `form_with`, or manual `f.text_field`/`f.email_field` helpers. Available wrappers: `:default` (app forms), `:boolean` (checkboxes), `:auth` (Devise auth pages with compact labels). See `config/initializers/simple_form.rb`.
 **Search/filter:** `ransack` gem.
 **Pagination:** `kaminari` gem.
 **Rich text:** `lexxy` gem (not ActionText's Trix).
