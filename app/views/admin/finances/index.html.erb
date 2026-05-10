@@ -1,21 +1,29 @@
 <h1 class="text-3xl font-bold mb-6">Finanzas Globales</h1>
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-  <div class="stat bg-base-100 shadow rounded-box">
-    <div class="stat-title">Pólizas Emitidas</div>
-    <div class="stat-value text-primary"><%= @total_policies %></div>
+  <div class="tooltip tooltip-bottom before:max-w-xs before:text-left before:whitespace-normal" data-tip="Total de pólizas emitidas en la plataforma, sin filtro de fecha ni estado.">
+    <div class="stat bg-base-100 shadow rounded-box cursor-default">
+      <div class="stat-title">Pólizas Emitidas</div>
+      <div class="stat-value text-primary"><%= @total_policies %></div>
+    </div>
   </div>
-  <div class="stat bg-base-100 shadow rounded-box">
-    <div class="stat-title">Comisión de Aseguradoras</div>
-    <div class="stat-value text-info"><%= Money.new(@total_provider_commission).format %></div>
+  <div class="tooltip tooltip-bottom before:max-w-xs before:text-left before:whitespace-normal" data-tip="Total bruto que las aseguradoras pagan a la plataforma. Incluye tanto la comisión de la plataforma como la de los productores.">
+    <div class="stat bg-base-100 shadow rounded-box cursor-default">
+      <div class="stat-title">Comisión de Aseguradoras</div>
+      <div class="stat-value text-info"><%= Money.new(@total_provider_commission).format %></div>
+    </div>
   </div>
-  <div class="stat bg-base-100 shadow rounded-box">
-    <div class="stat-title">Nuestra Comisión</div>
-    <div class="stat-value text-success"><%= Money.new(@total_platform_commission).format %></div>
+  <div class="tooltip tooltip-bottom before:max-w-xs before:text-left before:whitespace-normal" data-tip="Ganancia neta de la plataforma: comisión de aseguradora menos comisión del productor.">
+    <div class="stat bg-base-100 shadow rounded-box cursor-default">
+      <div class="stat-title">Nuestra Comisión</div>
+      <div class="stat-value text-success"><%= Money.new(@total_platform_commission).format %></div>
+    </div>
   </div>
-  <div class="stat bg-base-100 shadow rounded-box">
-    <div class="stat-title">Por Pagar a Productores</div>
-    <div class="stat-value text-warning"><%= Money.new(@total_producer_commission_pending).format %></div>
+  <div class="tooltip tooltip-bottom before:max-w-xs before:text-left before:whitespace-normal" data-tip="Comisiones de productores generadas pero aún no facturadas ni pagadas.">
+    <div class="stat bg-base-100 shadow rounded-box cursor-default">
+      <div class="stat-title">Por Pagar a Productores</div>
+      <div class="stat-value text-warning"><%= Money.new(@total_producer_commission_pending).format %></div>
+    </div>
   </div>
 </div>
 
