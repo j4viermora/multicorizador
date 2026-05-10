@@ -7,6 +7,7 @@ class HomeController < ApplicationController
     elsif current_user.producer? && current_user.active?
       redirect_to producer_dashboard_path
     else
+      sign_out current_user
       redirect_to new_user_session_path, alert: "Tu cuenta está pendiente de aprobación o suspendida."
     end
   end

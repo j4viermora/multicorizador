@@ -13,7 +13,7 @@ class ApplicationController < ActionController::Base
       ActsAsTenant.current_tenant = nil
       Money.default_currency = Money::Currency.new("ARS")
     else
-      set_current_tenant(current_user.company)
+      ActsAsTenant.current_tenant = current_user.company
       Money.default_currency = Money::Currency.new(current_user.company.currency)
     end
   end
