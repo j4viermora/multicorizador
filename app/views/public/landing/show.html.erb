@@ -178,7 +178,7 @@
   <%# HERO                                          %>
   <%# ══════════════════════════════════════════════ %>
   <div class="landing-hero -mx-4 -mt-8 px-4 pt-10 pb-16 md:pt-14 md:pb-20 relative">
-    <div class="max-w-2xl mx-auto relative z-10">
+    <div class="max-w-2xl lg:max-w-5xl mx-auto relative z-10">
 
       <%# Company name %>
       <div class="text-center mb-6 land-in">
@@ -226,7 +226,7 @@
   <%# ══════════════════════════════════════════════ %>
   <%# FORM WIZARD                                   %>
   <%# ══════════════════════════════════════════════ %>
-  <div class="max-w-2xl mx-auto -mt-8 relative z-20" data-controller="quote-wizard">
+  <div class="max-w-2xl lg:max-w-4xl mx-auto -mt-8 relative z-20" data-controller="quote-wizard">
 
     <%# Stepper %>
     <div class="mb-8 land-in d2">
@@ -244,7 +244,7 @@
     </div>
 
     <%# Card %>
-    <div class="wizard-card p-6 md:p-10 land-in d3">
+    <div class="wizard-card p-6 md:p-10 lg:p-12 land-in d3">
       <%= simple_form_for @quote, url: public_landing_path(@company.slug, ref: params[:ref]),
           method: :post, html: { class: "relative", novalidate: true, data: { turbo: false } } do |f| %>
 
@@ -264,7 +264,7 @@
               </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-0">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-5 lg:gap-x-6 gap-y-0">
               <div data-controller="country-autocomplete"
                    data-country-autocomplete-items-value="<%= countries_autocomplete_data %>"
                    class="ac-wrapper">
@@ -407,7 +407,7 @@
   <%# TRUST BAR — Proveedores                       %>
   <%# ══════════════════════════════════════════════ %>
   <% if @providers.any? %>
-    <div class="max-w-2xl mx-auto mt-8 land-in d4">
+    <div class="max-w-2xl lg:max-w-4xl mx-auto mt-8 land-in d4">
       <div class="trust-bar px-6 py-4">
         <p class="text-center text-xs font-bold uppercase tracking-widest mb-3" style="color: var(--wz-ink-muted);">
           Cotizamos con los mejores proveedores
@@ -424,8 +424,8 @@
   <%# ══════════════════════════════════════════════ %>
   <%# BENEFITS                                      %>
   <%# ══════════════════════════════════════════════ %>
-  <div class="max-w-2xl mx-auto mt-8 land-in d5">
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+  <div class="max-w-2xl lg:max-w-4xl mx-auto mt-8 land-in d5">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-5">
 
       <div class="benefit-card">
         <div class="benefit-icon" style="background: var(--wz-teal-light); color: var(--wz-teal);">
@@ -473,7 +473,7 @@
   <%# ══════════════════════════════════════════════ %>
   <%# FOOTER                                        %>
   <%# ══════════════════════════════════════════════ %>
-  <div class="max-w-2xl mx-auto mt-10 mb-4">
+  <div class="max-w-2xl lg:max-w-4xl mx-auto mt-10 mb-4">
     <div class="landing-footer pt-6 pb-4 flex flex-col md:flex-row items-center justify-between gap-3">
       <div class="flex items-center gap-2">
         <div style="width: 1.5rem; height: 1.5rem; border-radius: 0.375rem; background: var(--wz-teal); display: flex; align-items: center; justify-content: center;">
