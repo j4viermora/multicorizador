@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asisto — Documentación del Sistema</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1e2530;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --blue: #388bfd;
+    --blue-dim: #1f3d6e;
+    --green: #3fb950;
+    --green-dim: #1a3a25;
+    --orange: #d29922;
+    --orange-dim: #3d2e0a;
+    --purple: #a371f7;
+    --purple-dim: #2d1f5e;
+    --red: #f85149;
+    --red-dim: #3d1515;
+    --cyan: #39d0c4;
+    --cyan-dim: #0f2e2c;
+    --yellow: #e3b341;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 14px;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(13,17,23,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    height: 52px;
+  }
+  nav .logo {
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--blue);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  nav .logo span { color: var(--text); }
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color .15s;
+  }
+  nav a:hover { color: var(--text); }
+
+  /* LAYOUT */
+  .page { display: flex; min-height: 100vh; }
+
+  aside {
+    width: 220px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 52px;
+    height: calc(100vh - 52px);
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+    padding: 24px 16px;
+  }
+  aside h4 {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--muted);
+    margin-bottom: 8px;
+    margin-top: 20px;
+  }
+  aside h4:first-child { margin-top: 0; }
+  aside ul { list-style: none; }
+  aside ul li a {
+    display: block;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    transition: all .15s;
+  }
+  aside ul li a:hover { color: var(--text); background: var(--surface2); }
+
+  main {
+    flex: 1;
+    min-width: 0;
+    padding: 40px 48px;
+    max-width: 1100px;
+  }
+
+  /* HERO */
+  .hero {
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero .badge {
+    display: inline-block;
+    background: var(--blue-dim);
+    color: var(--blue);
+    border: 1px solid var(--blue);
+    border-radius: 20px;
+    padding: 2px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -.5px;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, var(--text) 0%, var(--blue) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero p {
+    color: var(--muted);
+    font-size: 16px;
+    max-width: 620px;
+  }
+  .hero .pills {
+    display: flex;
+    gap: 8px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  .pill {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* SECTIONS */
+  section { margin-bottom: 64px; }
+  section h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  section h2 .icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .subtitle {
+    color: var(--muted);
+    margin-bottom: 24px;
+    font-size: 14px;
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .card h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  /* DB DIAGRAM */
+  .db-diagram {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .db-table {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    font-size: 12px;
+  }
+  .db-table.tenant { border-color: var(--blue); }
+  .db-table.global { border-color: var(--purple); }
+  .db-table.junction { border-color: var(--orange); }
+
+  .db-table-header {
+    padding: 8px 12px;
+    font-weight: 700;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .db-table.tenant .db-table-header { background: var(--blue-dim); color: var(--blue); }
+  .db-table.global .db-table-header { background: var(--purple-dim); color: var(--purple); }
+  .db-table.junction .db-table-header { background: var(--orange-dim); color: var(--orange); }
+
+  .db-table-header .tag {
+    margin-left: auto;
+    font-size: 9px;
+    padding: 1px 6px;
+    border-radius: 10px;
+    font-weight: 500;
+  }
+  .db-table.tenant .tag { background: var(--blue); color: #000; }
+  .db-table.global .tag { background: var(--purple); color: #000; }
+  .db-table.junction .tag { background: var(--orange); color: #000; }
+
+  .db-col {
+    padding: 4px 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-bottom: 1px solid rgba(48,54,61,.4);
+    color: var(--muted);
+  }
+  .db-col:last-child { border-bottom: none; }
+  .db-col.pk { color: var(--yellow); }
+  .db-col.fk { color: var(--cyan); }
+  .db-col .col-name { flex: 1; font-family: monospace; }
+  .db-col .col-type { font-size: 10px; color: var(--muted); font-family: monospace; }
+  .db-col .col-badge {
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+  .col-badge.pk { background: var(--orange-dim); color: var(--yellow); }
+  .col-badge.fk { background: var(--cyan-dim); color: var(--cyan); }
+  .col-badge.nn { background: var(--surface2); color: var(--muted); }
+
+  /* LIFECYCLE */
+  .lifecycle {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 24px 0;
+    overflow-x: auto;
+    padding: 4px 0;
+  }
+  .lc-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .lc-bubble {
+    background: var(--surface2);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: all .2s;
+  }
+  .lc-bubble.draft { border-color: var(--muted); color: var(--muted); }
+  .lc-bubble.client_pending { border-color: var(--cyan); color: var(--cyan); background: var(--cyan-dim); }
+  .lc-bubble.quoting { border-color: var(--yellow); color: var(--yellow); background: var(--orange-dim); }
+  .lc-bubble.quoted { border-color: var(--blue); color: var(--blue); background: var(--blue-dim); }
+  .lc-bubble.pending_payment { border-color: var(--orange); color: var(--orange); background: var(--orange-dim); }
+  .lc-bubble.purchased { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+  .lc-bubble.cancelled { border-color: var(--red); color: var(--red); background: var(--red-dim); }
+  .lc-label { font-size: 10px; color: var(--muted); }
+
+  .lc-arrow {
+    color: var(--border);
+    font-size: 20px;
+    margin: 0 4px;
+    margin-top: -16px;
+    flex-shrink: 0;
+  }
+  .lc-fork {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  /* FLOW DIAGRAM */
+  .flow {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .flow-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .flow-row:last-child { margin-bottom: 0; }
+  .flow-node {
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    border: 1px solid;
+  }
+  .fn-actor { background: var(--surface2); border-color: var(--border); color: var(--text); }
+  .fn-job { background: var(--purple-dim); border-color: var(--purple); color: var(--purple); }
+  .fn-service { background: var(--cyan-dim); border-color: var(--cyan); color: var(--cyan); }
+  .fn-db { background: var(--orange-dim); border-color: var(--orange); color: var(--orange); }
+  .fn-provider { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+  .fn-event { background: var(--blue-dim); border-color: var(--blue); color: var(--blue); }
+
+  .flow-arrow {
+    color: var(--muted);
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .flow-label {
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  /* COMMISSION DIAGRAM */
+  .commission-flow {
+    display: flex;
+    align-items: stretch;
+    gap: 2px;
+    height: 80px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 16px 0;
+    font-size: 12px;
+  }
+  .cf-block {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    padding: 8px;
+    font-weight: 600;
+  }
+  .cf-block .cf-label { font-size: 10px; opacity: .7; }
+  .cf-block .cf-value { font-size: 13px; }
+  .cf-sale { background: var(--blue-dim); border: 1px solid var(--blue); flex: 5; color: var(--blue); border-radius: 8px 0 0 8px; }
+  .cf-provider { background: var(--green-dim); border: 1px solid var(--green); flex: 3; color: var(--green); }
+  .cf-producer { background: var(--purple-dim); border: 1px solid var(--purple); flex: 2; color: var(--purple); }
+  .cf-platform { background: var(--orange-dim); border: 1px solid var(--orange); flex: 1; color: var(--orange); border-radius: 0 8px 8px 0; }
+
+  /* ROUTE TABLE */
+  .route-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .route-table th {
+    text-align: left;
+    padding: 8px 12px;
+    background: var(--surface2);
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    border-bottom: 1px solid var(--border);
+  }
+  .route-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(48,54,61,.4);
+    vertical-align: top;
+  }
+  .route-table tr:last-child td { border-bottom: none; }
+  .route-table tr:hover td { background: var(--surface2); }
+
+  .method {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    font-family: monospace;
+    margin-right: 4px;
+  }
+  .method.GET { background: #1a3a25; color: var(--green); }
+  .method.POST { background: var(--blue-dim); color: var(--blue); }
+  .method.PATCH { background: var(--orange-dim); color: var(--orange); }
+  .method.DELETE { background: var(--red-dim); color: var(--red); }
+
+  .route-path {
+    font-family: monospace;
+    color: var(--text);
+    font-size: 12px;
+  }
+
+  /* STACK */
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .stack-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .stack-item .stack-gem {
+    font-family: monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .stack-item .stack-desc {
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .stack-item .stack-cat {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: 4px;
+  }
+
+  /* NAMESPACE BOXES */
+  .ns-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .ns-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .ns-header {
+    padding: 10px 16px;
+    font-weight: 700;
+    font-size: 13px;
+    font-family: monospace;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ns-header .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .ns-box.admin .ns-header { color: var(--red); }
+  .ns-box.admin .dot { background: var(--red); }
+  .ns-box.producer .ns-header { color: var(--green); }
+  .ns-box.producer .dot { background: var(--green); }
+  .ns-box.pub .ns-header { color: var(--blue); }
+  .ns-box.pub .dot { background: var(--blue); }
+  .ns-box.webhooks .ns-header { color: var(--orange); }
+  .ns-box.webhooks .dot { background: var(--orange); }
+  .ns-content { padding: 12px 16px; }
+  .ns-route {
+    font-size: 12px;
+    color: var(--muted);
+    padding: 3px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid rgba(48,54,61,.3);
+  }
+  .ns-route:last-child { border-bottom: none; }
+  .ns-route .r { font-family: monospace; color: var(--text); }
+
+  /* JOB CARDS */
+  .job-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .job-card {
+    background: var(--surface);
+    border: 1px solid var(--purple);
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .job-card h3 {
+    font-family: monospace;
+    font-size: 13px;
+    color: var(--purple);
+    margin-bottom: 8px;
+  }
+  .job-card p { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .job-card .job-meta {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .job-meta-item {
+    display: flex;
+    gap: 6px;
+    font-size: 11px;
+  }
+  .job-meta-key { color: var(--muted); min-width: 60px; }
+  .job-meta-val { color: var(--text); font-family: monospace; }
+
+  /* PROVIDER CARDS */
+  .provider-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .provider-card {
+    background: var(--surface);
+    border: 1px solid var(--green);
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .provider-card h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--green);
+    margin-bottom: 4px;
+  }
+  .provider-card .slug {
+    font-family: monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .provider-stat {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    padding: 3px 0;
+    border-bottom: 1px solid rgba(48,54,61,.4);
+  }
+  .provider-stat:last-child { border-bottom: none; }
+  .provider-stat .key { color: var(--muted); }
+  .provider-stat .val { color: var(--text); font-family: monospace; }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    font-size: 12px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 3px;
+    border: 1px solid;
+    flex-shrink: 0;
+  }
+
+  /* MISC */
+  code {
+    font-family: monospace;
+    background: var(--surface2);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: var(--cyan);
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 48px 0;
+  }
+
+  .info-box {
+    background: var(--blue-dim);
+    border: 1px solid var(--blue);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--text);
+    margin: 16px 0;
+  }
+  .info-box strong { color: var(--blue); }
+
+  .warn-box {
+    background: var(--orange-dim);
+    border: 1px solid var(--orange);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--text);
+    margin: 16px 0;
+  }
+
+  .model-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .model-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 12px;
+  }
+  .model-card h3 {
+    font-family: monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--yellow);
+    margin-bottom: 8px;
+  }
+  .model-card ul { list-style: none; }
+  .model-card ul li {
+    padding: 2px 0;
+    color: var(--muted);
+    border-bottom: 1px solid rgba(48,54,61,.3);
+  }
+  .model-card ul li:last-child { border-bottom: none; }
+  .model-card ul li strong { color: var(--cyan); }
+  .model-card ul li em { color: var(--purple); font-style: normal; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="logo">✦ <span>Asisto</span></a>
+  <a href="#overview">Overview</a>
+  <a href="#db">Base de datos</a>
+  <a href="#lifecycle">Ciclo de vida</a>
+  <a href="#commissions">Comisiones</a>
+  <a href="#routes">Rutas</a>
+  <a href="#jobs">Jobs</a>
+  <a href="#providers">Proveedores</a>
+  <a href="#stack">Stack</a>
+</nav>
+
+<div class="page">
+
+  <aside>
+    <h4>Secciones</h4>
+    <ul>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#tenancy">Multi-tenancy</a></li>
+      <li><a href="#auth">Auth & Roles</a></li>
+      <li><a href="#db">Base de datos</a></li>
+      <li><a href="#models">Modelos</a></li>
+      <li><a href="#lifecycle">Ciclo del Quote</a></li>
+      <li><a href="#commissions">Comisiones</a></li>
+      <li><a href="#routes">Rutas</a></li>
+      <li><a href="#jobs">Jobs</a></li>
+      <li><a href="#providers">Proveedores</a></li>
+      <li><a href="#public">Landing pública</a></li>
+      <li><a href="#stack">Stack</a></li>
+    </ul>
+  </aside>
+
+  <main>
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="badge">Ruby on Rails 8 · MVP</div>
+      <h1>Documentación del Sistema</h1>
+      <p>Plataforma SaaS multi-tenant para cotización y comparación de seguros de viaje. Los productores crean cotizaciones que se envían en paralelo a múltiples aseguradoras; se comparan resultados y se emiten pólizas al momento de la compra.</p>
+      <div class="pills">
+        <div class="pill">Rails 8.0</div>
+        <div class="pill">SQLite 3</div>
+        <div class="pill">Hotwire</div>
+        <div class="pill">TailwindCSS 4</div>
+        <div class="pill">Solid Queue</div>
+        <div class="pill">acts_as_tenant</div>
+        <div class="pill">Kamal</div>
+        <div class="pill">Módulo: Asisto</div>
+      </div>
+    </div>
+
+    <!-- OVERVIEW -->
+    <section id="overview">
+      <h2>
+        <span class="icon" style="background:var(--blue-dim)">🗺</span>
+        Overview del Sistema
+      </h2>
+      <p class="subtitle">Qué hace el sistema y cómo interactúan sus partes principales.</p>
+
+      <div class="flow">
+        <div class="flow-row">
+          <div class="flow-node fn-actor">Productor</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node fn-db">Quote</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node fn-job">QuoteJob</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node fn-job">ProviderQuoteJob ×N</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node fn-provider">Aseguradoras</div>
+        </div>
+        <div class="flow-row">
+          <div class="flow-node fn-provider">Aseguradoras</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node fn-db">QuoteResult</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node fn-actor">Cliente elige</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node fn-event">Webhook</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node fn-db">Policy</div>
+        </div>
+        <div class="flow-row">
+          <div class="flow-node fn-db">Policy</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node fn-actor">Comisión al Productor</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node fn-db">ProducerInvoice</div>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <h3>👥 Actores</h3>
+          <ul style="list-style:none;font-size:13px;color:var(--muted)">
+            <li style="padding:4px 0;border-bottom:1px solid rgba(48,54,61,.4)"><strong style="color:var(--green)">Super Admin</strong> — gestiona todo el sistema</li>
+            <li style="padding:4px 0;border-bottom:1px solid rgba(48,54,61,.4)"><strong style="color:var(--blue)">Productor</strong> — agente de seguros, crea cotizaciones</li>
+            <li style="padding:4px 0"><strong style="color:var(--cyan)">Cliente</strong> — viajero, ve cotizaciones vía link público</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>🏢 Tenants (Companies)</h3>
+          <ul style="list-style:none;font-size:13px;color:var(--muted)">
+            <li style="padding:4px 0;border-bottom:1px solid rgba(48,54,61,.4)">Cada <strong style="color:var(--text)">Company</strong> es un tenant aislado</li>
+            <li style="padding:4px 0;border-bottom:1px solid rgba(48,54,61,.4)">Los productores pertenecen a una company</li>
+            <li style="padding:4px 0;border-bottom:1px solid rgba(48,54,61,.4)">Cada registro scoped lleva <code>company_id</code></li>
+            <li style="padding:4px 0">La landing pública se accede vía <code>/cotizar/:slug</code></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>🌐 Integraciones</h3>
+          <ul style="list-style:none;font-size:13px;color:var(--muted)">
+            <li style="padding:4px 0;border-bottom:1px solid rgba(48,54,61,.4)"><strong style="color:var(--green)">3 providers fake</strong> (AssistCard, UniversalAssistance, TravelAce)</li>
+            <li style="padding:4px 0;border-bottom:1px solid rgba(48,54,61,.4)"><strong style="color:var(--blue)">Webhooks</strong> para confirmar compras</li>
+            <li style="padding:4px 0;border-bottom:1px solid rgba(48,54,61,.4)"><strong style="color:var(--orange)">Resend</strong> en producción (emails)</li>
+            <li style="padding:4px 0"><strong style="color:var(--purple)">Kamal</strong> para deploy con Docker</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- MULTI-TENANCY -->
+    <section id="tenancy">
+      <h2>
+        <span class="icon" style="background:var(--cyan-dim)">🏗</span>
+        Multi-Tenancy
+      </h2>
+      <p class="subtitle">Cómo se aíslan los datos entre companies.</p>
+
+      <div class="info-box">
+        <strong>gem acts_as_tenant v1.0.1</strong> — Automáticamente agrega <code>company_id = X</code> a todas las queries y JOINs de los modelos tenant-scoped. El tenant se setea en <code>ApplicationController#set_current_tenant</code> desde <code>current_user.company</code>.
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Modelos con <code>acts_as_tenant :company</code></h3>
+          <ul style="list-style:none;font-size:13px;color:var(--muted)">
+            <li style="padding:3px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--green)">✓</span> Quote</li>
+            <li style="padding:3px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--green)">✓</span> QuoteResult</li>
+            <li style="padding:3px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--green)">✓</span> Policy</li>
+            <li style="padding:3px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--green)">✓</span> Traveler</li>
+            <li style="padding:3px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--green)">✓</span> Link</li>
+            <li style="padding:3px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--green)">✓</span> ProducerInvoice</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Modelos globales (sin tenant)</h3>
+          <ul style="list-style:none;font-size:13px;color:var(--muted)">
+            <li style="padding:3px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--muted)">—</span> Provider</li>
+            <li style="padding:3px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--muted)">—</span> InsurancePlan</li>
+            <li style="padding:3px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--muted)">—</span> CommissionContract</li>
+            <li style="padding:3px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--muted)">—</span> PlatformInvoice</li>
+            <li style="padding:3px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--muted)">—</span> Company</li>
+            <li style="padding:3px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--muted)">—</span> User (solo super_admin no tiene company)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="warn-box">
+        ⚠️ Los <strong>background jobs</strong> corren sin contexto HTTP, por lo que no tienen tenant. Deben usar <code>ActsAsTenant.without_tenant</code> para cargar el Quote y luego <code>ActsAsTenant.with_tenant(quote.company)</code> para crear registros.
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- AUTH -->
+    <section id="auth">
+      <h2>
+        <span class="icon" style="background:var(--red-dim)">🔐</span>
+        Autenticación y Roles
+      </h2>
+      <p class="subtitle">Devise + enums de role y status.</p>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Roles de Usuario</h3>
+          <div style="font-size:13px">
+            <div style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px">
+              <div style="background:var(--red-dim);border:1px solid var(--red);color:var(--red);border-radius:6px;padding:4px 12px;font-weight:700;font-size:12px">super_admin (1)</div>
+              <div style="color:var(--muted)">Accede a <code>/admin</code> y <code>/jobs</code>. Sin restricción de tenant.</div>
+            </div>
+            <div style="padding:8px 0;display:flex;align-items:center;gap:12px">
+              <div style="background:var(--green-dim);border:1px solid var(--green);color:var(--green);border-radius:6px;padding:4px 12px;font-weight:700;font-size:12px">producer (0)</div>
+              <div style="color:var(--muted)">Accede a <code>/producer</code> solo si está <code>active</code>.</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Status del Productor</h3>
+          <div style="font-size:13px">
+            <div style="padding:6px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+              <code style="color:var(--yellow)">pending (0)</code>
+              <span style="color:var(--muted)">Recién registrado, espera aprobación. Redirige a <code>/account/pending</code>.</span>
+            </div>
+            <div style="padding:6px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+              <code style="color:var(--green)">active (1)</code>
+              <span style="color:var(--muted)">Puede usar la plataforma normalmente.</span>
+            </div>
+            <div style="padding:6px 0;display:flex;align-items:center;gap:10px">
+              <code style="color:var(--red)">suspended (2)</code>
+              <span style="color:var(--muted)">Bloqueado, se cierra sesión automáticamente.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h3>Registro de Productores</h3>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7">
+          Al registrarse via <code>Users::RegistrationsController</code>, se asigna automáticamente <code>role: producer</code> y <code>status: pending</code>. Se crea una <code>Company</code> nueva para el productor. El Super Admin la aprueba desde <code>/admin/users</code>.
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- DB DIAGRAM -->
+    <section id="db">
+      <h2>
+        <span class="icon" style="background:var(--orange-dim)">🗄</span>
+        Esquema de Base de Datos
+      </h2>
+      <p class="subtitle">SQLite3 en MVP. Esquema compatible con PostgreSQL para migración futura.</p>
+
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background:var(--blue-dim);border-color:var(--blue)"></div>
+          <span style="color:var(--muted);font-size:12px">Tenant-scoped (tiene company_id)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:var(--purple-dim);border-color:var(--purple)"></div>
+          <span style="color:var(--muted);font-size:12px">Global (sin tenant)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:var(--orange-dim);border-color:var(--orange)"></div>
+          <span style="color:var(--muted);font-size:12px">Tabla de unión</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:var(--cyan-dim);border-color:var(--cyan)"></div>
+          <span style="color:var(--muted);font-size:12px">FK (foreign key)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:var(--orange-dim);border-color:var(--yellow)"></div>
+          <span style="color:var(--muted);font-size:12px">PK</span>
+        </div>
+      </div>
+
+      <div class="db-diagram">
+
+        <!-- companies -->
+        <div class="db-table global">
+          <div class="db-table-header">companies <span class="tag">GLOBAL</span></div>
+          <div class="db-col pk"><span class="col-name">id</span><span class="col-type">integer</span><span class="col-badge pk">PK</span></div>
+          <div class="db-col"><span class="col-name">name</span><span class="col-type">string</span></div>
+          <div class="db-col"><span class="col-name">slug</span><span class="col-type">string unique</span></div>
+          <div class="db-col"><span class="col-name">currency</span><span class="col-type">string</span></div>
+        </div>
+
+        <!-- users -->
+        <div class="db-table tenant">
+          <div class="db-table-header">users <span class="tag">TENANT</span></div>
+          <div class="db-col pk"><span class="col-name">id</span><span class="col-type">integer</span><span class="col-badge pk">PK</span></div>
+          <div class="db-col fk"><span class="col-name">company_id</span><span class="col-type">integer</span><span class="col-badge fk">FK</span></div>
+          <div class="db-col"><span class="col-name">email</span><span class="col-type">string unique</span></div>
+          <div class="db-col"><span class="col-name">role</span><span class="col-type">int (producer/super_admin)</span></div>
+          <div class="db-col"><span class="col-name">status</span><span class="col-type">int (pending/active/suspended)</span></div>
+          <div class="db-col"><span class="col-name">first_name, last_name</span><span class="col-type">string</span></div>
+        </div>
+
+        <!-- providers -->
+        <div class="db-table global">
+          <div class="db-table-header">providers <span class="tag">GLOBAL</span></div>
+          <div class="db-col pk"><span class="col-name">id</span><span class="col-type">integer</span><span class="col-badge pk">PK</span></div>
+          <div class="db-col"><span class="col-name">name</span><span class="col-type">string</span></div>
+          <div class="db-col"><span class="col-name">slug</span><span class="col-type">string unique</span></div>
+          <div class="db-col"><span class="col-name">status</span><span class="col-type">string (active/inactive)</span></div>
+          <div class="db-col"><span class="col-name">config</span><span class="col-type">json</span></div>
+        </div>
+
+        <!-- quotes -->
+        <div class="db-table tenant">
+          <div class="db-table-header">quotes <span class="tag">TENANT</span></div>
+          <div class="db-col pk"><span class="col-name">id</span><span class="col-type">integer</span><span class="col-badge pk">PK</span></div>
+          <div class="db-col fk"><span class="col-name">company_id</span><span class="col-type">integer</span><span class="col-badge fk">FK</span></div>
+          <div class="db-col fk"><span class="col-name">producer_id</span><span class="col-type">integer → users</span><span class="col-badge fk">FK</span></div>
+          <div class="db-col fk"><span class="col-name">traveler_id</span><span class="col-type">integer (opcional)</span><span class="col-badge fk">FK</span></div>
+          <div class="db-col"><span class="col-name">status</span><span class="col-type">string (7 estados)</span></div>
+          <div class="db-col"><span class="col-name">origin, destination</span><span class="col-type">string</span></div>
+          <div class="db-col"><span class="col-name">departure_date</span><span class="col-type">date</span></div>
+          <div class="db-col"><span class="col-name">return_date</span><span class="col-type">date (opcional)</span></div>
+          <div class="db-col"><span class="col-name">travelers_count</span><span class="col-type">int</span></div>
+          <div class="db-col"><span class="col-name">public_token</span><span class="col-type">string unique</span></div>
+          <div class="db-col"><span class="col-name">trip_type</span><span class="col-type">string (single/multi)</span></div>
+        </div>
+
+        <!-- quote_results -->
+        <div class="db-table tenant">
+          <div class="db-table-header">quote_results <span class="tag">TENANT</span></div>
+          <div class="db-col pk"><span class="col-name">id</span><span class="col-type">integer</span><span class="col-badge pk">PK</span></div>
+          <div class="db-col fk"><span class="col-name">company_id</span><span class="col-type">integer</span><span class="col-badge fk">FK</span></div>
+          <div class="db-col fk"><span class="col-name">quote_id</span><span class="col-type">integer</span><span class="col-badge fk">FK</span></div>
+          <div class="db-col fk"><span class="col-name">provider_id</span><span class="col-type">integer</span><span class="col-badge fk">FK</span></div>
+          <div class="db-col fk"><span class="col-name">insurance_plan_id</span><span class="col-type">int (opcional)</span><span class="col-badge fk">FK</span></div>
+          <div class="db-col"><span class="col-name">status</span><span class="col-type">string (pending/success/error)</span></div>
+          <div class="db-col"><span class="col-name">price_cents</span><span class="col-type">integer</span></div>
+          <div class="db-col"><span class="col-name">provider_commission_cents</span><span class="col-type">integer</span></div>
+          <div class="db-col"><span class="col-name">producer_commission_cents</span><span class="col-type">integer</span></div>
+          <div class="db-col"><span class="col-name">platform_commission_cents</span><span class="col-type">integer</span></div>
+          <div class="db-col"><span class="col-name">raw_response</span><span class="col-type">json</span></div>
+        </div>
+
+        <!-- policies -->
+        <div class="db-table tenant">
+          <div class="db-table-header">policies <span class="tag">TENANT</span></div>
+          <div class="db-col pk"><span class="col-name">id</span><span class="col-type">integer</span><span class="col-badge pk">PK</span></div>
+          <div class="db-col fk"><span class="col-name">company_id</span><span class="col-type">integer</span><span class="col-badge fk">FK</span></div>
+          <div class="db-col fk"><span class="col-name">quote_result_id</span><span class="col-type">integer</span><span class="col-badge fk">FK</span></div>
+          <div class="db-col"><span class="col-name">policy_number</span><span class="col-type">string</span></div>
+          <div class="db-col"><span class="col-name">status</span><span class="col-type">string (active/cancelled/expired)</span></div>
+          <div class="db-col"><span class="col-name">premium_cents</span><span class="col-type">integer</span></div>
+          <div class="db-col"><span class="col-name">producer_commission_cents</span><span class="col-type">integer</span></div>
+          <div class="db-col"><span class="col-name">producer_commission_status</span><span class="col-type">string (pending/invoiced/paid)</span></div>
+          <div class="db-col"><span class="col-name">starts_at, ends_at</span><span class="col-type">date</span></div>
+          <div class="db-col"><span class="col-name">webhook_payload</span><span class="col-type">json</span></div>
+        </div>
+
+        <!-- travelers -->
+        <div class="db-table tenant">
+          <div class="db-table-header">travelers <span class="tag">TENANT</span></div>
+          <div class="db-col pk"><span class="col-name">id</span><span class="col-type">integer</span><span class="col-badge pk">PK</span></div>
+          <div class="db-col fk"><span class="col-name">company_id</span><span class="col-type">integer</span><span class="col-badge fk">FK</span></div>
+          <div class="db-col fk"><span class="col-name">producer_id</span><span class="col-type">integer → users</span><span class="col-badge fk">FK</span></div>
+          <div class="db-col"><span class="col-name">first_name, last_name</span><span class="col-type">string</span></div>
+          <div class="db-col"><span class="col-name">email, phone</span><span class="col-type">string</span></div>
+          <div class="db-col"><span class="col-name">document, birth_date</span><span class="col-type">string / date</span></div>
+        </div>
+
+        <!-- commission_contracts -->
+        <div class="db-table global">
+          <div class="db-table-header">commission_contracts <span class="tag">GLOBAL</span></div>
+          <div class="db-col pk"><span class="col-name">id</span><span class="col-type">integer</span><span class="col-badge pk">PK</span></div>
+          <div class="db-col fk"><span class="col-name">provider_id</span><span class="col-type">integer</span><span class="col-badge fk">FK</span></div>
+          <div class="db-col fk"><span class="col-name">producer_id</span><span class="col-type">integer (nullable = default)</span><span class="col-badge fk">FK</span></div>
+          <div class="db-col"><span class="col-name">provider_commission_rate</span><span class="col-type">decimal (0–1)</span></div>
+          <div class="db-col"><span class="col-name">producer_share_rate</span><span class="col-type">decimal (0–1)</span></div>
+          <div class="db-col"><span class="col-name">valid_from, valid_until</span><span class="col-type">date</span></div>
+        </div>
+
+        <!-- insurance_plans -->
+        <div class="db-table global">
+          <div class="db-table-header">insurance_plans <span class="tag">GLOBAL</span></div>
+          <div class="db-col pk"><span class="col-name">id</span><span class="col-type">integer</span><span class="col-badge pk">PK</span></div>
+          <div class="db-col fk"><span class="col-name">provider_id</span><span class="col-type">integer</span><span class="col-badge fk">FK</span></div>
+          <div class="db-col"><span class="col-name">name</span><span class="col-type">string</span></div>
+          <div class="db-col"><span class="col-name">description</span><span class="col-type">text</span></div>
+          <div class="db-col"><span class="col-name">coverage_details</span><span class="col-type">json</span></div>
+          <div class="db-col"><span class="col-name">status</span><span class="col-type">string (active/inactive)</span></div>
+        </div>
+
+        <!-- links -->
+        <div class="db-table tenant">
+          <div class="db-table-header">links <span class="tag">TENANT</span></div>
+          <div class="db-col pk"><span class="col-name">id</span><span class="col-type">integer</span><span class="col-badge pk">PK</span></div>
+          <div class="db-col fk"><span class="col-name">company_id</span><span class="col-type">integer</span><span class="col-badge fk">FK</span></div>
+          <div class="db-col fk"><span class="col-name">quote_id</span><span class="col-type">integer</span><span class="col-badge fk">FK</span></div>
+          <div class="db-col"><span class="col-name">token</span><span class="col-type">string unique</span></div>
+          <div class="db-col"><span class="col-name">purpose</span><span class="col-type">string (quote_share)</span></div>
+          <div class="db-col"><span class="col-name">status</span><span class="col-type">string (active/expired/revoked)</span></div>
+          <div class="db-col"><span class="col-name">expires_at</span><span class="col-type">datetime</span></div>
+          <div class="db-col"><span class="col-name">access_count</span><span class="col-type">integer</span></div>
+        </div>
+
+        <!-- producer_invoices -->
+        <div class="db-table tenant">
+          <div class="db-table-header">producer_invoices <span class="tag">TENANT</span></div>
+          <div class="db-col pk"><span class="col-name">id</span><span class="col-type">integer</span><span class="col-badge pk">PK</span></div>
+          <div class="db-col fk"><span class="col-name">company_id</span><span class="col-type">integer</span><span class="col-badge fk">FK</span></div>
+          <div class="db-col fk"><span class="col-name">producer_id</span><span class="col-type">integer → users</span><span class="col-badge fk">FK</span></div>
+          <div class="db-col"><span class="col-name">period_start, period_end</span><span class="col-type">date</span></div>
+          <div class="db-col"><span class="col-name">total_commission_cents</span><span class="col-type">integer</span></div>
+          <div class="db-col"><span class="col-name">status</span><span class="col-type">string (draft/pending/paid)</span></div>
+          <div class="db-col"><span class="col-name">paid_at</span><span class="col-type">datetime</span></div>
+        </div>
+
+        <!-- producer_invoice_policies -->
+        <div class="db-table junction">
+          <div class="db-table-header">producer_invoice_policies <span class="tag">JOIN</span></div>
+          <div class="db-col fk"><span class="col-name">producer_invoice_id</span><span class="col-type">integer</span><span class="col-badge fk">FK</span></div>
+          <div class="db-col fk"><span class="col-name">policy_id</span><span class="col-type">integer</span><span class="col-badge fk">FK</span></div>
+        </div>
+
+        <!-- platform_invoices -->
+        <div class="db-table global">
+          <div class="db-table-header">platform_invoices <span class="tag">GLOBAL</span></div>
+          <div class="db-col pk"><span class="col-name">id</span><span class="col-type">integer</span><span class="col-badge pk">PK</span></div>
+          <div class="db-col fk"><span class="col-name">provider_id</span><span class="col-type">integer</span><span class="col-badge fk">FK</span></div>
+          <div class="db-col"><span class="col-name">period_start, period_end</span><span class="col-type">date</span></div>
+          <div class="db-col"><span class="col-name">total_commission_cents</span><span class="col-type">integer</span></div>
+          <div class="db-col"><span class="col-name">status</span><span class="col-type">string (draft/pending/paid)</span></div>
+        </div>
+
+      </div><!-- /db-diagram -->
+
+    </section>
+
+    <hr class="divider">
+
+    <!-- MODELS -->
+    <section id="models">
+      <h2>
+        <span class="icon" style="background:var(--yellow);color:#000">M</span>
+        Asociaciones entre Modelos
+      </h2>
+      <p class="subtitle">Relaciones principales entre los modelos ActiveRecord.</p>
+
+      <div class="model-list">
+        <div class="model-card">
+          <h3>Company</h3>
+          <ul>
+            <li><strong>has_many</strong> users <em>(dependent: destroy)</em></li>
+          </ul>
+        </div>
+        <div class="model-card">
+          <h3>User</h3>
+          <ul>
+            <li><strong>belongs_to</strong> company <em>(optional)</em></li>
+            <li><strong>has_many</strong> quotes <em>(as producer)</em></li>
+            <li><strong>has_many</strong> travelers <em>(as producer)</em></li>
+            <li><strong>has_many</strong> producer_invoices <em>(as producer)</em></li>
+            <li><strong>has_many</strong> commission_contracts <em>(as producer)</em></li>
+          </ul>
+        </div>
+        <div class="model-card">
+          <h3>Quote</h3>
+          <ul>
+            <li><strong>belongs_to</strong> company</li>
+            <li><strong>belongs_to</strong> producer <em>(User)</em></li>
+            <li><strong>belongs_to</strong> traveler <em>(optional)</em></li>
+            <li><strong>has_many</strong> quote_results <em>(dependent: destroy)</em></li>
+            <li><strong>has_many</strong> links <em>(dependent: destroy)</em></li>
+          </ul>
+        </div>
+        <div class="model-card">
+          <h3>QuoteResult</h3>
+          <ul>
+            <li><strong>belongs_to</strong> company</li>
+            <li><strong>belongs_to</strong> quote</li>
+            <li><strong>belongs_to</strong> provider</li>
+            <li><strong>belongs_to</strong> insurance_plan <em>(optional)</em></li>
+            <li><strong>has_one</strong> policy <em>(dependent: nullify)</em></li>
+          </ul>
+        </div>
+        <div class="model-card">
+          <h3>Policy</h3>
+          <ul>
+            <li><strong>belongs_to</strong> company</li>
+            <li><strong>belongs_to</strong> quote_result</li>
+            <li><strong>has_many</strong> producer_invoice_policies</li>
+            <li><strong>has_many</strong> producer_invoices <em>(through)</em></li>
+          </ul>
+        </div>
+        <div class="model-card">
+          <h3>Provider</h3>
+          <ul>
+            <li><strong>has_many</strong> insurance_plans <em>(dependent: destroy)</em></li>
+            <li><strong>has_many</strong> commission_contracts <em>(dependent: destroy)</em></li>
+            <li><strong>has_many</strong> quote_results <em>(dependent: nullify)</em></li>
+            <li><strong>has_many</strong> platform_invoices</li>
+          </ul>
+        </div>
+        <div class="model-card">
+          <h3>CommissionContract</h3>
+          <ul>
+            <li><strong>belongs_to</strong> provider</li>
+            <li><strong>belongs_to</strong> producer <em>(User, optional)</em></li>
+            <li><em>producer_id NULL = contrato por defecto del provider</em></li>
+            <li>Resolución: primero busca específico por productor, luego fallback a default</li>
+          </ul>
+        </div>
+        <div class="model-card">
+          <h3>ProducerInvoice</h3>
+          <ul>
+            <li><strong>belongs_to</strong> company</li>
+            <li><strong>belongs_to</strong> producer <em>(User)</em></li>
+            <li><strong>has_many</strong> producer_invoice_policies</li>
+            <li><strong>has_many</strong> policies <em>(through)</em></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- LIFECYCLE -->
+    <section id="lifecycle">
+      <h2>
+        <span class="icon" style="background:var(--blue-dim)">🔄</span>
+        Ciclo de Vida del Quote
+      </h2>
+      <p class="subtitle">Los 7 estados por los que puede pasar una cotización.</p>
+
+      <div class="lifecycle">
+        <div class="lc-step">
+          <div class="lc-bubble draft">draft</div>
+          <div class="lc-label">Borrador</div>
+        </div>
+        <div class="lc-arrow">→</div>
+        <div class="lc-step">
+          <div class="lc-bubble client_pending">client_pending</div>
+          <div class="lc-label">Compartido al cliente</div>
+        </div>
+        <div class="lc-arrow">→</div>
+        <div class="lc-step">
+          <div class="lc-bubble quoting">quoting</div>
+          <div class="lc-label">Consultando aseguradoras</div>
+        </div>
+        <div class="lc-arrow">→</div>
+        <div class="lc-step">
+          <div class="lc-bubble quoted">quoted</div>
+          <div class="lc-label">Con resultados</div>
+        </div>
+        <div class="lc-arrow">→</div>
+        <div class="lc-step">
+          <div class="lc-bubble pending_payment">pending_payment</div>
+          <div class="lc-label">Esperando pago</div>
+        </div>
+        <div class="lc-arrow">→</div>
+        <div class="lc-fork">
+          <div class="lc-step">
+            <div class="lc-bubble purchased">purchased</div>
+            <div class="lc-label">Comprado ✓</div>
+          </div>
+          <div class="lc-step">
+            <div class="lc-bubble cancelled">cancelled</div>
+            <div class="lc-label">Cancelado ✗</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Flujo detallado de cotización</h3>
+        <div class="flow-row" style="margin-bottom:10px">
+          <div class="flow-node fn-actor">Productor crea Quote</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-label">status: draft</div>
+        </div>
+        <div class="flow-row" style="margin-bottom:10px">
+          <div class="flow-node fn-actor">Productor envía</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node fn-job">QuoteJob.perform_later</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-label">status: quoting</div>
+        </div>
+        <div class="flow-row" style="margin-bottom:10px">
+          <div class="flow-node fn-job">ProviderQuoteJob × 3</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node fn-provider">AssistCard / UniversalAssist / TravelAce</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node fn-db">QuoteResult</div>
+        </div>
+        <div class="flow-row" style="margin-bottom:10px">
+          <div class="flow-label">Todos completos</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-label">status: quoted</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-label">Cliente elige plan</div>
+        </div>
+        <div class="flow-row">
+          <div class="flow-node fn-event">Webhook del provider</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node fn-job">WebhookProcessorJob</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node fn-db">Policy creada</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-label">status: purchased</div>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <strong>draft → client_pending:</strong> El productor comparte un link vía <code>Link#token</code>. El cliente accede sin autenticación a <code>/public/quotes/:token</code> y puede ver/seleccionar resultados.
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- COMMISSIONS -->
+    <section id="commissions">
+      <h2>
+        <span class="icon" style="background:var(--green-dim)">💰</span>
+        Modelo de Comisiones
+      </h2>
+      <p class="subtitle">Sistema de tres capas: la aseguradora paga a la plataforma, que distribuye al productor.</p>
+
+      <div class="commission-flow">
+        <div class="cf-block cf-sale">
+          <div class="cf-label">PRECIO TOTAL</div>
+          <div class="cf-value">price_cents</div>
+        </div>
+        <div class="cf-block cf-provider">
+          <div class="cf-label">COMISIÓN PROVIDER</div>
+          <div class="cf-value">price × provider_commission_rate</div>
+        </div>
+        <div class="cf-block cf-producer">
+          <div class="cf-label">AL PRODUCTOR</div>
+          <div class="cf-value">provider_comm × producer_share_rate</div>
+        </div>
+        <div class="cf-block cf-platform">
+          <div class="cf-label">PLATAFORMA</div>
+          <div class="cf-value">provider − producer</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>CommissionContract</h3>
+          <ul style="list-style:none;font-size:13px;color:var(--muted)">
+            <li style="padding:4px 0;border-bottom:1px solid rgba(48,54,61,.4)"><strong style="color:var(--text)">provider_commission_rate</strong> — % que paga la aseguradora (ej: 0.15 = 15%)</li>
+            <li style="padding:4px 0;border-bottom:1px solid rgba(48,54,61,.4)"><strong style="color:var(--text)">producer_share_rate</strong> — % de esa comisión que va al productor (ej: 0.60 = 60%)</li>
+            <li style="padding:4px 0;border-bottom:1px solid rgba(48,54,61,.4)"><strong style="color:var(--text)">producer_id NULL</strong> — contrato por defecto del proveedor</li>
+            <li style="padding:4px 0">Resolución: primero busca contrato específico para el productor, luego el default.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Ciclo de pagos</h3>
+          <ul style="list-style:none;font-size:13px;color:var(--muted)">
+            <li style="padding:4px 0;border-bottom:1px solid rgba(48,54,61,.4)">Policy se crea con <code>producer_commission_status: pending</code></li>
+            <li style="padding:4px 0;border-bottom:1px solid rgba(48,54,61,.4)">Productor crea <code>ProducerInvoice</code> con las policies del período</li>
+            <li style="padding:4px 0;border-bottom:1px solid rgba(48,54,61,.4)">Estado pasa a <code>invoiced</code> → luego <code>paid</code></li>
+            <li style="padding:4px 0">Admin gestiona <code>PlatformInvoice</code> por proveedor separado</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- ROUTES -->
+    <section id="routes">
+      <h2>
+        <span class="icon" style="background:var(--surface2)">🛣</span>
+        Rutas y Namespaces
+      </h2>
+      <p class="subtitle">Cuatro namespaces principales más la raíz.</p>
+
+      <div class="ns-grid">
+        <div class="ns-box admin">
+          <div class="ns-header"><div class="dot"></div>/admin/*</div>
+          <div class="ns-content">
+            <div class="ns-route"><span class="method GET">GET</span><span class="r">/admin/dashboard</span></div>
+            <div class="ns-route"><span class="method GET">GET</span><span class="r">/admin/providers</span></div>
+            <div class="ns-route"><span class="method GET">GET</span><span class="r">/admin/insurance_plans</span></div>
+            <div class="ns-route"><span class="method GET">GET</span><span class="r">/admin/commission_contracts</span></div>
+            <div class="ns-route"><span class="method GET">GET</span><span class="r">/admin/users</span></div>
+            <div class="ns-route"><span class="method PATCH">PATCH</span><span class="r">/admin/users/:id/approve</span></div>
+            <div class="ns-route"><span class="method GET">GET</span><span class="r">/admin/finances</span></div>
+            <div class="ns-route"><span class="method GET">GET</span><span class="r">/admin/platform_invoices</span></div>
+            <div style="padding-top:8px;font-size:11px;color:var(--muted)">Auth: <code>authenticate_super_admin!</code></div>
+          </div>
+        </div>
+
+        <div class="ns-box producer">
+          <div class="ns-header"><div class="dot"></div>/producer/*</div>
+          <div class="ns-content">
+            <div class="ns-route"><span class="method GET">GET</span><span class="r">/producer/dashboard</span></div>
+            <div class="ns-route"><span class="method GET">GET</span><span class="r">/producer/quotes</span></div>
+            <div class="ns-route"><span class="method POST">POST</span><span class="r">/producer/quotes</span></div>
+            <div class="ns-route"><span class="method GET">GET</span><span class="r">/producer/travelers</span></div>
+            <div class="ns-route"><span class="method GET">GET</span><span class="r">/producer/policies</span></div>
+            <div class="ns-route"><span class="method GET">GET</span><span class="r">/producer/commissions</span></div>
+            <div class="ns-route"><span class="method GET">GET</span><span class="r">/producer/invoices</span></div>
+            <div class="ns-route"><span class="method POST">POST</span><span class="r">/producer/invoices</span></div>
+            <div style="padding-top:8px;font-size:11px;color:var(--muted)">Auth: <code>authenticate_active_producer!</code></div>
+          </div>
+        </div>
+
+        <div class="ns-box pub">
+          <div class="ns-header"><div class="dot"></div>/public/* + /cotizar/:slug</div>
+          <div class="ns-content">
+            <div class="ns-route"><span class="method GET">GET</span><span class="r">/public/quotes/:token</span></div>
+            <div class="ns-route"><span class="method PATCH">PATCH</span><span class="r">/public/quotes/:token</span></div>
+            <div class="ns-route"><span class="method GET">GET</span><span class="r">/cotizar/:slug</span></div>
+            <div class="ns-route"><span class="method POST">POST</span><span class="r">/cotizar/:slug</span></div>
+            <div class="ns-route"><span class="method POST">POST</span><span class="r">/cotizar/:slug/comprar</span></div>
+            <div class="ns-route"><span class="method POST">POST</span><span class="r">/cotizar/:slug/checkout</span></div>
+            <div class="ns-route"><span class="method GET">GET</span><span class="r">/cotizar/:slug/gracias</span></div>
+            <div style="padding-top:8px;font-size:11px;color:var(--muted)">Sin autenticación. Layout propio.</div>
+          </div>
+        </div>
+
+        <div class="ns-box webhooks">
+          <div class="ns-header"><div class="dot"></div>/webhooks + /jobs</div>
+          <div class="ns-content">
+            <div class="ns-route"><span class="method POST">POST</span><span class="r">/webhooks/:provider_slug</span></div>
+            <div class="ns-route" style="color:var(--muted);font-size:11px">Valida y encola WebhookProcessorJob</div>
+            <div class="ns-route" style="margin-top:8px"><span class="method GET">GET</span><span class="r">/jobs/*</span></div>
+            <div class="ns-route" style="color:var(--muted);font-size:11px">Mission Control Jobs. Solo super_admin.</div>
+            <div style="padding-top:8px;font-size:11px;color:var(--muted)">Skip CSRF en webhooks.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- JOBS -->
+    <section id="jobs">
+      <h2>
+        <span class="icon" style="background:var(--purple-dim)">⚙</span>
+        Background Jobs (Solid Queue)
+      </h2>
+      <p class="subtitle">Jobs asincrónicos gestionados por Solid Queue. En dev corre en proceso separado (<code>Procfile.dev</code>); en producción dentro de Puma (<code>SOLID_QUEUE_IN_PUMA=true</code>).</p>
+
+      <div class="job-grid">
+        <div class="job-card">
+          <h3>QuoteJob</h3>
+          <p>Orquesta el proceso de cotización. Actualiza el quote a <code>quoting</code> y encola un <code>ProviderQuoteJob</code> por cada proveedor activo.</p>
+          <div class="job-meta">
+            <div class="job-meta-item"><span class="job-meta-key">Queue</span><span class="job-meta-val">:default</span></div>
+            <div class="job-meta-item"><span class="job-meta-key">Input</span><span class="job-meta-val">quote_id</span></div>
+            <div class="job-meta-item"><span class="job-meta-key">Tenant</span><span class="job-meta-val">with_tenant(quote.company)</span></div>
+          </div>
+        </div>
+        <div class="job-card">
+          <h3>ProviderQuoteJob</h3>
+          <p>Llama al API de un proveedor específico. Resuelve el CommissionContract, calcula comisiones y crea un <code>QuoteResult</code>. Cuando todos completan, actualiza el quote a <code>quoted</code>.</p>
+          <div class="job-meta">
+            <div class="job-meta-item"><span class="job-meta-key">Queue</span><span class="job-meta-val">:default</span></div>
+            <div class="job-meta-item"><span class="job-meta-key">Retry</span><span class="job-meta-val">3× / 5s backoff</span></div>
+            <div class="job-meta-item"><span class="job-meta-key">Error</span><span class="job-meta-val">ProviderError</span></div>
+            <div class="job-meta-item"><span class="job-meta-key">Tenant</span><span class="job-meta-val">with_tenant(quote.company)</span></div>
+          </div>
+        </div>
+        <div class="job-card">
+          <h3>WebhookProcessorJob</h3>
+          <p>Procesa webhooks de proveedores. Parsea el payload, crea la <code>Policy</code> con todos los datos de comisiones y actualiza el quote a <code>purchased</code>.</p>
+          <div class="job-meta">
+            <div class="job-meta-item"><span class="job-meta-key">Queue</span><span class="job-meta-val">:default</span></div>
+            <div class="job-meta-item"><span class="job-meta-key">Trigger</span><span class="job-meta-val">POST /webhooks/:slug</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- PROVIDERS -->
+    <section id="providers">
+      <h2>
+        <span class="icon" style="background:var(--green-dim)">🔌</span>
+        Integración con Proveedores
+      </h2>
+      <p class="subtitle">Patrón Registry con clase base abstracta. Todos los providers actuales son fakes para el MVP.</p>
+
+      <div class="card" style="margin-bottom:20px">
+        <h3>Arquitectura de Providers</h3>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7">
+          Los providers se registran en <code>InsuranceProviders::REGISTRY</code> por slug. La interfaz base (<code>BaseProvider</code>) define: <code>quote(quote)</code>, <code>purchase_url(quote_result)</code>, <code>parse_webhook(payload)</code>, <code>valid_webhook?(request)</code>. <code>ExampleProvider</code> sirve de implementación de referencia.
+        </div>
+      </div>
+
+      <div class="provider-grid">
+        <div class="provider-card">
+          <h3>AssistCard Fake</h3>
+          <div class="slug">assist_card_fake</div>
+          <div class="provider-stat"><span class="key">Tarifa base</span><span class="val">480¢/día USD</span></div>
+          <div class="provider-stat"><span class="key">Recargo senior</span><span class="val">1.65× (≥65 años)</span></div>
+          <div class="provider-stat"><span class="key">Cobertura médica</span><span class="val">USD 200,000</span></div>
+          <div class="provider-stat"><span class="key">Equipaje</span><span class="val">USD 2,500</span></div>
+          <div class="provider-stat"><span class="key">COVID</span><span class="val">Sí</span></div>
+          <div class="provider-stat"><span class="key">Pre-existencias</span><span class="val">Sí</span></div>
+        </div>
+        <div class="provider-card">
+          <h3>Universal Assistance Fake</h3>
+          <div class="slug">universal_assistance_fake</div>
+          <div class="provider-stat"><span class="key">Tarifa base</span><span class="val">350¢/día USD</span></div>
+          <div class="provider-stat"><span class="key">Recargo senior</span><span class="val">1.55× (≥65 años)</span></div>
+          <div class="provider-stat"><span class="key">Cobertura médica</span><span class="val">USD 120,000</span></div>
+          <div class="provider-stat"><span class="key">Equipaje</span><span class="val">USD 1,500</span></div>
+          <div class="provider-stat"><span class="key">COVID</span><span class="val">Sí</span></div>
+          <div class="provider-stat"><span class="key">Pre-existencias</span><span class="val">No</span></div>
+        </div>
+        <div class="provider-card">
+          <h3>TravelAce Fake</h3>
+          <div class="slug">travel_ace_fake</div>
+          <div class="provider-stat"><span class="key">Tarifa base</span><span class="val">220¢/día USD (más barato)</span></div>
+          <div class="provider-stat"><span class="key">Recargo senior</span><span class="val">1.45× (≥65 años)</span></div>
+          <div class="provider-stat"><span class="key">Cobertura médica</span><span class="val">USD 50,000</span></div>
+          <div class="provider-stat"><span class="key">Equipaje</span><span class="val">USD 800</span></div>
+          <div class="provider-stat"><span class="key">COVID</span><span class="val">No</span></div>
+          <div class="provider-stat"><span class="key">Pre-existencias</span><span class="val">No</span></div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- PUBLIC LANDING -->
+    <section id="public">
+      <h2>
+        <span class="icon" style="background:var(--blue-dim)">🌍</span>
+        Landing Pública
+      </h2>
+      <p class="subtitle">Flujo de cotización sin autenticación, accesible por el cliente final.</p>
+
+      <div class="flow">
+        <div class="flow-row">
+          <div class="flow-node fn-actor">Cliente visita</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-label"><code>/cotizar/:slug</code> (slug de la company del productor)</div>
+        </div>
+        <div class="flow-row">
+          <div class="flow-node fn-actor">Completa datos</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-label">origen, destino, fechas, pasajeros</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node fn-db">Quote creado</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node fn-job">QuoteJob</div>
+        </div>
+        <div class="flow-row">
+          <div class="flow-node fn-event">Resultados</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-label">Cliente selecciona plan</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node fn-event">purchase → checkout</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-label"><code>/gracias</code></div>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <strong>Links de cotización compartidos:</strong> El productor puede también compartir un <code>Link</code> al cliente con <code>/public/quotes/:token</code>. El link registra accesos (<code>access_count</code>), tiene fecha de expiración opcional y puede revocarse.
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- STACK -->
+    <section id="stack">
+      <h2>
+        <span class="icon" style="background:var(--surface2)">🧰</span>
+        Stack Tecnológico
+      </h2>
+      <p class="subtitle">Gemas y tecnologías principales del proyecto.</p>
+
+      <div class="stack-grid">
+        <div class="stack-item">
+          <div class="stack-cat" style="color:var(--red)">Core</div>
+          <div class="stack-gem">rails ~> 8.0.4</div>
+          <div class="stack-desc">Framework web</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-cat" style="color:var(--orange)">DB</div>
+          <div class="stack-gem">sqlite3 >= 2.1</div>
+          <div class="stack-desc">Base de datos MVP (compatible Postgres)</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-cat" style="color:var(--blue)">Assets</div>
+          <div class="stack-gem">propshaft</div>
+          <div class="stack-desc">Asset pipeline moderno</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-cat" style="color:var(--blue)">Frontend</div>
+          <div class="stack-gem">turbo-rails</div>
+          <div class="stack-desc">Hotwire Turbo (SPA-like sin JS)</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-cat" style="color:var(--blue)">Frontend</div>
+          <div class="stack-gem">stimulus-rails</div>
+          <div class="stack-desc">Controladores JS ligeros</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-cat" style="color:var(--cyan)">CSS</div>
+          <div class="stack-gem">tailwindcss-rails</div>
+          <div class="stack-desc">TailwindCSS 4 (sin Node)</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-cat" style="color:var(--cyan)">UI</div>
+          <div class="stack-gem">DaisyUI</div>
+          <div class="stack-desc">Componentes sobre Tailwind</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-cat" style="color:var(--cyan)">Forms</div>
+          <div class="stack-gem">simple_form</div>
+          <div class="stack-desc">Wrappers DaisyUI: :default, :boolean, :auth</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-cat" style="color:var(--green)">Auth</div>
+          <div class="stack-gem">devise</div>
+          <div class="stack-desc">Autenticación con i18n</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-cat" style="color:var(--green)">Tenancy</div>
+          <div class="stack-gem">acts_as_tenant 1.0.1</div>
+          <div class="stack-desc">Multi-tenancy automático</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-cat" style="color:var(--yellow)">Money</div>
+          <div class="stack-gem">money-rails ~> 3.0</div>
+          <div class="stack-desc">Valores monetarios (_cents/_currency)</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-cat" style="color:var(--yellow)">Search</div>
+          <div class="stack-gem">ransack</div>
+          <div class="stack-desc">Filtros y búsqueda</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-cat" style="color:var(--yellow)">Pagination</div>
+          <div class="stack-gem">kaminari</div>
+          <div class="stack-desc">Paginación</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-cat" style="color:var(--purple)">Jobs</div>
+          <div class="stack-gem">solid_queue</div>
+          <div class="stack-desc">Cola de jobs en SQLite</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-cat" style="color:var(--purple)">Monitor</div>
+          <div class="stack-gem">mission_control-jobs</div>
+          <div class="stack-desc">UI para jobs en /jobs</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-cat" style="color:var(--purple)">Cache</div>
+          <div class="stack-gem">solid_cache</div>
+          <div class="stack-desc">Cache en SQLite</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-cat" style="color:var(--orange)">Email</div>
+          <div class="stack-gem">resend</div>
+          <div class="stack-desc">Envío de emails en producción</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-cat" style="color:var(--muted)">Dev</div>
+          <div class="stack-gem">letter_opener</div>
+          <div class="stack-desc">Previsualizar emails en desarrollo</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-cat" style="color:var(--red)">Deploy</div>
+          <div class="stack-gem">kamal</div>
+          <div class="stack-desc">Deploy Docker + Let's Encrypt</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-cat" style="color:var(--red)">Security</div>
+          <div class="stack-gem">brakeman</div>
+          <div class="stack-desc">Análisis estático de seguridad</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-cat" style="color:var(--muted)">Lint</div>
+          <div class="stack-gem">rubocop-rails-omakase</div>
+          <div class="stack-desc">Style guide Rails por defecto</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-cat" style="color:var(--cyan)">Rich text</div>
+          <div class="stack-gem">lexxy ~> 0.1.26.beta</div>
+          <div class="stack-desc">Editor rich text (no ActionText)</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:24px">
+        <h3>Arquitectura de frontend</h3>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7">
+          Sin Node ni webpack. El CSS se compila con <code>bin/rails tailwindcss:watch</code>. Los imports de JS se manejan con <strong>Importmap</strong>. <strong>Propshaft</strong> sirve los assets. Para formularios se usa <strong>siempre</strong> <code>simple_form_for</code> con <code>f.input</code> — nunca <code>form_with</code> ni helpers crudos de Rails. El I18n default es <code>:es</code> (UI en español, código en inglés).
+        </div>
+      </div>
+    </section>
+
+    <div style="height:80px"></div>
+
+  </main>
+</div>
+
+<script>
+  // Active nav highlight on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const links = document.querySelectorAll('aside a');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        links.forEach(l => l.style.color = '');
+        const link = document.querySelector(`aside a[href="#${entry.target.id}"]`);
+        if (link) link.style.color = 'var(--text)';
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

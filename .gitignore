@@ -38,3 +38,4 @@
 
 # Playwright MCP screenshots
 .playwright-mcp/
+.DS_Store
