@@ -2,8 +2,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@23.8.1/build/css/intlTelInput.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@23.8.1/build/js/intlTelInput.min.js"></script>
 <% end %>
-
 <style>
   .landing-root, .landing-root * { font-family: 'Outfit', sans-serif; }
 
@@ -170,16 +171,37 @@
     background: oklch(0.8 0.01 80);
     border-radius: 3px;
   }
+
+  /* ── intl-tel-input: el wrapper actúa como input-bordered ── */
+  .iti {
+    width: 100%;
+    display: flex;
+    height: 40px;
+    border: 1px solid oklch(0.88 0.015 80);
+    border-radius: 12px;
+    background: white;
+    overflow: hidden;
+  }
+  .iti:focus-within { border-color: oklch(0.7 0.1 195); }
+  .iti__tel-input {
+    flex: 1;
+    height: 100%;
+    min-width: 0;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    font-size: 14px;
+    padding-right: 12px !important;
+  }
+  .iti__dropdown-content { font-family: 'Outfit', sans-serif; }
 </style>
-
 <div class="landing-root">
-
   <%# ══════════════════════════════════════════════ %>
   <%# HERO                                          %>
   <%# ══════════════════════════════════════════════ %>
   <div class="landing-hero -mx-4 -mt-8 px-4 pt-10 pb-16 md:pt-14 md:pb-20 relative">
     <div class="max-w-2xl lg:max-w-5xl mx-auto relative z-10">
-
       <%# Company name %>
       <div class="text-center mb-6 land-in">
         <h1 class="text-3xl md:text-4xl font-black text-white tracking-tight leading-tight">
@@ -187,10 +209,9 @@
         </h1>
         <p class="text-base md:text-lg mt-2 font-light" style="color: oklch(0.85 0.03 195);">
           Cotizá tu asistencia al viajero al mejor precio.<br class="hidden md:block">
-          Compará opciones de múltiples proveedores en segundos.
+          Encuentra la protección que buscas, elige la tranquilidad que necesitas
         </p>
       </div>
-
       <%# Producer card (if ref param) %>
       <% if @producer %>
         <div class="producer-card px-5 py-4 max-w-md mx-auto land-in d1">
@@ -219,15 +240,12 @@
           </div>
         </div>
       <% end %>
-
     </div>
   </div>
-
   <%# ══════════════════════════════════════════════ %>
   <%# FORM WIZARD                                   %>
   <%# ══════════════════════════════════════════════ %>
   <div class="max-w-2xl lg:max-w-4xl mx-auto -mt-8 relative z-20" data-controller="quote-wizard">
-
     <%# Stepper %>
     <div class="mb-8 land-in d2">
       <div class="wizard-stepper">
@@ -242,14 +260,11 @@
         </div>
       </div>
     </div>
-
     <%# Card %>
     <div class="wizard-card p-6 md:p-10 lg:p-12 land-in d3">
       <%= simple_form_for @quote, url: public_landing_path(@company.slug, ref: params[:ref]),
           method: :post, html: { class: "relative", novalidate: true, data: { turbo: false } } do |f| %>
-
         <div data-quote-wizard-target="stepContainer" class="relative">
-
           <%# ── PASO 1: Viaje ── %>
           <div class="wizard-step is-active" data-quote-wizard-target="step">
             <div class="flex items-start gap-3.5 mb-7">
@@ -263,8 +278,7 @@
                 <p class="wizard-section-subtitle mt-0.5">Contanos los detalles para encontrar la mejor cobertura.</p>
               </div>
             </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-5 lg:gap-x-6 gap-y-0">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-x-5 lg:gap-x-6 gap-y-0">
               <div data-controller="country-autocomplete"
                    data-country-autocomplete-items-value="<%= countries_autocomplete_data %>"
                    class="ac-wrapper">
@@ -279,7 +293,6 @@
                     } %>
                 <ul data-country-autocomplete-target="list" class="ac-list hidden"></ul>
               </div>
-
               <div data-controller="country-autocomplete"
                    data-country-autocomplete-items-value="<%= countries_autocomplete_data %>"
                    class="ac-wrapper">
@@ -294,14 +307,11 @@
                     } %>
                 <ul data-country-autocomplete-target="list" class="ac-list hidden"></ul>
               </div>
-
               <%= f.input :departure_date, label: "Fecha de salida", as: :string,
                   input_html: { type: "date", required: true, min: Date.today,
                                 data: { action: "focus->quote-wizard#clearError" } } %>
-
               <%= f.input :return_date, label: "Fecha de regreso", as: :string,
                   input_html: { type: "date", min: Date.today } %>
-
               <%= f.input :travelers_count, label: "Cantidad de pasajeros",
                   input_html: {
                     min: 1, max: 10, value: 1, required: true,
@@ -311,10 +321,8 @@
                   } %>
             </div>
           </div>
-
           <%# ── PASO 2: Edades + Contacto ── %>
           <div class="wizard-step" data-quote-wizard-target="step">
-
             <div class="flex items-start gap-3.5 mb-6">
               <div class="wizard-icon-badge passengers">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -326,7 +334,6 @@
                 <p class="wizard-section-subtitle mt-0.5">Ingresá la edad de cada viajero.</p>
               </div>
             </div>
-
             <div class="wizard-age-grid mb-6" data-quote-wizard-target="agesContainer">
               <div data-age-field class="wizard-age-card">
                 <label>Pasajero 1</label>
@@ -335,9 +342,7 @@
                        data-action="focus->quote-wizard#clearError" />
               </div>
             </div>
-
             <div class="wizard-divider"></div>
-
             <div class="flex items-start gap-3.5 mb-5">
               <div class="wizard-icon-badge contact">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -349,7 +354,6 @@
                 <p class="wizard-section-subtitle mt-0.5">Para contactarte con las mejores opciones.</p>
               </div>
             </div>
-
             <div class="wizard-optional-section p-4 md:p-5">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-0">
                 <div class="form-control w-full mb-4">
@@ -363,16 +367,15 @@
                 </div>
                 <div class="form-control w-full mb-4">
                   <label class="label label-text text-sm font-medium">WhatsApp / Teléfono</label>
-                  <input type="tel" name="quote[metadata][phone]"
-                         class="input input-bordered w-full"
-                         placeholder="+54 9 11 1234-5678" />
+                  <input type="tel" id="phone-input"
+                         placeholder="11 1234-5678"
+                         autocomplete="tel" />
+                  <input type="hidden" name="quote[metadata][phone]" id="phone-full-value" />
                 </div>
               </div>
             </div>
           </div>
-
         </div>
-
         <%# Nav %>
         <div class="flex items-center justify-between mt-8 pt-5" style="border-top: 1px solid var(--wz-border);">
           <button type="button"
@@ -398,11 +401,9 @@
             </button>
           </div>
         </div>
-
       <% end %>
     </div>
   </div>
-
   <%# ══════════════════════════════════════════════ %>
   <%# TRUST BAR — Proveedores                       %>
   <%# ══════════════════════════════════════════════ %>
@@ -420,13 +421,11 @@
       </div>
     </div>
   <% end %>
-
   <%# ══════════════════════════════════════════════ %>
   <%# BENEFITS                                      %>
   <%# ══════════════════════════════════════════════ %>
   <div class="max-w-2xl lg:max-w-4xl mx-auto mt-8 land-in d5">
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-5">
-
       <div class="benefit-card">
         <div class="benefit-icon" style="background: var(--wz-teal-light); color: var(--wz-teal);">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -436,7 +435,6 @@
         <p class="font-bold text-sm" style="color: var(--wz-ink);">Cotización inmediata</p>
         <p class="text-xs mt-0.5" style="color: var(--wz-ink-muted);">Resultados en segundos, sin esperas.</p>
       </div>
-
       <div class="benefit-card">
         <div class="benefit-icon" style="background: var(--wz-coral-light); color: var(--wz-coral);">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -446,7 +444,6 @@
         <p class="font-bold text-sm" style="color: var(--wz-ink);">Máxima cobertura</p>
         <p class="text-xs mt-0.5" style="color: var(--wz-ink-muted);">Planes que cubren lo que necesitás.</p>
       </div>
-
       <div class="benefit-card">
         <div class="benefit-icon" style="background: var(--wz-amber-light); color: oklch(0.55 0.14 75);">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -456,7 +453,6 @@
         <p class="font-bold text-sm" style="color: var(--wz-ink);">Mejores precios</p>
         <p class="text-xs mt-0.5" style="color: var(--wz-ink-muted);">Compará y elegí la opción ideal.</p>
       </div>
-
       <div class="benefit-card">
         <div class="benefit-icon" style="background: oklch(0.92 0.04 280); color: oklch(0.5 0.15 280);">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -466,10 +462,8 @@
         <p class="font-bold text-sm" style="color: var(--wz-ink);">Asistencia 24/7</p>
         <p class="text-xs mt-0.5" style="color: var(--wz-ink-muted);">Soporte en cualquier parte del mundo.</p>
       </div>
-
     </div>
   </div>
-
   <%# ══════════════════════════════════════════════ %>
   <%# FOOTER                                        %>
   <%# ══════════════════════════════════════════════ %>
@@ -488,5 +482,27 @@
       </p>
     </div>
   </div>
-
 </div>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const phoneInput = document.getElementById("phone-input")
+    const hiddenInput = document.getElementById("phone-full-value")
+    if (!phoneInput || typeof intlTelInput === "undefined") return
+
+    const iti = intlTelInput(phoneInput, {
+      initialCountry: "ar",
+      preferredCountries: ["ar", "br", "cl", "co", "mx", "uy", "py", "pe", "us", "es"],
+      separateDialCode: false,
+      nationalMode: false,
+      useFullscreenPopup: false,
+      loadUtilsOnInit: "https://cdn.jsdelivr.net/npm/intl-tel-input@23.8.1/build/js/utils.js",
+    })
+
+    const form = phoneInput.closest("form")
+    if (form) {
+      form.addEventListener("submit", function () {
+        hiddenInput.value = iti.getNumber()
+      })
+    }
+  })
+</script>
