@@ -52,3 +52,23 @@ CommissionContract.find_or_create_by!(provider: example_provider, producer: nil)
 end
 
 puts "Proveedor de ejemplo creado: #{example_provider.name}"
+
+# Proveedores fake para testing de búsqueda
+[
+  { name: "Assist Card", slug: "assist_card_fake", config: { base_url: "https://fake.assistcard.com" } },
+  { name: "Universal Assistance", slug: "universal_assistance_fake", config: { base_url: "https://fake.universal.com" } },
+  { name: "Travel Ace", slug: "travel_ace_fake", config: { base_url: "https://fake.travelace.com" } }
+].each do |attrs|
+  prov = Provider.find_or_create_by!(slug: attrs[:slug]) do |p|
+    p.name = attrs[:name]
+    p.config = attrs[:config]
+  end
+
+  CommissionContract.find_or_create_by!(provider: prov, producer: nil) do |c|
+    c.provider_commission_rate = 0.35
+    c.producer_share_rate = 0.50
+    c.valid_from = Date.today.beginning_of_year
+  end
+
+  puts "Proveedor fake creado: #{prov.name}"
+end

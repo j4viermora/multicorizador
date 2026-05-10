@@ -1,0 +1,240 @@
+<% content_for(:head) do %>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<% end %>
+
+<style>
+  .checkout-root, .checkout-root * { font-family: 'Outfit', sans-serif; }
+
+  .checkout-card {
+    background: white;
+    border: 1px solid var(--wz-border);
+    border-radius: 1.25rem;
+    overflow: hidden;
+    box-shadow: 0 4px 20px oklch(0 0 0 / 0.06);
+  }
+
+  .checkout-hero {
+    background: linear-gradient(160deg, oklch(0.22 0.06 210) 0%, oklch(0.30 0.08 200) 50%, oklch(0.25 0.07 195) 100%);
+    padding: 2.5rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .checkout-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 400px 250px at 70% 30%, oklch(0.45 0.12 195 / 0.25), transparent),
+      radial-gradient(ellipse 250px 200px at 30% 70%, oklch(0.55 0.15 25 / 0.1), transparent);
+    pointer-events: none;
+  }
+
+  .checkout-check {
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 50%;
+    background: oklch(1 0 0 / 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    position: relative;
+    animation: checkPop 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+  }
+  @keyframes checkPop {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.15); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .checkout-check svg {
+    width: 2.5rem;
+    height: 2.5rem;
+    color: white;
+    stroke-dasharray: 30;
+    stroke-dashoffset: 30;
+    animation: checkDraw 0.5s ease 0.7s forwards;
+  }
+  @keyframes checkDraw {
+    to { stroke-dashoffset: 0; }
+  }
+
+  .checkout-detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid oklch(0.96 0.005 80);
+    font-size: 0.82rem;
+  }
+  .checkout-detail-row:last-child { border-bottom: none; }
+  .checkout-detail-label { color: var(--wz-ink-muted); }
+  .checkout-detail-value { color: var(--wz-ink); font-weight: 600; }
+
+  .checkout-mock-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: oklch(0.92 0.08 80);
+    color: oklch(0.45 0.12 75);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.35rem 0.75rem;
+    border-radius: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .checkout-passenger-card {
+    background: oklch(0.975 0.005 80);
+    border: 1px solid var(--wz-border);
+    border-radius: 0.65rem;
+    padding: 0.85rem 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .checkout-fade-in {
+    opacity: 0;
+    transform: translateY(12px);
+    animation: checkoutFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  @keyframes checkoutFade {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .cd2 { animation-delay: 0.15s; }
+  .cd3 { animation-delay: 0.3s; }
+  .cd4 { animation-delay: 0.45s; }
+
+  .checkout-new-search {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.7rem 1.5rem;
+    border-radius: 0.55rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    background: var(--wz-teal-light);
+    color: var(--wz-teal);
+    transition: background 0.2s;
+  }
+  .checkout-new-search:hover { background: oklch(0.88 0.06 195); }
+</style>
+
+<div class="checkout-root max-w-2xl mx-auto">
+
+  <div class="checkout-card checkout-fade-in">
+
+    <%# ── Hero with check ── %>
+    <div class="checkout-hero">
+      <div class="relative z-10">
+        <div class="checkout-check">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h1 class="text-white text-2xl md:text-3xl font-black tracking-tight mb-2">
+          Compra confirmada
+        </h1>
+        <p class="text-sm" style="color: oklch(0.8 0.03 195);">
+          Tu asistencia al viajero fue procesada correctamente.
+        </p>
+        <div class="checkout-mock-badge mt-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Modo demo — No se proceso ningun pago real
+        </div>
+      </div>
+    </div>
+
+    <%# ── Body ── %>
+    <div class="p-6 md:p-8">
+
+      <%# Trip details %>
+      <div class="checkout-fade-in cd2">
+        <h3 class="text-xs font-bold uppercase tracking-wider mb-3" style="color: var(--wz-ink-muted);">
+          Detalle del viaje
+        </h3>
+        <div class="checkout-detail-row">
+          <span class="checkout-detail-label">Destino</span>
+          <span class="checkout-detail-value"><%= @search[:origin] %> → <%= @search[:destination] %></span>
+        </div>
+        <div class="checkout-detail-row">
+          <span class="checkout-detail-label">Fechas</span>
+          <span class="checkout-detail-value"><%= @search[:departure_date] %> — <%= @search[:return_date] %></span>
+        </div>
+        <div class="checkout-detail-row">
+          <span class="checkout-detail-label">Proveedor</span>
+          <span class="checkout-detail-value"><%= @plan[:provider_name] %></span>
+        </div>
+        <div class="checkout-detail-row">
+          <span class="checkout-detail-label">Plan</span>
+          <span class="checkout-detail-value"><%= @plan[:plan_name] %></span>
+        </div>
+        <div class="checkout-detail-row">
+          <span class="checkout-detail-label">Total pagado</span>
+          <span class="checkout-detail-value" style="font-size: 1.1rem; color: var(--wz-teal);">
+            <%= @plan[:currency] %> <%= "%.2f" % (@plan[:price_cents].to_i / 100.0) %>
+          </span>
+        </div>
+      </div>
+
+      <%# Passengers %>
+      <div class="mt-6 checkout-fade-in cd3">
+        <h3 class="text-xs font-bold uppercase tracking-wider mb-3" style="color: var(--wz-ink-muted);">
+          Pasajeros asegurados
+        </h3>
+        <% @passengers.each_with_index do |p, i| %>
+          <div class="checkout-passenger-card">
+            <div class="flex items-center gap-2.5">
+              <div style="width: 2rem; height: 2rem; border-radius: 50%; background: var(--wz-teal-light); color: var(--wz-teal); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.7rem;">
+                <%= i + 1 %>
+              </div>
+              <div>
+                <p class="font-bold text-sm" style="color: var(--wz-ink);"><%= p["first_name"] %> <%= p["last_name"] %></p>
+                <p class="text-xs" style="color: var(--wz-ink-muted);">Doc: <%= p["document"] %></p>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <%# Voucher mock %>
+      <div class="mt-6 checkout-fade-in cd4" style="background: oklch(0.94 0.04 195 / 0.3); border-radius: 0.75rem; padding: 1.25rem;">
+        <div class="flex items-start gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0 mt-0.5" style="color: var(--wz-teal);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+          <div>
+            <p class="font-bold text-sm" style="color: var(--wz-ink);">Voucher enviado</p>
+            <p class="text-xs mt-0.5" style="color: var(--wz-ink-soft);">
+              Enviamos el voucher y los detalles de tu poliza a
+              <strong><%= @search[:email] %></strong>.
+              Revisa tu bandeja de entrada.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <%# CTA %>
+      <div class="mt-8 text-center checkout-fade-in cd4">
+        <%= link_to public_landing_path(@company.slug), class: "checkout-new-search" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          Nueva cotizacion
+        <% end %>
+      </div>
+
+    </div>
+  </div>
+
+  <%# Footer %>
+  <div class="text-center mt-6 mb-8 text-xs checkout-fade-in cd4" style="color: var(--wz-ink-muted);">
+    <%= @company.name %> &mdash; Powered by <strong>Asisto</strong>
+  </div>
+</div>

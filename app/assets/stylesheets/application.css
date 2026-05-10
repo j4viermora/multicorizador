@@ -1,10 +1,339 @@
 /*
- * This is a manifest file that'll be compiled into application.css.
- *
- * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
- * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
- * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
- * depending on specificity.
- *
- * Consider organizing styles into separate files for maintainability.
+ * Application styles — Propshaft (no preprocessing)
  */
+
+/* ── Quote Wizard: "Warm Coastal Fintech" ── */
+
+:root {
+  --wz-teal: oklch(0.47 0.12 195);
+  --wz-teal-light: oklch(0.92 0.04 195);
+  --wz-teal-glow: oklch(0.47 0.12 195 / 0.12);
+  --wz-sand: oklch(0.97 0.01 80);
+  --wz-sand-deep: oklch(0.94 0.015 75);
+  --wz-coral: oklch(0.65 0.18 25);
+  --wz-coral-light: oklch(0.93 0.04 25);
+  --wz-amber: oklch(0.75 0.15 75);
+  --wz-amber-light: oklch(0.94 0.04 75);
+  --wz-ink: oklch(0.25 0.02 250);
+  --wz-ink-soft: oklch(0.45 0.02 250);
+  --wz-ink-muted: oklch(0.6 0.01 250);
+  --wz-border: oklch(0.88 0.015 80);
+  --wz-radius: 0.75rem;
+}
+
+/* ── Card ── */
+.wizard-card {
+  background: var(--wz-sand);
+  border: 1px solid var(--wz-border);
+  border-radius: 1.25rem;
+  box-shadow:
+    0 1px 2px oklch(0 0 0 / 0.03),
+    0 4px 16px oklch(0 0 0 / 0.04),
+    0 12px 40px oklch(0 0 0 / 0.03);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative top accent bar */
+.wizard-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--wz-teal), var(--wz-coral), var(--wz-amber));
+  border-radius: 1.25rem 1.25rem 0 0;
+}
+
+/* ── Step transitions ── */
+.wizard-step {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+}
+
+.wizard-step.is-active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  position: relative;
+}
+
+.wizard-step.slide-out-left {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+/* ── Stepper ── */
+.wizard-stepper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+}
+
+.wizard-stepper-dot {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 2.5px solid var(--wz-border);
+  background: white;
+  color: var(--wz-ink-muted);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.wizard-stepper-dot.is-active {
+  border-color: var(--wz-teal);
+  background: var(--wz-teal);
+  color: white;
+  box-shadow: 0 0 0 5px var(--wz-teal-glow), 0 2px 8px oklch(0 0 0 / 0.08);
+  transform: scale(1.05);
+}
+
+.wizard-stepper-dot.is-complete {
+  border-color: var(--wz-teal);
+  background: var(--wz-teal-light);
+  color: var(--wz-teal);
+}
+
+.wizard-stepper-line {
+  height: 2.5px;
+  width: 6rem;
+  margin-top: 1.3rem;
+  background: var(--wz-border);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  border-radius: 2px;
+}
+
+.wizard-stepper-line.is-complete {
+  background: var(--wz-teal);
+}
+
+.wizard-stepper-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-top: 0.6rem;
+  transition: color 0.3s ease;
+  color: var(--wz-ink-muted);
+}
+
+.wizard-stepper-label.is-active {
+  color: var(--wz-teal);
+}
+
+/* ── Section icon badges ── */
+.wizard-icon-badge {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--wz-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.wizard-icon-badge.travel {
+  background: var(--wz-teal-light);
+  color: var(--wz-teal);
+}
+
+.wizard-icon-badge.passengers {
+  background: var(--wz-coral-light);
+  color: var(--wz-coral);
+}
+
+.wizard-icon-badge.contact {
+  background: var(--wz-amber-light);
+  color: oklch(0.55 0.14 75);
+}
+
+/* ── Inputs inside wizard ── */
+.wizard-card .input,
+.wizard-card .select,
+.wizard-card select.input {
+  background: white;
+  border-color: var(--wz-border);
+  border-radius: var(--wz-radius);
+  font-weight: 500;
+  color: var(--wz-ink);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.wizard-card select.input {
+  appearance: auto;
+  padding-right: 2rem;
+  background-image: none;
+  height: auto;
+  min-height: 3rem;
+}
+
+.wizard-card .input:focus,
+.wizard-card .select:focus,
+.wizard-card select.input:focus {
+  border-color: var(--wz-teal);
+  box-shadow: 0 0 0 3px var(--wz-teal-glow);
+  outline: none;
+}
+
+.wizard-card .input.input-error,
+.wizard-card .select.input-error {
+  border-color: var(--wz-coral);
+  box-shadow: 0 0 0 3px oklch(0.65 0.18 25 / 0.1);
+}
+
+.wizard-card .label-text {
+  color: var(--wz-ink-soft);
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.01em;
+}
+
+/* ── Age fields ── */
+.wizard-age-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+  gap: 0.75rem;
+}
+
+.wizard-age-card {
+  background: white;
+  border: 1.5px solid var(--wz-border);
+  border-radius: var(--wz-radius);
+  padding: 0.75rem;
+  text-align: center;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.wizard-age-card:focus-within {
+  border-color: var(--wz-teal);
+  box-shadow: 0 0 0 3px var(--wz-teal-glow);
+}
+
+.wizard-age-card label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--wz-ink-muted);
+  margin-bottom: 0.25rem;
+}
+
+.wizard-age-card input {
+  width: 100%;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--wz-ink);
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0.125rem 0;
+  -moz-appearance: textfield;
+}
+
+.wizard-age-card input::placeholder {
+  color: var(--wz-border);
+  font-weight: 400;
+}
+
+.wizard-age-card input::-webkit-outer-spin-button,
+.wizard-age-card input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+@keyframes age-card-in {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.age-field-enter {
+  animation: age-card-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* ── Optional section ── */
+.wizard-optional-section {
+  background: var(--wz-sand-deep);
+  border: 1px solid var(--wz-border);
+  border-radius: var(--wz-radius);
+}
+
+/* ── Nav buttons ── */
+.wizard-nav-btn {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border-radius: var(--wz-radius);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.wizard-nav-btn.btn-primary {
+  background: var(--wz-teal);
+  border-color: var(--wz-teal);
+  color: white;
+}
+
+.wizard-nav-btn.btn-primary:hover {
+  background: oklch(0.42 0.12 195);
+  border-color: oklch(0.42 0.12 195);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px oklch(0.47 0.12 195 / 0.25);
+}
+
+.wizard-nav-btn:active:not(:disabled) {
+  transform: translateY(0) !important;
+}
+
+/* ── Divider ── */
+.wizard-divider {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--wz-border), transparent);
+  margin: 1.75rem 0;
+}
+
+/* ── Section title ── */
+.wizard-section-title {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--wz-ink);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.wizard-section-subtitle {
+  font-size: 0.825rem;
+  color: var(--wz-ink-muted);
+  line-height: 1.4;
+}
+
+/* ── Page load stagger ── */
+@keyframes wizard-fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.wizard-animate-in {
+  animation: wizard-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.wizard-animate-in.delay-1 { animation-delay: 0.08s; }
+.wizard-animate-in.delay-2 { animation-delay: 0.16s; }

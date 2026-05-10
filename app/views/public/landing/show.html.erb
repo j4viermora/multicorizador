@@ -1,0 +1,492 @@
+<% content_for(:head) do %>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<% end %>
+
+<style>
+  .landing-root, .landing-root * { font-family: 'Outfit', sans-serif; }
+
+  /* ── Hero ── */
+  .landing-hero {
+    background: linear-gradient(160deg, oklch(0.22 0.06 210) 0%, oklch(0.30 0.08 200) 50%, oklch(0.25 0.07 195) 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .landing-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 600px 400px at 80% 20%, oklch(0.45 0.12 195 / 0.3), transparent),
+      radial-gradient(ellipse 400px 300px at 20% 80%, oklch(0.55 0.15 25 / 0.12), transparent);
+    pointer-events: none;
+  }
+  .landing-hero::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: linear-gradient(to top, oklch(0.96 0.008 80), transparent);
+    pointer-events: none;
+  }
+
+  /* ── Producer card ── */
+  .producer-card {
+    background: oklch(1 0 0 / 0.08);
+    backdrop-filter: blur(12px);
+    border: 1px solid oklch(1 0 0 / 0.12);
+    border-radius: 1rem;
+  }
+  .producer-avatar {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--wz-teal), oklch(0.55 0.13 200));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 800;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    border: 2px solid oklch(1 0 0 / 0.2);
+  }
+
+  /* ── Trust bar ── */
+  .trust-bar {
+    background: white;
+    border: 1px solid var(--wz-border);
+    border-radius: 1rem;
+    box-shadow: 0 2px 12px oklch(0 0 0 / 0.04);
+  }
+  .trust-provider {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    background: var(--wz-sand);
+    font-weight: 700;
+    font-size: 0.75rem;
+    color: var(--wz-ink-soft);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  /* ── Benefits ── */
+  .benefit-card {
+    background: white;
+    border: 1px solid var(--wz-border);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .benefit-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px oklch(0 0 0 / 0.06);
+  }
+  .benefit-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.75rem;
+  }
+
+  /* ── Footer ── */
+  .landing-footer {
+    border-top: 1px solid var(--wz-border);
+    color: var(--wz-ink-muted);
+  }
+
+  /* ── Stagger animations ── */
+  @keyframes landing-fade-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .land-in {
+    animation: landing-fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .land-in.d1 { animation-delay: 0.1s; }
+  .land-in.d2 { animation-delay: 0.2s; }
+  .land-in.d3 { animation-delay: 0.3s; }
+  .land-in.d4 { animation-delay: 0.4s; }
+  .land-in.d5 { animation-delay: 0.5s; }
+
+  /* ── Autocomplete ── */
+  .ac-wrapper { position: relative; }
+  .ac-list {
+    position: absolute;
+    z-index: 50;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 15rem;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid var(--wz-border);
+    border-radius: 0.65rem;
+    box-shadow: 0 8px 24px oklch(0 0 0 / 0.1), 0 2px 6px oklch(0 0 0 / 0.04);
+    list-style: none;
+    padding: 0.3rem;
+    margin-top: -0.25rem;
+  }
+  .ac-list.hidden { display: none; }
+  .ac-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.65rem;
+    border-radius: 0.4rem;
+    cursor: pointer;
+    font-size: 0.82rem;
+    color: var(--wz-ink);
+    transition: background 0.12s;
+  }
+  .ac-item:hover,
+  .ac-item.is-highlighted {
+    background: var(--wz-teal-light);
+  }
+  .ac-item.hidden { display: none; }
+  .ac-flag { font-size: 1.1rem; line-height: 1; flex-shrink: 0; }
+  .ac-header {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--wz-ink-muted);
+    padding: 0.5rem 0.65rem 0.25rem;
+  }
+  .ac-divider {
+    height: 1px;
+    background: var(--wz-border);
+    margin: 0.3rem 0.5rem;
+  }
+  .ac-list::-webkit-scrollbar { width: 5px; }
+  .ac-list::-webkit-scrollbar-track { background: transparent; }
+  .ac-list::-webkit-scrollbar-thumb {
+    background: oklch(0.8 0.01 80);
+    border-radius: 3px;
+  }
+</style>
+
+<div class="landing-root">
+
+  <%# ══════════════════════════════════════════════ %>
+  <%# HERO                                          %>
+  <%# ══════════════════════════════════════════════ %>
+  <div class="landing-hero -mx-4 -mt-8 px-4 pt-10 pb-16 md:pt-14 md:pb-20 relative">
+    <div class="max-w-2xl mx-auto relative z-10">
+
+      <%# Company name %>
+      <div class="text-center mb-6 land-in">
+        <h1 class="text-3xl md:text-4xl font-black text-white tracking-tight leading-tight">
+          <%= @company.name %>
+        </h1>
+        <p class="text-base md:text-lg mt-2 font-light" style="color: oklch(0.85 0.03 195);">
+          Cotizá tu asistencia al viajero al mejor precio.<br class="hidden md:block">
+          Compará opciones de múltiples proveedores en segundos.
+        </p>
+      </div>
+
+      <%# Producer card (if ref param) %>
+      <% if @producer %>
+        <div class="producer-card px-5 py-4 max-w-md mx-auto land-in d1">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="producer-avatar">
+              <%= @producer.first_name&.first&.upcase %><%= @producer.last_name&.first&.upcase %>
+            </div>
+            <div>
+              <p class="text-white font-bold text-sm leading-tight"><%= @producer.full_name %></p>
+              <p class="text-xs font-medium" style="color: oklch(0.75 0.04 195);">Asesor de seguros</p>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-x-4 gap-y-1 ml-1" style="color: oklch(0.82 0.03 195);">
+            <% if @producer.email.present? %>
+              <a href="mailto:<%= @producer.email %>" class="flex items-center gap-1.5 text-xs font-medium hover:underline" style="color: oklch(0.82 0.03 195);">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                <%= @producer.email %>
+              </a>
+            <% end %>
+            <% if @producer.phone.present? %>
+              <a href="https://wa.me/<%= @producer.phone.gsub(/\D/, '') %>" target="_blank" class="flex items-center gap-1.5 text-xs font-medium hover:underline" style="color: oklch(0.82 0.03 195);">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                <%= @producer.phone %>
+              </a>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+    </div>
+  </div>
+
+  <%# ══════════════════════════════════════════════ %>
+  <%# FORM WIZARD                                   %>
+  <%# ══════════════════════════════════════════════ %>
+  <div class="max-w-2xl mx-auto -mt-8 relative z-20" data-controller="quote-wizard">
+
+    <%# Stepper %>
+    <div class="mb-8 land-in d2">
+      <div class="wizard-stepper">
+        <div class="flex flex-col items-center">
+          <div class="wizard-stepper-dot is-active" data-quote-wizard-target="stepDot"><span>1</span></div>
+          <span class="wizard-stepper-label is-active" data-quote-wizard-target="stepLabel">Viaje</span>
+        </div>
+        <div class="wizard-stepper-line" data-quote-wizard-target="stepLine"></div>
+        <div class="flex flex-col items-center">
+          <div class="wizard-stepper-dot" data-quote-wizard-target="stepDot"><span>2</span></div>
+          <span class="wizard-stepper-label" data-quote-wizard-target="stepLabel">Contacto</span>
+        </div>
+      </div>
+    </div>
+
+    <%# Card %>
+    <div class="wizard-card p-6 md:p-10 land-in d3">
+      <%= simple_form_for @quote, url: public_landing_path(@company.slug, ref: params[:ref]),
+          method: :post, html: { class: "relative", novalidate: true, data: { turbo: false } } do |f| %>
+
+        <div data-quote-wizard-target="stepContainer" class="relative">
+
+          <%# ── PASO 1: Viaje ── %>
+          <div class="wizard-step is-active" data-quote-wizard-target="step">
+            <div class="flex items-start gap-3.5 mb-7">
+              <div class="wizard-icon-badge travel">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+              </div>
+              <div>
+                <h2 class="wizard-section-title">¿A dónde viajás?</h2>
+                <p class="wizard-section-subtitle mt-0.5">Contanos los detalles para encontrar la mejor cobertura.</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-0">
+              <div data-controller="country-autocomplete"
+                   data-country-autocomplete-items-value="<%= countries_autocomplete_data %>"
+                   class="ac-wrapper">
+                <%= f.input :origin, label: "Origen",
+                    placeholder: "Ej: Argentina",
+                    input_html: {
+                      required: true, autocomplete: "off",
+                      data: {
+                        country_autocomplete_target: "input",
+                        action: "input->country-autocomplete#filter focus->country-autocomplete#open keydown->country-autocomplete#keydown focus->quote-wizard#clearError"
+                      }
+                    } %>
+                <ul data-country-autocomplete-target="list" class="ac-list hidden"></ul>
+              </div>
+
+              <div data-controller="country-autocomplete"
+                   data-country-autocomplete-items-value="<%= countries_autocomplete_data %>"
+                   class="ac-wrapper">
+                <%= f.input :destination, label: "Destino",
+                    placeholder: "Ej: Europa",
+                    input_html: {
+                      required: true, autocomplete: "off",
+                      data: {
+                        country_autocomplete_target: "input",
+                        action: "input->country-autocomplete#filter focus->country-autocomplete#open keydown->country-autocomplete#keydown focus->quote-wizard#clearError"
+                      }
+                    } %>
+                <ul data-country-autocomplete-target="list" class="ac-list hidden"></ul>
+              </div>
+
+              <%= f.input :departure_date, label: "Fecha de salida", as: :string,
+                  input_html: { type: "date", required: true, min: Date.today,
+                                data: { action: "focus->quote-wizard#clearError" } } %>
+
+              <%= f.input :return_date, label: "Fecha de regreso", as: :string,
+                  input_html: { type: "date", min: Date.today } %>
+
+              <%= f.input :travelers_count, label: "Cantidad de pasajeros",
+                  input_html: {
+                    min: 1, max: 10, value: 1, required: true,
+                    class: "input input-bordered w-full",
+                    "data-travelers-count": "",
+                    "data-action": "change->quote-wizard#updateAges focus->quote-wizard#clearError"
+                  } %>
+            </div>
+          </div>
+
+          <%# ── PASO 2: Edades + Contacto ── %>
+          <div class="wizard-step" data-quote-wizard-target="step">
+
+            <div class="flex items-start gap-3.5 mb-6">
+              <div class="wizard-icon-badge passengers">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <div>
+                <h2 class="wizard-section-title">Edades de los pasajeros</h2>
+                <p class="wizard-section-subtitle mt-0.5">Ingresá la edad de cada viajero.</p>
+              </div>
+            </div>
+
+            <div class="wizard-age-grid mb-6" data-quote-wizard-target="agesContainer">
+              <div data-age-field class="wizard-age-card">
+                <label>Pasajero 1</label>
+                <input type="number" name="quote[metadata][ages][]" min="0" max="120"
+                       placeholder="—" required
+                       data-action="focus->quote-wizard#clearError" />
+              </div>
+            </div>
+
+            <div class="wizard-divider"></div>
+
+            <div class="flex items-start gap-3.5 mb-5">
+              <div class="wizard-icon-badge contact">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <h2 class="wizard-section-title">¿Dónde te enviamos los resultados?</h2>
+                <p class="wizard-section-subtitle mt-0.5">Para contactarte con las mejores opciones.</p>
+              </div>
+            </div>
+
+            <div class="wizard-optional-section p-4 md:p-5">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-0">
+                <div class="form-control w-full mb-4">
+                  <label class="label label-text text-sm font-medium">
+                    <span class="text-error">*</span> Email
+                  </label>
+                  <input type="email" name="quote[metadata][email]"
+                         class="input input-bordered w-full"
+                         placeholder="juan@ejemplo.com" required
+                         data-action="focus->quote-wizard#clearError" />
+                </div>
+                <div class="form-control w-full mb-4">
+                  <label class="label label-text text-sm font-medium">WhatsApp / Teléfono</label>
+                  <input type="tel" name="quote[metadata][phone]"
+                         class="input input-bordered w-full"
+                         placeholder="+54 9 11 1234-5678" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <%# Nav %>
+        <div class="flex items-center justify-between mt-8 pt-5" style="border-top: 1px solid var(--wz-border);">
+          <button type="button"
+                  class="wizard-nav-btn btn btn-ghost btn-sm gap-1.5 invisible"
+                  data-action="quote-wizard#prev"
+                  data-quote-wizard-target="prevBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
+            Anterior
+          </button>
+          <div class="flex items-center gap-2.5">
+            <button type="button"
+                    class="wizard-nav-btn btn btn-primary btn-sm gap-1.5"
+                    data-action="quote-wizard#next"
+                    data-quote-wizard-target="nextBtn">
+              Siguiente
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+            </button>
+            <button type="submit"
+                    class="wizard-nav-btn btn btn-primary btn-sm gap-1.5 hidden"
+                    data-quote-wizard-target="submitBtn">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+              Cotizar ahora
+            </button>
+          </div>
+        </div>
+
+      <% end %>
+    </div>
+  </div>
+
+  <%# ══════════════════════════════════════════════ %>
+  <%# TRUST BAR — Proveedores                       %>
+  <%# ══════════════════════════════════════════════ %>
+  <% if @providers.any? %>
+    <div class="max-w-2xl mx-auto mt-8 land-in d4">
+      <div class="trust-bar px-6 py-4">
+        <p class="text-center text-xs font-bold uppercase tracking-widest mb-3" style="color: var(--wz-ink-muted);">
+          Cotizamos con los mejores proveedores
+        </p>
+        <div class="flex flex-wrap justify-center gap-2">
+          <% @providers.each do |provider| %>
+            <span class="trust-provider"><%= provider.name %></span>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <%# ══════════════════════════════════════════════ %>
+  <%# BENEFITS                                      %>
+  <%# ══════════════════════════════════════════════ %>
+  <div class="max-w-2xl mx-auto mt-8 land-in d5">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+
+      <div class="benefit-card">
+        <div class="benefit-icon" style="background: var(--wz-teal-light); color: var(--wz-teal);">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+        </div>
+        <p class="font-bold text-sm" style="color: var(--wz-ink);">Cotización inmediata</p>
+        <p class="text-xs mt-0.5" style="color: var(--wz-ink-muted);">Resultados en segundos, sin esperas.</p>
+      </div>
+
+      <div class="benefit-card">
+        <div class="benefit-icon" style="background: var(--wz-coral-light); color: var(--wz-coral);">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+        </div>
+        <p class="font-bold text-sm" style="color: var(--wz-ink);">Máxima cobertura</p>
+        <p class="text-xs mt-0.5" style="color: var(--wz-ink-muted);">Planes que cubren lo que necesitás.</p>
+      </div>
+
+      <div class="benefit-card">
+        <div class="benefit-icon" style="background: var(--wz-amber-light); color: oklch(0.55 0.14 75);">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <p class="font-bold text-sm" style="color: var(--wz-ink);">Mejores precios</p>
+        <p class="text-xs mt-0.5" style="color: var(--wz-ink-muted);">Compará y elegí la opción ideal.</p>
+      </div>
+
+      <div class="benefit-card">
+        <div class="benefit-icon" style="background: oklch(0.92 0.04 280); color: oklch(0.5 0.15 280);">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+        </div>
+        <p class="font-bold text-sm" style="color: var(--wz-ink);">Asistencia 24/7</p>
+        <p class="text-xs mt-0.5" style="color: var(--wz-ink-muted);">Soporte en cualquier parte del mundo.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <%# ══════════════════════════════════════════════ %>
+  <%# FOOTER                                        %>
+  <%# ══════════════════════════════════════════════ %>
+  <div class="max-w-2xl mx-auto mt-10 mb-4">
+    <div class="landing-footer pt-6 pb-4 flex flex-col md:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <div style="width: 1.5rem; height: 1.5rem; border-radius: 0.375rem; background: var(--wz-teal); display: flex; align-items: center; justify-content: center;">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+        </div>
+        <span class="text-xs font-bold" style="color: var(--wz-ink-soft);">Powered by Asisto</span>
+      </div>
+      <p class="text-xs" style="color: var(--wz-ink-muted);">
+        Multicotizador de seguros de viaje &middot; Datos protegidos
+      </p>
+    </div>
+  </div>
+
+</div>

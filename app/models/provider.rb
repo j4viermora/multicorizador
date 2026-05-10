@@ -8,6 +8,10 @@ class Provider < ApplicationRecord
 
   scope :active, -> { where(status: "active") }
 
+  def active?
+    status == "active"
+  end
+
   def config_for(key)
     config.fetch(key.to_s, nil)
   end

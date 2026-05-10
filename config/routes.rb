@@ -28,6 +28,13 @@ Rails.application.routes.draw do
     resources :quotes, only: [:show, :update], param: :token
   end
 
+  # Public landing page per company
+  get  "cotizar/:slug", to: "public/landing#show", as: :public_landing
+  post "cotizar/:slug", to: "public/landing#create"
+  post "cotizar/:slug/comprar", to: "public/landing#purchase", as: :public_landing_purchase
+  post "cotizar/:slug/checkout", to: "public/landing#checkout", as: :public_landing_checkout
+  get  "cotizar/:slug/gracias", to: "public/landing#thanks", as: :public_landing_thanks
+
   resources :webhooks, only: [:create], param: :provider_slug
 
   get "account/pending", to: "account#pending", as: :account_pending

@@ -47,10 +47,26 @@ SimpleForm.setup do |config|
     b.use :error, wrap_with: { tag: :div, class: "label" }, class: "label-text-alt text-error"
   end
 
+  # ── Select wrapper (DaisyUI) ──
+  config.wrappers :select, class: "form-control w-full mb-4" do |b|
+    b.use :html5
+    b.optional :readonly
+
+    b.use :label, class: "label label-text text-sm font-medium"
+    b.use :input, class: "select select-bordered w-full",
+                  error_class: "select-error"
+    b.use :hint,  wrap_with: { tag: :p, class: "mt-1 text-xs text-base-content/50" }
+    b.use :error, wrap_with: { tag: :p, class: "mt-1 text-xs text-error" }
+  end
+
   config.default_wrapper = :default
   config.boolean_style = :inline
 
-  config.wrapper_mappings = { boolean: :boolean }
+  config.wrapper_mappings = { boolean: :boolean, select: :select, collection_select: :select }
+
+  # Prevent SimpleForm from adding input type classes (e.g. "select") to wrapper divs,
+  # which collides with DaisyUI's .select class.
+  config.generate_additional_classes_for = [:input]
 
   config.button_class = "btn btn-neutral"
 

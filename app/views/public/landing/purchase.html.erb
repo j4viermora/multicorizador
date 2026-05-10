@@ -1,0 +1,507 @@
+<% content_for(:head) do %>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<% end %>
+
+<style>
+  .purchase-root, .purchase-root * { font-family: 'Outfit', sans-serif; }
+
+  /* ── Stepper ── */
+  .purchase-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 2rem;
+  }
+  .purchase-step {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 2rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--wz-ink-muted);
+    background: transparent;
+    transition: all 0.3s;
+  }
+  .purchase-step.is-done {
+    color: var(--wz-teal);
+  }
+  .purchase-step.is-active {
+    background: var(--wz-teal);
+    color: white;
+  }
+  .purchase-step-num {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 800;
+    border: 2px solid currentColor;
+    flex-shrink: 0;
+  }
+  .purchase-step.is-active .purchase-step-num {
+    border-color: white;
+    background: oklch(1 0 0 / 0.2);
+  }
+  .purchase-step.is-done .purchase-step-num {
+    background: var(--wz-teal);
+    border-color: var(--wz-teal);
+    color: white;
+  }
+  .purchase-step-line {
+    width: 2rem;
+    height: 2px;
+    background: var(--wz-border);
+    flex-shrink: 0;
+  }
+  .purchase-step-line.is-done {
+    background: var(--wz-teal);
+  }
+
+  /* ── Section cards ── */
+  .purchase-section {
+    background: white;
+    border: 1px solid var(--wz-border);
+    border-radius: 1rem;
+    padding: 1.75rem;
+    margin-bottom: 1.25rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .purchase-section::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--wz-teal), oklch(0.55 0.14 195));
+  }
+  .purchase-section.accent-coral::before {
+    background: linear-gradient(90deg, var(--wz-coral), oklch(0.70 0.16 30));
+  }
+  .purchase-section.accent-amber::before {
+    background: linear-gradient(90deg, var(--wz-amber), oklch(0.80 0.14 80));
+  }
+
+  .section-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* ── Sidebar ── */
+  .purchase-sidebar {
+    background: linear-gradient(160deg, oklch(0.22 0.06 210) 0%, oklch(0.30 0.08 200) 50%, oklch(0.25 0.07 195) 100%);
+    border-radius: 1rem;
+    padding: 1.75rem;
+    position: sticky;
+    top: 2rem;
+    overflow: hidden;
+  }
+  .purchase-sidebar::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 300px 200px at 80% 20%, oklch(0.45 0.12 195 / 0.25), transparent),
+      radial-gradient(ellipse 200px 150px at 20% 80%, oklch(0.55 0.15 25 / 0.1), transparent);
+    pointer-events: none;
+  }
+  .sidebar-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid oklch(1 0 0 / 0.08);
+    font-size: 0.8rem;
+  }
+  .sidebar-row:last-child { border-bottom: none; }
+  .sidebar-label { color: oklch(0.75 0.03 195); }
+  .sidebar-value { color: white; font-weight: 600; }
+
+  .sidebar-price {
+    font-size: 2rem;
+    font-weight: 800;
+    color: white;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .sidebar-price-currency {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: oklch(0.75 0.03 195);
+    vertical-align: super;
+    margin-right: 0.1rem;
+  }
+
+  /* ── Form inputs ── */
+  .purchase-input {
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid var(--wz-border);
+    border-radius: 0.55rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    color: var(--wz-ink);
+    background: white;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  .purchase-input:focus {
+    border-color: var(--wz-teal);
+    box-shadow: 0 0 0 3px oklch(0.47 0.12 195 / 0.1);
+  }
+  .purchase-input::placeholder {
+    color: var(--wz-ink-muted);
+  }
+  .purchase-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--wz-ink-soft);
+    margin-bottom: 0.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .purchase-field { margin-bottom: 1rem; }
+
+  /* ── CTA ── */
+  .purchase-cta {
+    display: block;
+    width: 100%;
+    padding: 0.9rem;
+    border: none;
+    border-radius: 0.65rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    background: linear-gradient(135deg, var(--wz-teal), oklch(0.52 0.14 195));
+    color: white;
+    box-shadow: 0 2px 8px oklch(0.47 0.12 195 / 0.3);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    text-align: center;
+  }
+  .purchase-cta:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px oklch(0.47 0.12 195 / 0.4);
+  }
+
+  /* ── Checkbox ── */
+  .purchase-checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 0.78rem;
+    color: var(--wz-ink-soft);
+    cursor: pointer;
+    line-height: 1.4;
+  }
+  .purchase-checkbox-label input[type="checkbox"] {
+    margin-top: 0.15rem;
+    accent-color: var(--wz-teal);
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+  }
+
+  /* Animations */
+  .purchase-fade-in {
+    opacity: 0;
+    transform: translateY(16px);
+    animation: purchaseFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  @keyframes purchaseFadeIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .pd1 { animation-delay: 0.1s; }
+  .pd2 { animation-delay: 0.2s; }
+  .pd3 { animation-delay: 0.3s; }
+  .pd4 { animation-delay: 0.4s; }
+  .pd5 { animation-delay: 0.5s; }
+
+  /* ── Back link ── */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--wz-ink-muted);
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--wz-teal); }
+  .back-link svg { width: 1rem; height: 1rem; }
+</style>
+
+<div class="purchase-root max-w-6xl mx-auto">
+
+  <%# ── Back link ── %>
+  <div class="mb-5 purchase-fade-in pd1">
+    <a href="javascript:history.back()" class="back-link">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+      </svg>
+      Volver a resultados
+    </a>
+  </div>
+
+  <%# ── Stepper ── %>
+  <div class="purchase-stepper purchase-fade-in pd1">
+    <div class="purchase-step is-done">
+      <span class="purchase-step-num">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+      </span>
+      Cotizacion
+    </div>
+    <div class="purchase-step-line is-done"></div>
+    <div class="purchase-step is-active">
+      <span class="purchase-step-num">2</span>
+      Datos personales
+    </div>
+    <div class="purchase-step-line"></div>
+    <div class="purchase-step">
+      <span class="purchase-step-num">3</span>
+      Pago
+    </div>
+  </div>
+
+  <%# ── Main layout: form + sidebar ── %>
+  <form action="<%= public_landing_checkout_path(@company.slug) %>" method="post" data-turbo="false">
+    <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+
+    <%# Pass plan + search data through as hidden fields %>
+    <input type="hidden" name="plan[provider_name]" value="<%= @plan[:provider_name] %>">
+    <input type="hidden" name="plan[provider_slug]" value="<%= @plan[:provider_slug] %>">
+    <input type="hidden" name="plan[plan_name]" value="<%= @plan[:plan_name] %>">
+    <input type="hidden" name="plan[price_cents]" value="<%= @plan[:price_cents] %>">
+    <input type="hidden" name="plan[currency]" value="<%= @plan[:currency] %>">
+    <input type="hidden" name="plan[price_per_person_cents]" value="<%= @plan[:price_per_person_cents] %>">
+    <input type="hidden" name="plan[coverage_json]" value="<%= (@plan[:coverage] || []).to_json %>">
+    <input type="hidden" name="search[origin]" value="<%= @search[:origin] %>">
+    <input type="hidden" name="search[destination]" value="<%= @search[:destination] %>">
+    <input type="hidden" name="search[departure_date]" value="<%= @search[:departure_date] %>">
+    <input type="hidden" name="search[return_date]" value="<%= @search[:return_date] %>">
+    <input type="hidden" name="search[travelers_count]" value="<%= @search[:travelers_count] %>">
+    <input type="hidden" name="search[trip_type]" value="<%= @search[:trip_type] %>">
+    <input type="hidden" name="search[email]" value="<%= @search[:email] %>">
+    <input type="hidden" name="search[phone]" value="<%= @search[:phone] %>">
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <%# ── LEFT: Form sections ── %>
+      <div class="lg:col-span-2">
+
+        <%# Section 1: Passenger data %>
+        <% travelers_count = (@search[:travelers_count] || 1).to_i %>
+        <div class="purchase-section purchase-fade-in pd2">
+          <div class="flex items-start gap-3 mb-5">
+            <div class="section-icon" style="background: var(--wz-teal-light); color: var(--wz-teal);">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-lg font-bold" style="color: var(--wz-ink);">Datos de los pasajeros</h2>
+              <p class="text-sm" style="color: var(--wz-ink-muted);">Completa los datos de cada viajero.</p>
+            </div>
+          </div>
+
+          <% travelers_count.times do |i| %>
+            <% if i > 0 %>
+              <div style="height: 1px; background: var(--wz-border); margin: 1.25rem 0;"></div>
+            <% end %>
+
+            <div class="mb-1">
+              <p class="text-xs font-bold uppercase tracking-wider mb-3" style="color: var(--wz-teal);">
+                Pasajero <%= i + 1 %>
+              </p>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+                <div class="purchase-field">
+                  <label class="purchase-label">Nombres</label>
+                  <input type="text" name="passengers[][first_name]" class="purchase-input"
+                         placeholder="Nombre completo" required>
+                </div>
+                <div class="purchase-field">
+                  <label class="purchase-label">Apellido</label>
+                  <input type="text" name="passengers[][last_name]" class="purchase-input"
+                         placeholder="Apellido completo" required>
+                </div>
+                <div class="purchase-field">
+                  <label class="purchase-label">Fecha de nacimiento</label>
+                  <input type="date" name="passengers[][birth_date]" class="purchase-input" required>
+                </div>
+                <div class="purchase-field">
+                  <label class="purchase-label">N. de documento</label>
+                  <input type="text" name="passengers[][document]" class="purchase-input"
+                         placeholder="Ej: 12.345.678" required>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+
+        <%# Section 2: Contact / voucher recipient %>
+        <div class="purchase-section accent-coral purchase-fade-in pd3">
+          <div class="flex items-start gap-3 mb-5">
+            <div class="section-icon" style="background: var(--wz-coral-light); color: var(--wz-coral);">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-lg font-bold" style="color: var(--wz-ink);">¿Quien recibe el voucher?</h2>
+              <p class="text-sm" style="color: var(--wz-ink-muted);">Datos de contacto para enviarte la poliza.</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+            <div class="purchase-field md:col-span-2">
+              <label class="purchase-label">Email</label>
+              <input type="email" name="contact[email]" class="purchase-input"
+                     value="<%= @search[:email] %>" placeholder="nombre@email.com" required>
+            </div>
+            <div class="purchase-field">
+              <label class="purchase-label">Telefono / WhatsApp</label>
+              <input type="tel" name="contact[phone]" class="purchase-input"
+                     value="<%= @search[:phone] %>" placeholder="+54 9 11 1234-5678">
+            </div>
+          </div>
+        </div>
+
+        <%# Section 3: Emergency contact %>
+        <div class="purchase-section accent-amber purchase-fade-in pd4">
+          <div class="flex items-start gap-3 mb-5">
+            <div class="section-icon" style="background: var(--wz-amber-light); color: oklch(0.55 0.14 75);">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-lg font-bold" style="color: var(--wz-ink);">Contacto de emergencia</h2>
+              <p class="text-sm" style="color: var(--wz-ink-muted);">Persona a contactar en caso de emergencia durante el viaje.</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+            <div class="purchase-field md:col-span-2">
+              <label class="purchase-label">Nombre y apellido</label>
+              <input type="text" name="emergency[name]" class="purchase-input"
+                     placeholder="Nombre completo">
+            </div>
+            <div class="purchase-field">
+              <label class="purchase-label">Telefono</label>
+              <input type="tel" name="emergency[phone]" class="purchase-input"
+                     placeholder="+54 9 11 1234-5678">
+            </div>
+          </div>
+        </div>
+
+        <%# Terms + Submit %>
+        <div class="purchase-fade-in pd5">
+          <label class="purchase-checkbox-label mb-5">
+            <input type="checkbox" name="terms" value="1" required>
+            <span>
+              Declaro ser mayor de edad, haber leido y aceptado las
+              <a href="#" style="color: var(--wz-teal); text-decoration: underline;">condiciones generales</a>
+              del servicio a contratar.
+            </span>
+          </label>
+
+          <button type="submit" class="purchase-cta">
+            <span class="flex items-center justify-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              Continuar al pago
+            </span>
+          </button>
+        </div>
+
+      </div>
+
+      <%# ── RIGHT: Sidebar summary ── %>
+      <div class="lg:col-span-1">
+        <div class="purchase-sidebar purchase-fade-in pd2">
+          <div class="relative z-10">
+            <h3 class="text-white font-bold text-sm uppercase tracking-wider mb-4" style="letter-spacing: 0.08em;">
+              Datos de tu compra
+            </h3>
+
+            <div class="sidebar-row">
+              <span class="sidebar-label">Origen</span>
+              <span class="sidebar-value"><%= @search[:origin] %></span>
+            </div>
+            <div class="sidebar-row">
+              <span class="sidebar-label">Destino</span>
+              <span class="sidebar-value"><%= @search[:destination] %></span>
+            </div>
+            <div class="sidebar-row">
+              <span class="sidebar-label">Fecha de salida</span>
+              <span class="sidebar-value"><%= @search[:departure_date] %></span>
+            </div>
+            <div class="sidebar-row">
+              <span class="sidebar-label">Fin de vigencia</span>
+              <span class="sidebar-value"><%= @search[:return_date] %></span>
+            </div>
+            <% trip_days = begin
+              (Date.parse(@search[:return_date].to_s) - Date.parse(@search[:departure_date].to_s)).to_i
+            rescue
+              7
+            end %>
+            <div class="sidebar-row">
+              <span class="sidebar-label">Cantidad de dias</span>
+              <span class="sidebar-value"><%= trip_days %></span>
+            </div>
+            <div class="sidebar-row">
+              <span class="sidebar-label">Proveedor</span>
+              <span class="sidebar-value"><%= @plan[:provider_name] %></span>
+            </div>
+            <div class="sidebar-row">
+              <span class="sidebar-label">Producto</span>
+              <span class="sidebar-value"><%= @plan[:plan_name] %></span>
+            </div>
+            <div class="sidebar-row">
+              <span class="sidebar-label">Pasajeros</span>
+              <span class="sidebar-value"><%= @search[:travelers_count] %></span>
+            </div>
+
+            <div style="height: 1px; background: oklch(1 0 0 / 0.12); margin: 1rem 0;"></div>
+
+            <div class="flex items-baseline justify-between">
+              <span class="text-xs font-semibold" style="color: oklch(0.75 0.03 195);">Precio final total</span>
+              <div class="sidebar-price">
+                <span class="sidebar-price-currency"><%= @plan[:currency] %></span>
+                <%= "%.2f" % (@plan[:price_cents].to_i / 100.0) %>
+              </div>
+            </div>
+            <% if @search[:travelers_count].to_i > 1 && @plan[:price_per_person_cents].present? %>
+              <p class="text-right text-xs mt-1" style="color: oklch(0.75 0.03 195);">
+                <%= @plan[:currency] %> <%= "%.2f" % (@plan[:price_per_person_cents].to_i / 100.0) %> por persona
+              </p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </form>
+
+  <%# Footer %>
+  <div class="text-center mt-6 mb-8 text-xs purchase-fade-in pd5" style="color: var(--wz-ink-muted);">
+    <%= @company.name %> &mdash; Powered by <strong>Asisto</strong>
+  </div>
+</div>

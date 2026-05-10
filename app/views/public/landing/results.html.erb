@@ -1,0 +1,413 @@
+<% content_for(:head) do %>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<% end %>
+
+<style>
+  .results-root, .results-root * { font-family: 'Outfit', sans-serif; }
+
+  /* ── Hero summary bar ── */
+  .results-hero {
+    background: linear-gradient(160deg, oklch(0.22 0.06 210) 0%, oklch(0.30 0.08 200) 50%, oklch(0.25 0.07 195) 100%);
+    position: relative;
+    overflow: hidden;
+    border-radius: 1.25rem;
+  }
+  .results-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 500px 300px at 85% 30%, oklch(0.45 0.12 195 / 0.25), transparent),
+      radial-gradient(ellipse 300px 200px at 15% 70%, oklch(0.55 0.15 25 / 0.1), transparent);
+    pointer-events: none;
+  }
+
+  /* ── Result cards ── */
+  .result-card {
+    background: white;
+    border: 1px solid var(--wz-border);
+    border-radius: 1rem;
+    overflow: hidden;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+  }
+  .result-card:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 8px 25px oklch(0 0 0 / 0.08),
+      0 2px 8px oklch(0 0 0 / 0.04);
+  }
+
+  /* Best price badge */
+  .result-card.is-best::before {
+    content: "Mejor precio";
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: linear-gradient(135deg, var(--wz-teal), oklch(0.52 0.14 195));
+    color: white;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.3rem 0.7rem;
+    border-radius: 2rem;
+    z-index: 2;
+  }
+
+  /* Provider accent stripe */
+  .result-card-header {
+    padding: 1.5rem 1.5rem 1rem;
+    border-bottom: 1px solid oklch(0.94 0.01 80);
+    position: relative;
+  }
+  .result-card-header::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+  }
+  .result-card:nth-child(1) .result-card-header::after {
+    background: linear-gradient(90deg, var(--wz-teal), oklch(0.55 0.14 195));
+  }
+  .result-card:nth-child(2) .result-card-header::after {
+    background: linear-gradient(90deg, var(--wz-coral), oklch(0.70 0.16 30));
+  }
+  .result-card:nth-child(3) .result-card-header::after {
+    background: linear-gradient(90deg, var(--wz-amber), oklch(0.80 0.14 80));
+  }
+
+  /* Provider name badge */
+  .provider-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.25rem 0.6rem;
+    border-radius: 0.35rem;
+    background: var(--wz-teal-light);
+    color: var(--wz-teal);
+  }
+
+  /* Price area */
+  .result-price {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--wz-ink);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .result-price-currency {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--wz-ink-soft);
+    vertical-align: super;
+    margin-right: 0.15rem;
+  }
+  .result-price-detail {
+    font-size: 0.75rem;
+    color: var(--wz-ink-muted);
+    font-weight: 400;
+  }
+
+  /* Coverage list */
+  .coverage-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .coverage-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid oklch(0.96 0.005 80);
+    font-size: 0.82rem;
+  }
+  .coverage-item:last-child {
+    border-bottom: none;
+  }
+  .coverage-name {
+    color: var(--wz-ink-soft);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .coverage-name svg {
+    width: 0.9rem;
+    height: 0.9rem;
+    color: var(--wz-teal);
+    flex-shrink: 0;
+  }
+  .coverage-amount {
+    font-weight: 600;
+    color: var(--wz-ink);
+    text-align: right;
+  }
+
+  /* CTA button */
+  .result-cta {
+    display: block;
+    width: 100%;
+    padding: 0.85rem;
+    border: none;
+    border-radius: 0.65rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    text-align: center;
+    text-decoration: none;
+  }
+  .result-cta-primary {
+    background: linear-gradient(135deg, var(--wz-teal), oklch(0.52 0.14 195));
+    color: white;
+    box-shadow: 0 2px 8px oklch(0.47 0.12 195 / 0.3);
+  }
+  .result-cta-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px oklch(0.47 0.12 195 / 0.4);
+  }
+  .result-cta-secondary {
+    background: var(--wz-teal-light);
+    color: var(--wz-teal);
+  }
+  .result-cta-secondary:hover {
+    background: oklch(0.88 0.06 195);
+  }
+
+  /* Summary pills */
+  .summary-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: oklch(1 0 0 / 0.12);
+    color: white;
+    border-radius: 2rem;
+    padding: 0.4rem 0.85rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    backdrop-filter: blur(4px);
+  }
+  .summary-pill svg {
+    width: 0.9rem;
+    height: 0.9rem;
+    opacity: 0.7;
+  }
+
+  /* Animations */
+  .results-fade-in {
+    opacity: 0;
+    transform: translateY(16px);
+    animation: resultsFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  @keyframes resultsFadeIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .rd1 { animation-delay: 0.1s; }
+  .rd2 { animation-delay: 0.2s; }
+  .rd3 { animation-delay: 0.35s; }
+  .rd4 { animation-delay: 0.5s; }
+
+  /* No results */
+  .no-results-card {
+    background: white;
+    border: 1px solid var(--wz-border);
+    border-radius: 1rem;
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+
+  /* Back link */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--wz-ink-muted);
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .back-link:hover {
+    color: var(--wz-teal);
+  }
+  .back-link svg {
+    width: 1rem;
+    height: 1rem;
+  }
+</style>
+
+<div class="results-root max-w-5xl mx-auto">
+
+  <%# ── Back link ── %>
+  <div class="mb-5 results-fade-in rd1">
+    <%= link_to public_landing_path(@company.slug, ref: params[:ref]), class: "back-link" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+      </svg>
+      Nueva búsqueda
+    <% end %>
+  </div>
+
+  <%# ── Hero summary ── %>
+  <div class="results-hero p-6 md:p-8 mb-8 results-fade-in rd1">
+    <div class="relative z-10">
+      <h1 class="text-white text-xl md:text-2xl font-bold mb-1 tracking-tight">
+        Resultados de tu búsqueda
+      </h1>
+      <p class="text-white/60 text-sm mb-5">
+        Encontramos <strong class="text-white/90"><%= @results.size %></strong> opciones para tu viaje
+      </p>
+
+      <div class="flex flex-wrap gap-2.5">
+        <span class="summary-pill">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          <%= @search.origin %> → <%= @search.destination %>
+        </span>
+
+        <span class="summary-pill">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <%= l(@search.departure_date, format: :long) rescue @search.departure_date %>
+          <% if @search.return_date %>
+            — <%= l(@search.return_date, format: :long) rescue @search.return_date %>
+          <% end %>
+        </span>
+
+        <span class="summary-pill">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+          <%= @search.travelers_count %> pasajero<%= @search.travelers_count > 1 ? "s" : "" %>
+        </span>
+
+        <span class="summary-pill">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <%= @search.trip_days %> días
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <% if @results.any? %>
+    <%# ── Results grid ── %>
+    <div class="grid grid-cols-1 md:grid-cols-<%= [@results.size, 3].min %> gap-5 mb-8">
+      <% @results.each_with_index do |result, idx| %>
+        <div class="result-card <%= 'is-best' if idx == 0 %> results-fade-in rd<%= idx + 2 %>">
+
+          <%# Header %>
+          <div class="result-card-header">
+            <div class="provider-badge mb-3">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              <%= result[:provider_name] %>
+            </div>
+            <h3 class="text-lg font-bold" style="color: var(--wz-ink); letter-spacing: -0.01em;">
+              <%= result[:plan_name] %>
+            </h3>
+          </div>
+
+          <%# Price %>
+          <div class="px-6 py-5" style="background: oklch(0.985 0.003 80);">
+            <div class="result-price">
+              <span class="result-price-currency"><%= result[:currency] %></span>
+              <%= "%.2f" % (result[:price_cents] / 100.0) %>
+            </div>
+            <div class="result-price-detail mt-1">
+              Total por <%= @search.travelers_count %> pasajero<%= @search.travelers_count > 1 ? "s" : "" %>
+              <% if @search.travelers_count > 1 && result[:price_per_person_cents] %>
+                · <%= result[:currency] %> <%= "%.2f" % (result[:price_per_person_cents] / 100.0) %> c/u
+              <% end %>
+            </div>
+          </div>
+
+          <%# Coverage %>
+          <div class="px-6 py-4">
+            <p class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: var(--wz-ink-muted);">
+              Coberturas incluidas
+            </p>
+            <ul class="coverage-list">
+              <% (result[:coverage] || []).each do |cov| %>
+                <li class="coverage-item">
+                  <span class="coverage-name">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <%= cov[:name] %>
+                  </span>
+                  <span class="coverage-amount"><%= cov[:amount] %></span>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+
+          <%# CTA %>
+          <div class="px-6 pb-6">
+            <form action="<%= public_landing_purchase_path(@company.slug) %>" method="post" data-turbo="false">
+              <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+
+              <%# Plan data %>
+              <input type="hidden" name="plan[provider_name]" value="<%= result[:provider_name] %>">
+              <input type="hidden" name="plan[provider_slug]" value="<%= result[:provider_slug] %>">
+              <input type="hidden" name="plan[plan_name]" value="<%= result[:plan_name] %>">
+              <input type="hidden" name="plan[price_cents]" value="<%= result[:price_cents] %>">
+              <input type="hidden" name="plan[currency]" value="<%= result[:currency] %>">
+              <input type="hidden" name="plan[price_per_person_cents]" value="<%= result[:price_per_person_cents] %>">
+              <input type="hidden" name="plan[coverage_json]" value="<%= (result[:coverage] || []).to_json %>">
+
+              <%# Search context %>
+              <input type="hidden" name="search[origin]" value="<%= @search.origin %>">
+              <input type="hidden" name="search[destination]" value="<%= @search.destination %>">
+              <input type="hidden" name="search[departure_date]" value="<%= @search.departure_date %>">
+              <input type="hidden" name="search[return_date]" value="<%= @search.return_date %>">
+              <input type="hidden" name="search[travelers_count]" value="<%= @search.travelers_count %>">
+              <input type="hidden" name="search[trip_type]" value="<%= @search.trip_type %>">
+              <input type="hidden" name="search[email]" value="<%= @search.metadata['email'] %>">
+              <input type="hidden" name="search[phone]" value="<%= @search.metadata['phone'] %>">
+
+              <button type="submit" class="result-cta <%= idx == 0 ? 'result-cta-primary' : 'result-cta-secondary' %>">
+                Comprar este plan
+              </button>
+            </form>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+  <% else %>
+    <%# No results %>
+    <div class="no-results-card results-fade-in rd2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-4" style="color: var(--wz-ink-muted);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <h2 class="text-lg font-bold mb-2" style="color: var(--wz-ink);">No encontramos resultados</h2>
+      <p class="text-sm mb-5" style="color: var(--wz-ink-muted);">
+        No pudimos obtener cotizaciones para esta búsqueda. Intentá con otras fechas o destino.
+      </p>
+      <%= link_to "Intentar de nuevo", public_landing_path(@company.slug, ref: params[:ref]),
+          class: "result-cta result-cta-primary", style: "display: inline-block; max-width: 14rem;" %>
+    </div>
+  <% end %>
+
+  <%# Footer %>
+  <div class="text-center mt-4 mb-8 text-xs results-fade-in rd4" style="color: var(--wz-ink-muted);">
+    <%= @company.name %> &mdash; Powered by <strong>Asisto</strong>
+  </div>
+</div>
