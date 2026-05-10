@@ -19,7 +19,7 @@
         Crea tu cuenta<br><em>gratuita</em>
       </h1>
       <p class="font-sans text-white/40 text-sm font-light leading-relaxed max-w-md">
-        Únete y descubre una nueva forma de gestionar tus tareas y proyectos con inteligencia.
+        Regístrate como productor y comienza a cotizar seguros de viaje con múltiples proveedores en segundos.
       </p>
       <div class="flex items-center gap-3 mt-10">
         <div class="w-10 h-px bg-white/25"></div>
@@ -41,46 +41,27 @@
       <p class="font-sans text-xs text-base-content/40">Completa tus datos para registrarte</p>
     </div>
 
-    <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-      <%= render "devise/shared/error_messages", resource: resource %>
+    <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "flex flex-col gap-5" }) do |f| %>
+      <%= f.error_notification %>
 
-      <div class="flex flex-col gap-5">
-
-        <div class="grid grid-cols-2 gap-3">
-          <label class="form-control w-full">
-            <%= f.label :first_name, "Nombre", class: "label label-text text-xs uppercase tracking-widest text-base-content/40" %>
-            <%= f.text_field :first_name, placeholder: "Juan", class: "input input-bordered w-full" %>
-          </label>
-
-          <label class="form-control w-full">
-            <%= f.label :last_name, "Apellido", class: "label label-text text-xs uppercase tracking-widest text-base-content/40" %>
-            <%= f.text_field :last_name, placeholder: "Pérez", class: "input input-bordered w-full" %>
-          </label>
-        </div>
-
-        <label class="form-control w-full">
-          <%= f.label :email, "Correo electrónico", class: "label label-text text-xs uppercase tracking-widest text-base-content/40" %>
-          <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "nombre@correo.com", class: "input input-bordered w-full" %>
-        </label>
-
-        <label class="form-control w-full">
-          <%= f.label :password, "Contraseña", class: "label label-text text-xs uppercase tracking-widest text-base-content/40" %>
-          <%= f.password_field :password, autocomplete: "new-password", placeholder: "••••••••", class: "input input-bordered w-full" %>
-          <% if @minimum_password_length %>
-            <div class="label">
-              <span class="label-text-alt text-base-content/30">Mínimo <%= @minimum_password_length %> caracteres</span>
-            </div>
-          <% end %>
-        </label>
-
-        <label class="form-control w-full">
-          <%= f.label :password_confirmation, "Confirmar contraseña", class: "label label-text text-xs uppercase tracking-widest text-base-content/40" %>
-          <%= f.password_field :password_confirmation, autocomplete: "new-password", placeholder: "••••••••", class: "input input-bordered w-full" %>
-        </label>
-
-        <%= f.submit "Crear cuenta →", class: "btn btn-neutral w-full mt-2 text-xs tracking-widest uppercase" %>
-
+      <div class="grid grid-cols-2 gap-3">
+        <%= f.input :first_name, label: "Nombre", placeholder: "Juan",
+                    wrapper: :auth, input_html: { autofocus: true } %>
+        <%= f.input :last_name, label: "Apellido", placeholder: "Pérez", wrapper: :auth %>
       </div>
+
+      <%= f.input :email, label: "Correo electrónico", placeholder: "nombre@correo.com",
+                  wrapper: :auth, input_html: { autocomplete: "email" } %>
+
+      <%= f.input :password, label: "Contraseña", placeholder: "••••••••",
+                  wrapper: :auth, input_html: { autocomplete: "new-password" },
+                  hint: @minimum_password_length ? "Mínimo #{@minimum_password_length} caracteres" : nil %>
+
+      <%= f.input :password_confirmation, label: "Confirmar contraseña", placeholder: "••••••••",
+                  wrapper: :auth, input_html: { autocomplete: "new-password" } %>
+
+      <%= f.button :submit, "Crear cuenta →", class: "btn btn-neutral w-full mt-2 text-xs tracking-widest uppercase" %>
+
     <% end %>
 
     <div class="mt-8 pt-6 border-t border-base-200 flex flex-col gap-2">

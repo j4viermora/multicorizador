@@ -1,25 +1,64 @@
-<h2>Change your password</h2>
+<% content_for :full_screen, true %>
 
-<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
-  <%= f.hidden_field :reset_password_token %>
+<div class="flex h-screen overflow-hidden">
 
-  <div class="field">
-    <p><%= f.label :password, "New password" %></p>
-    <% if @minimum_password_length %>
-      <p><em>(<%= @minimum_password_length %> characters minimum)</em></p>
+  <%# ── Left Hero Panel (3/4) ── %>
+  <div class="hidden lg:flex lg:w-3/4 relative flex-col justify-between p-14 overflow-hidden bg-linear-to-br from-[#0d0b1e] via-[#2d1b69] to-[#1e3a5f]">
+
+    <div class="absolute -top-24 -left-20 w-md h-112 rounded-full bg-purple-500/20 blur-3xl animate-pulse"></div>
+    <div class="absolute -bottom-16 right-10 w-80 h-80 rounded-full bg-blue-400/20 blur-3xl animate-pulse [animation-delay:2s]"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-pink-400/10 blur-3xl animate-pulse [animation-delay:4s]"></div>
+
+    <div class="relative z-10">
+      <span class="font-sans text-white/90 text-xs tracking-[0.35em] uppercase">ASISTO</span>
+    </div>
+
+    <div class="relative z-10">
+      <p class="font-sans text-white/35 text-xs tracking-[0.2em] uppercase mb-5">Seguridad</p>
+      <h1 class="font-serif text-6xl text-white font-light leading-tight mb-6">
+        Nueva<br><em>contraseña</em>
+      </h1>
+      <p class="font-sans text-white/40 text-sm font-light leading-relaxed max-w-md">
+        Elige una contraseña segura para proteger tu cuenta.
+      </p>
+      <div class="flex items-center gap-3 mt-10">
+        <div class="w-10 h-px bg-white/25"></div>
+        <div class="w-1.5 h-1.5 rounded-full bg-white/30"></div>
+        <div class="w-4 h-px bg-white/15"></div>
+      </div>
+    </div>
+  </div>
+
+  <%# ── Right Form Panel (1/4) ── %>
+  <div class="w-full lg:w-1/4 flex flex-col justify-center bg-base-100 px-10 overflow-y-auto">
+
+    <div class="lg:hidden mb-10">
+      <span class="font-sans text-xs tracking-[0.35em] uppercase text-base-content">ASISTO</span>
+    </div>
+
+    <div class="mb-9">
+      <h2 class="font-serif text-3xl font-light text-base-content mb-1">Cambiar contraseña</h2>
+      <p class="font-sans text-xs text-base-content/40">Ingresa tu nueva contraseña</p>
+    </div>
+
+    <%= simple_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put, class: "flex flex-col gap-5" }) do |f| %>
+      <%= f.error_notification %>
+      <%= f.hidden_field :reset_password_token %>
+
+      <%= f.input :password, label: "Nueva contraseña", placeholder: "••••••••",
+                  wrapper: :auth, input_html: { autofocus: true, autocomplete: "new-password" },
+                  hint: @minimum_password_length ? "Mínimo #{@minimum_password_length} caracteres" : nil %>
+
+      <%= f.input :password_confirmation, label: "Confirmar contraseña", placeholder: "••••••••",
+                  wrapper: :auth, input_html: { autocomplete: "new-password" } %>
+
+      <%= f.button :submit, "Cambiar contraseña →", class: "btn btn-neutral w-full mt-2 text-xs tracking-widest uppercase" %>
+
     <% end %>
-    <p><%= f.password_field :password, autofocus: true, autocomplete: "new-password" %></p>
-  </div>
 
-  <div class="field">
-    <p><%= f.label :password_confirmation, "Confirm new password" %></p>
-    <p><%= f.password_field :password_confirmation, autocomplete: "new-password" %></p>
-  </div>
+    <div class="mt-8 pt-6 border-t border-base-200 flex flex-col gap-2">
+      <%= render "devise/shared/links" %>
+    </div>
 
-  <div class="actions">
-    <%= f.submit "Change my password" %>
   </div>
-<% end %>
-
-<%= render "devise/shared/links" %>
+</div>

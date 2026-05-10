@@ -1,16 +1,60 @@
-<h2>Resend confirmation instructions</h2>
+<% content_for :full_screen, true %>
 
-<%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+<div class="flex h-screen overflow-hidden">
 
-  <div class="field">
-    <p><%= f.label :email %></p>
-    <p><%= f.email_field :email, autofocus: true, autocomplete: "email", value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email) %></p>
+  <%# ── Left Hero Panel (3/4) ── %>
+  <div class="hidden lg:flex lg:w-3/4 relative flex-col justify-between p-14 overflow-hidden bg-linear-to-br from-[#0d0b1e] via-[#2d1b69] to-[#1e3a5f]">
+
+    <div class="absolute -top-24 -left-20 w-md h-112 rounded-full bg-purple-500/20 blur-3xl animate-pulse"></div>
+    <div class="absolute -bottom-16 right-10 w-80 h-80 rounded-full bg-blue-400/20 blur-3xl animate-pulse [animation-delay:2s]"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-pink-400/10 blur-3xl animate-pulse [animation-delay:4s]"></div>
+
+    <div class="relative z-10">
+      <span class="font-sans text-white/90 text-xs tracking-[0.35em] uppercase">ASISTO</span>
+    </div>
+
+    <div class="relative z-10">
+      <p class="font-sans text-white/35 text-xs tracking-[0.2em] uppercase mb-5">Verificación</p>
+      <h1 class="font-serif text-6xl text-white font-light leading-tight mb-6">
+        Confirma tu<br><em>correo</em>
+      </h1>
+      <p class="font-sans text-white/40 text-sm font-light leading-relaxed max-w-md">
+        Te enviaremos nuevamente las instrucciones de confirmación a tu correo.
+      </p>
+      <div class="flex items-center gap-3 mt-10">
+        <div class="w-10 h-px bg-white/25"></div>
+        <div class="w-1.5 h-1.5 rounded-full bg-white/30"></div>
+        <div class="w-4 h-px bg-white/15"></div>
+      </div>
+    </div>
   </div>
 
-  <div class="actions">
-    <%= f.submit "Resend confirmation instructions" %>
-  </div>
-<% end %>
+  <%# ── Right Form Panel (1/4) ── %>
+  <div class="w-full lg:w-1/4 flex flex-col justify-center bg-base-100 px-10 overflow-y-auto">
 
-<%= render "devise/shared/links" %>
+    <div class="lg:hidden mb-10">
+      <span class="font-sans text-xs tracking-[0.35em] uppercase text-base-content">ASISTO</span>
+    </div>
+
+    <div class="mb-9">
+      <h2 class="font-serif text-3xl font-light text-base-content mb-1">Reenviar confirmación</h2>
+      <p class="font-sans text-xs text-base-content/40">Ingresa tu correo para recibir las instrucciones</p>
+    </div>
+
+    <%= simple_form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post, class: "flex flex-col gap-5" }) do |f| %>
+      <%= f.error_notification %>
+
+      <%= f.input :email, label: "Correo electrónico", placeholder: "nombre@correo.com",
+                  wrapper: :auth, input_html: { autofocus: true, autocomplete: "email",
+                  value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email) } %>
+
+      <%= f.button :submit, "Reenviar instrucciones →", class: "btn btn-neutral w-full mt-2 text-xs tracking-widest uppercase" %>
+
+    <% end %>
+
+    <div class="mt-8 pt-6 border-t border-base-200 flex flex-col gap-2">
+      <%= render "devise/shared/links" %>
+    </div>
+
+  </div>
+</div>

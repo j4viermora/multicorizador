@@ -16,10 +16,10 @@
     <div class="relative z-10">
       <p class="font-sans text-white/35 text-xs tracking-[0.2em] uppercase mb-5">Bienvenido de vuelta</p>
       <h1 class="font-serif text-6xl text-white font-light leading-tight mb-6">
-        Tu asistente<br><em>inteligente</em>
+        Tu multicotizador<br><em>de seguros</em>
       </h1>
       <p class="font-sans text-white/40 text-sm font-light leading-relaxed max-w-md">
-        Gestiona tus tareas, conecta con tus herramientas y trabaja de manera más eficiente cada día.
+        Cotiza, compara y emite pólizas de seguro de viaje con múltiples proveedores desde un solo lugar.
       </p>
       <div class="flex items-center gap-3 mt-10">
         <div class="w-10 h-px bg-white/25"></div>
@@ -41,29 +41,23 @@
       <p class="font-sans text-xs text-base-content/40">Ingresa tus credenciales para continuar</p>
     </div>
 
-    <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-      <div class="flex flex-col gap-5">
+    <%= simple_form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "flex flex-col gap-5" }) do |f| %>
 
-        <label class="form-control w-full">
-          <%= f.label :email, "Correo electrónico", class: "label label-text text-xs uppercase tracking-widest text-base-content/40" %>
-          <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "nombre@correo.com", class: "input input-bordered w-full" %>
-        </label>
+      <%= f.input :email, label: "Correo electrónico", placeholder: "nombre@correo.com",
+                  wrapper: :auth, input_html: { autofocus: true, autocomplete: "email" } %>
 
-        <label class="form-control w-full">
-          <%= f.label :password, "Contraseña", class: "label label-text text-xs uppercase tracking-widest text-base-content/40" %>
-          <%= f.password_field :password, autocomplete: "current-password", placeholder: "••••••••", class: "input input-bordered w-full" %>
-        </label>
+      <%= f.input :password, label: "Contraseña", placeholder: "••••••••",
+                  wrapper: :auth, input_html: { autocomplete: "current-password" } %>
 
-        <% if devise_mapping.rememberable? %>
-          <div class="flex items-center gap-2">
-            <%= f.check_box :remember_me, class: "checkbox checkbox-sm" %>
-            <%= f.label :remember_me, "Recordarme", class: "font-sans text-xs text-base-content/50 cursor-pointer" %>
-          </div>
-        <% end %>
+      <% if devise_mapping.rememberable? %>
+        <%= f.input :remember_me, as: :boolean, label: "Recordarme",
+                    wrapper_html: { class: "form-control mb-0" },
+                    label_html: { class: "label cursor-pointer justify-start gap-2" },
+                    input_html: { class: "checkbox checkbox-sm" } %>
+      <% end %>
 
-        <%= f.submit "Entrar →", class: "btn btn-neutral w-full mt-2 text-xs tracking-widest uppercase" %>
+      <%= f.button :submit, "Entrar →", class: "btn btn-neutral w-full mt-2 text-xs tracking-widest uppercase" %>
 
-      </div>
     <% end %>
 
     <div class="mt-8 pt-6 border-t border-base-200 flex flex-col gap-2">
