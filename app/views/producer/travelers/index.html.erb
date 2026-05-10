@@ -1,0 +1,30 @@
+<h1 class="text-3xl font-bold mb-6">Clientes</h1>
+
+<%= link_to "Nuevo Cliente", new_producer_traveler_path, class: "btn btn-primary mb-4" %>
+
+<div class="overflow-x-auto bg-base-100 shadow rounded-box">
+  <table class="table table-zebra">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Email</th>
+        <th>Teléfono</th>
+        <th>Documento</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @travelers.each do |traveler| %>
+        <tr>
+          <td><%= traveler.full_name %></td>
+          <td><%= traveler.email %></td>
+          <td><%= traveler.phone %></td>
+          <td><%= traveler.document %></td>
+          <td>
+            <%= link_to "Editar", edit_producer_traveler_path(traveler), class: "btn btn-sm btn-outline" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

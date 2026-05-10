@@ -1,0 +1,47 @@
+<h1 class="text-3xl font-bold mb-2">Cotización #<%= @quote.id %></h1>
+<p class="text-gray-500 mb-6"><%= @quote.origin %> → <%= @quote.destination %> | Salida: <%= l @quote.departure_date %></p>
+
+<div class="flex gap-2 mb-6">
+  <span class="badge badge-lg badge-<%= quote_status_color(@quote.status) %>"><%= @quote.status.humanize %></span>
+</div>
+
+<% if @quote.quoted? && @quote_results.any? %>
+  <h2 class="text-xl font-semibold mb-4">Resultados de Cotización</h2>
+  <div class="grid grid-cols-1 gap-4">
+    <% @quote_results.each do |result| %>
+      <div class="card bg-base-100 shadow">
+        <div class="card-body flex flex-row items-center justify-between">
+          <div>
+            <h3 class="card-title"><%= result.provider.name %></h3>
+            <p class="text-sm text-gray-500"><%= result.raw_response["plan_name"] %></p>
+          </div>
+          <div class="text-right">
+            <p class="text-2xl font-bold text-primary"><%= result.price.format %></p>
+            <p class="text-sm text-success">Tu comisión: <%= result.producer_commission.format %></p>
+          </div>
+          <div class="card-actions">
+            <%= link_to "Seleccionar", "#", class: "btn btn-primary btn-sm" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% elsif @quote.quoting? %>
+  <div class="alert alert-info">
+    <span class="loading loading-spinner loading-sm"></span>
+    Consultando proveedores... Esto puede tardar unos segundos.
+  </div>
+<% elsif @quote.draft? %>
+  <div class="alert alert-warning">Esta cotización está en borrador. Edítala para enviarla.</div>
+<% elsif @quote.purchased? %>
+  <div class="alert alert-success">Esta cotización ya tiene una póliza emitida.</div>
+<% else %>
+  <div class="alert alert-info">No hay resultados disponibles.</div>
+<% end %>
+
+<div class="mt-8 flex gap-2">
+  <%= link_to "Volver", producer_quotes_path, class: "btn btn-ghost" %>
+  <% if @quote.editable? %>
+    <%= link_to "Editar", edit_producer_quote_path(@quote), class: "btn btn-outline" %>
+  <% end %>
+</div>

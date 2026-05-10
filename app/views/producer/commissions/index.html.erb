@@ -1,0 +1,47 @@
+<h1 class="text-3xl font-bold mb-6">Mis Comisiones</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+  <div class="stat bg-base-100 shadow rounded-box">
+    <div class="stat-title">Comisión Pendiente</div>
+    <div class="stat-value text-warning"><%= Money.new(@total_pending).format %></div>
+    <div class="stat-desc">Por facturar</div>
+  </div>
+  <div class="stat bg-base-100 shadow rounded-box">
+    <div class="stat-title">Comisión Pagada</div>
+    <div class="stat-value text-success"><%= Money.new(@total_paid).format %></div>
+    <div class="stat-desc">Total acumulado</div>
+  </div>
+</div>
+
+<% if @pending_policies.any? %>
+  <h2 class="text-xl font-semibold mb-4">Pólizas Pendientes de Facturación</h2>
+  <%= form_with url: producer_invoices_path, method: :post do %>
+    <div class="overflow-x-auto bg-base-100 shadow rounded-box mb-4">
+      <table class="table table-zebra">
+        <thead>
+          <tr>
+            <th><input type="checkbox" class="checkbox" onclick="document.querySelectorAll('.policy-checkbox').forEach(cb => cb.checked = this.checked)"></th>
+            <th>Número</th>
+            <th>Proveedor</th>
+            <th>Comisión</th>
+            <th>Emitida</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @pending_policies.each do |policy| %>
+            <tr>
+              <td><%= check_box_tag "policy_ids[]", policy.id, false, class: "checkbox policy-checkbox" %></td>
+              <td><%= policy.policy_number %></td>
+              <td><%= policy.quote_result.provider.name %></td>
+              <td class="text-success font-semibold"><%= policy.producer_commission.format %></td>
+              <td><%= l policy.issued_at, format: :short if policy.issued_at %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <%= submit_tag "Generar Factura Mensual", class: "btn btn-primary" %>
+  <% end %>
+<% else %>
+  <div class="alert alert-info">No tienes pólizas pendientes de facturación.</div>
+<% end %>

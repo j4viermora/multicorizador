@@ -1,7 +1,10 @@
 # encoding : utf-8
 
 MoneyRails.configure do |config|
-  config.default_currency = :usd
+
+  # To set the default currency
+  config.default_currency = :ars
+  config.locale_backend = :i18n
 
   # Set default bank object
   #
@@ -80,7 +83,28 @@ MoneyRails.configure do |config|
   #   sign_before_symbol: nil
   # }
 
-  config.locale_backend = :i18n
+  # If you would like to use I18n localization (formatting depends on the
+  # locale):
+  # config.locale_backend = :i18n
+  #
+  # Example (using default localization from rails-i18n):
+  #
+  # I18n.locale = :en
+  # Money.new(10_000_00, 'USD').format # => $10,000.00
+  # I18n.locale = :es
+  # Money.new(10_000_00, 'USD').format # => $10.000,00
+  #
+  # For the legacy behaviour of "per currency" localization (formatting depends
+  # only on currency):
+  # config.locale_backend = :currency
+  #
+  # Example:
+  # Money.new(10_000_00, 'USD').format # => $10,000.00
+  # Money.new(10_000_00, 'EUR').format # => €10.000,00
+  #
+  # In case you don't need localization and would like to use default values
+  # (can be redefined using config.default_format):
+  # config.locale_backend = nil
 
   # Set default raise_error_on_money_parsing option
   # It will be raise error if assigned different currency

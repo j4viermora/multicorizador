@@ -1,0 +1,13 @@
+<h1 class="text-3xl font-bold mb-6">Editar Plan</h1>
+
+<%= simple_form_for [:admin, @plan], html: { class: "bg-base-100 p-6 rounded-box shadow max-w-lg" } do |f| %>
+  <%= f.association :provider, include_blank: false %>
+  <%= f.input :name %>
+  <%= f.input :description %>
+  <%= f.input :status, collection: %w[active inactive], include_blank: false %>
+
+  <div class="flex gap-2">
+    <%= f.button :submit, "Actualizar", class: "btn btn-primary" %>
+    <%= link_to "Cancelar", admin_insurance_plans_path, class: "btn btn-ghost" %>
+  </div>
+<% end %>

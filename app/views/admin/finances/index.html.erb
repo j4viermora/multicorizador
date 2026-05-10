@@ -1,0 +1,52 @@
+<h1 class="text-3xl font-bold mb-6">Finanzas Globales</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+  <div class="stat bg-base-100 shadow rounded-box">
+    <div class="stat-title">Pólizas Emitidas</div>
+    <div class="stat-value text-primary"><%= @total_policies %></div>
+  </div>
+  <div class="stat bg-base-100 shadow rounded-box">
+    <div class="stat-title">Comisión de Aseguradoras</div>
+    <div class="stat-value text-info"><%= Money.new(@total_provider_commission).format %></div>
+  </div>
+  <div class="stat bg-base-100 shadow rounded-box">
+    <div class="stat-title">Nuestra Comisión</div>
+    <div class="stat-value text-success"><%= Money.new(@total_platform_commission).format %></div>
+  </div>
+  <div class="stat bg-base-100 shadow rounded-box">
+    <div class="stat-title">Por Pagar a Productores</div>
+    <div class="stat-value text-warning"><%= Money.new(@total_producer_commission_pending).format %></div>
+  </div>
+</div>
+
+<h2 class="text-xl font-semibold mb-4">Pólizas Recientes</h2>
+<div class="overflow-x-auto bg-base-100 shadow rounded-box">
+  <table class="table table-zebra">
+    <thead>
+      <tr>
+        <th>Número</th>
+        <th>Proveedor</th>
+        <th>Prima</th>
+        <th>Comisión Productor</th>
+        <th>Estado</th>
+        <th>Emitida</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @recent_policies.each do |policy| %>
+        <tr>
+          <td><%= policy.policy_number %></td>
+          <td><%= policy.quote_result.provider.name %></td>
+          <td><%= policy.premium.format %></td>
+          <td><%= policy.producer_commission.format %></td>
+          <td>
+            <span class="badge badge-<%= policy.pending_commission? ? 'warning' : 'success' %>">
+              <%= policy.producer_commission_status.humanize %>
+            </span>
+          </td>
+          <td><%= l policy.issued_at, format: :short if policy.issued_at %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

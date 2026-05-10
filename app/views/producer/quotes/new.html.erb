@@ -1,0 +1,32 @@
+<h1 class="text-3xl font-bold mb-6">Nueva Cotización</h1>
+
+<%= simple_form_for [:producer, @quote], html: { class: "bg-base-100 p-6 rounded-box shadow max-w-2xl" } do |f| %>
+  <h3 class="text-lg font-semibold mb-4">Datos del Viaje</h3>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+    <%= f.input :origin, label: "Origen" %>
+    <%= f.input :destination, label: "Destino" %>
+    <%= f.input :departure_date, label: "Fecha de salida", as: :date %>
+    <%= f.input :return_date, label: "Fecha de regreso", as: :date %>
+    <%= f.input :travelers_count, label: "Viajeros", input_html: { min: 1 } %>
+    <%= f.input :trip_type, label: "Tipo de viaje", collection: [["Único", "single"], ["Multi-viaje", "multi_trip"], ["Anual", "annual"]], include_blank: false %>
+  </div>
+
+  <h3 class="text-lg font-semibold mb-4">Viajero Principal</h3>
+  <%= f.association :traveler, collection: current_user.travelers, label: "Seleccionar existente", include_blank: "Crear nuevo" %>
+
+  <%= f.simple_fields_for :traveler do |tf| %>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <%= tf.input :first_name, label: "Nombre" %>
+      <%= tf.input :last_name, label: "Apellido" %>
+      <%= tf.input :email, label: "Email" %>
+      <%= tf.input :phone, label: "Teléfono" %>
+      <%= tf.input :document, label: "Documento" %>
+      <%= tf.input :birth_date, label: "Fecha de nacimiento", as: :date %>
+    </div>
+  <% end %>
+
+  <div class="flex gap-2 mt-6">
+    <%= f.button :submit, "Cotizar", class: "btn btn-primary" %>
+    <%= link_to "Cancelar", producer_quotes_path, class: "btn btn-ghost" %>
+  </div>
+<% end %>

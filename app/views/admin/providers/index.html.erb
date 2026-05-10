@@ -1,0 +1,32 @@
+<h1 class="text-3xl font-bold mb-6">Proveedores</h1>
+
+<%= link_to "Nuevo Proveedor", new_admin_provider_path, class: "btn btn-primary mb-4" %>
+
+<div class="overflow-x-auto bg-base-100 shadow rounded-box">
+  <table class="table table-zebra">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Slug</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @providers.each do |provider| %>
+        <tr>
+          <td><%= provider.name %></td>
+          <td><code><%= provider.slug %></code></td>
+          <td>
+            <span class="badge badge-<%= provider.active? ? 'success' : 'error' %>">
+              <%= provider.status %>
+            </span>
+          </td>
+          <td>
+            <%= link_to "Editar", edit_admin_provider_path(provider), class: "btn btn-sm btn-outline" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

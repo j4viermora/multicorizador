@@ -1,0 +1,33 @@
+<div class="card bg-base-100 shadow">
+  <div class="card-body">
+    <h2 class="card-title text-2xl">Completa tu cotización</h2>
+    <p class="text-gray-500 mb-4">Ingresa los datos de tu viaje para recibir las mejores opciones.</p>
+
+    <%= simple_form_for @quote, url: public_quote_path(@link.token), method: :patch do |f| %>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <%= f.input :origin, label: "Origen" %>
+        <%= f.input :destination, label: "Destino" %>
+        <%= f.input :departure_date, label: "Fecha de salida", as: :date %>
+        <%= f.input :return_date, label: "Fecha de regreso", as: :date %>
+        <%= f.input :travelers_count, label: "Viajeros", input_html: { min: 1 } %>
+        <%= f.input :trip_type, label: "Tipo de viaje", collection: [["Único", "single"], ["Multi-viaje", "multi_trip"], ["Anual", "annual"]], include_blank: false %>
+      </div>
+
+      <h3 class="text-lg font-semibold mb-2">Datos del viajero principal</h3>
+      <%= f.simple_fields_for :traveler, @quote.traveler || Traveler.new do |tf| %>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <%= tf.input :first_name, label: "Nombre" %>
+          <%= tf.input :last_name, label: "Apellido" %>
+          <%= tf.input :email, label: "Email" %>
+          <%= tf.input :phone, label: "Teléfono" %>
+          <%= tf.input :document, label: "Documento" %>
+          <%= tf.input :birth_date, label: "Fecha de nacimiento", as: :date %>
+        </div>
+      <% end %>
+
+      <div class="card-actions justify-end mt-4">
+        <%= f.button :submit, "Cotizar ahora", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

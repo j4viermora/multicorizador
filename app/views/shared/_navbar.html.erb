@@ -1,0 +1,37 @@
+<div class="navbar bg-base-100 shadow-lg mb-6">
+  <div class="navbar-start">
+    <%= link_to "Asisto", root_path, class: "btn btn-ghost text-xl" %>
+  </div>
+
+  <div class="navbar-center hidden lg:flex">
+    <ul class="menu menu-horizontal px-1">
+      <% if current_user.super_admin? %>
+        <li><%= link_to "Dashboard", admin_dashboard_path %></li>
+        <li><%= link_to "Proveedores", admin_providers_path %></li>
+        <li><%= link_to "Productores", admin_users_path %></li>
+        <li><%= link_to "Finanzas", admin_finances_path %></li>
+      <% elsif current_user.producer? && current_user.active? %>
+        <li><%= link_to "Dashboard", producer_dashboard_path %></li>
+        <li><%= link_to "Cotizaciones", producer_quotes_path %></li>
+        <li><%= link_to "Clientes", producer_travelers_path %></li>
+        <li><%= link_to "Pólizas", producer_policies_path %></li>
+        <li><%= link_to "Comisiones", producer_commissions_path %></li>
+      <% end %>
+    </ul>
+  </div>
+
+  <div class="navbar-end">
+    <div class="dropdown dropdown-end">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+        <div class="w-10 rounded-full bg-primary text-primary-content flex items-center justify-center">
+          <span class="text-lg font-bold"><%= current_user.first_name&.first || current_user.email.first %></span>
+        </div>
+      </div>
+      <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+        <li class="menu-title"><%= current_user.full_name %></li>
+        <li><%= link_to "Editar perfil", edit_user_registration_path %></li>
+        <li><%= button_to "Cerrar sesión", destroy_user_session_path, method: :delete, class: "w-full text-left" %></li>
+      </ul>
+    </div>
+  </div>
+</div>

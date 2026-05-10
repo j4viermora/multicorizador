@@ -1,0 +1,26 @@
+<h1 class="text-3xl font-bold mb-2">Póliza <%= @policy.policy_number %></h1>
+<p class="text-gray-500 mb-6">Emitida el <%= l @policy.issued_at, format: :long if @policy.issued_at %></p>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <div class="card bg-base-100 shadow">
+    <div class="card-body">
+      <h2 class="card-title">Detalles</h2>
+      <p><strong>Proveedor:</strong> <%= @policy.quote_result.provider.name %></p>
+      <p><strong>Vigencia:</strong> <%= l @policy.starts_at %> - <%= l @policy.ends_at %></p>
+      <p><strong>Prima:</strong> <%= @policy.premium.format %></p>
+      <p><strong>Total:</strong> <%= @policy.total.format %></p>
+    </div>
+  </div>
+
+  <div class="card bg-base-100 shadow">
+    <div class="card-body">
+      <h2 class="card-title">Comisiones</h2>
+      <p><strong>Tu comisión:</strong> <span class="text-success font-bold"><%= @policy.producer_commission.format %></span></p>
+      <p><strong>Estado:</strong> <span class="badge badge-<%= @policy.pending_commission? ? 'warning' : 'success' %>"><%= @policy.producer_commission_status.humanize %></span></p>
+    </div>
+  </div>
+</div>
+
+<div class="mt-8">
+  <%= link_to "Volver", producer_policies_path, class: "btn btn-ghost" %>
+</div>

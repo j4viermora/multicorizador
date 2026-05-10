@@ -1,0 +1,21 @@
+<h1 class="text-3xl font-bold mb-6">Panel de Administración</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+  <div class="stat bg-base-100 shadow rounded-box">
+    <div class="stat-title">Productores Pendientes</div>
+    <div class="stat-value text-warning"><%= @pending_producers_count %></div>
+    <div class="stat-desc"><%= link_to "Ver productores", admin_users_path, class: "link" %></div>
+  </div>
+
+  <div class="stat bg-base-100 shadow rounded-box">
+    <div class="stat-title">Proveedores</div>
+    <div class="stat-value text-primary"><%= @total_providers %></div>
+    <div class="stat-desc"><%= link_to "Gestionar proveedores", admin_providers_path, class: "link" %></div>
+  </div>
+
+  <div class="stat bg-base-100 shadow rounded-box">
+    <div class="stat-title">Pólizas Emitidas</div>
+    <div class="stat-value text-success"><%= @total_policies %></div>
+    <div class="stat-desc">Total acumulado</div>
+  </div>
+</div>

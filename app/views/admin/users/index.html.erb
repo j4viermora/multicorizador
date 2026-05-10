@@ -1,0 +1,30 @@
+<h1 class="text-3xl font-bold mb-6">Productores</h1>
+
+<div class="overflow-x-auto bg-base-100 shadow rounded-box">
+  <table class="table table-zebra">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Email</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @users.each do |user| %>
+        <tr>
+          <td><%= user.full_name %></td>
+          <td><%= user.email %></td>
+          <td>
+            <span class="badge badge-<%= user.pending? ? 'warning' : user.active? ? 'success' : 'error' %>">
+              <%= user.status.humanize %>
+            </span>
+          </td>
+          <td>
+            <%= link_to "Editar", edit_admin_user_path(user), class: "btn btn-sm btn-outline" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

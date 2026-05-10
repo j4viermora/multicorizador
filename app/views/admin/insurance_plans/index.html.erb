@@ -1,0 +1,30 @@
+<h1 class="text-3xl font-bold mb-6">Planes de Seguro</h1>
+
+<%= link_to "Nuevo Plan", new_admin_insurance_plan_path, class: "btn btn-primary mb-4" %>
+
+<div class="overflow-x-auto bg-base-100 shadow rounded-box">
+  <table class="table table-zebra">
+    <thead>
+      <tr>
+        <th>Proveedor</th>
+        <th>Nombre</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @plans.each do |plan| %>
+        <tr>
+          <td><%= plan.provider.name %></td>
+          <td><%= plan.name %></td>
+          <td>
+            <span class="badge badge-<%= plan.active? ? 'success' : 'error' %>"><%= plan.status %></span>
+          </td>
+          <td>
+            <%= link_to "Editar", edit_admin_insurance_plan_path(plan), class: "btn btn-sm btn-outline" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

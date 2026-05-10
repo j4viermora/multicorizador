@@ -1,20 +1,36 @@
 Rails.application.routes.draw do
-  devise_for :users
+  devise_for :users, controllers: { registrations: 'users/registrations' }
 
-  authenticate :user, ->(user) { user.is_superuser? } do
+  authenticate :user, ->(user) { user.super_admin? } do
     mount MissionControl::Jobs::Engine, at: "/jobs"
   end
 
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  namespace :admin do
+    get "dashboard", to: "dashboard#index"
+    resources :providers
+    resources :insurance_plans
+    resources :commission_contracts
+    resources :users, only: [:index, :show, :edit, :update]
+    resources :finances, only: [:index]
+    resources :platform_invoices
+  end
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
+  namespace :producer do
+    get "dashboard", to: "dashboard#index"
+    resources :quotes
+    resources :travelers
+    resources :policies, only: [:index, :show]
+    resources :commissions, only: [:index]
+    resources :invoices, only: [:index, :show, :create]
+  end
+
+  namespace :public do
+    resources :quotes, only: [:show, :update], param: :token
+  end
+
+  resources :webhooks, only: [:create], param: :provider_slug
+
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
-
-  # Defines the root path route ("/")
-  # root "posts#index"
+  root "home#index"
 end

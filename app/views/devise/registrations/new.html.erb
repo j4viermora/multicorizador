@@ -1,3 +1,5 @@
+<% content_for :full_screen, true %>
+
 <div class="flex h-screen overflow-hidden">
 
   <%# ── Left Hero Panel (3/4) ── %>
@@ -43,6 +45,18 @@
       <%= render "devise/shared/error_messages", resource: resource %>
 
       <div class="flex flex-col gap-5">
+
+        <div class="grid grid-cols-2 gap-3">
+          <label class="form-control w-full">
+            <%= f.label :first_name, "Nombre", class: "label label-text text-xs uppercase tracking-widest text-base-content/40" %>
+            <%= f.text_field :first_name, placeholder: "Juan", class: "input input-bordered w-full" %>
+          </label>
+
+          <label class="form-control w-full">
+            <%= f.label :last_name, "Apellido", class: "label label-text text-xs uppercase tracking-widest text-base-content/40" %>
+            <%= f.text_field :last_name, placeholder: "Pérez", class: "input input-bordered w-full" %>
+          </label>
+        </div>
 
         <label class="form-control w-full">
           <%= f.label :email, "Correo electrónico", class: "label label-text text-xs uppercase tracking-widest text-base-content/40" %>

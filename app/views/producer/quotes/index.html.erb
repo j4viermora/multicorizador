@@ -1,0 +1,42 @@
+<h1 class="text-3xl font-bold mb-6">Cotizaciones</h1>
+
+<%= link_to "Nueva Cotización", new_producer_quote_path, class: "btn btn-primary mb-4" %>
+
+<div class="overflow-x-auto bg-base-100 shadow rounded-box">
+  <table class="table table-zebra">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Destino</th>
+        <th>Salida</th>
+        <th>Estado</th>
+        <th>Creado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @quotes.each do |quote| %>
+        <tr>
+          <td>#<%= quote.id %></td>
+          <td><%= quote.destination %></td>
+          <td><%= l quote.departure_date %></td>
+          <td>
+            <span class="badge badge-<%= quote_status_color(quote.status) %>">
+              <%= quote.status.humanize %>
+            </span>
+          </td>
+          <td><%= l quote.created_at, format: :short %></td>
+          <td>
+            <%= link_to "Ver", producer_quote_path(quote), class: "btn btn-sm btn-outline" %>
+            <% if quote.editable? %>
+              <%= link_to "Editar", edit_producer_quote_path(quote), class: "btn btn-sm btn-ghost" %>
+            <% end %>
+            <% if quote.deletable? %>
+              <%= button_to "Eliminar", producer_quote_path(quote), method: :delete, class: "btn btn-sm btn-error btn-outline", data: { turbo_confirm: "¿Seguro?" } %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
