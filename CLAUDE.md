@@ -49,6 +49,13 @@ When working on this project, use these skills for specialized assistance:
 
 **Key tables:** `companies`, `users`, `providers`, `insurance_plans`, `quotes`, `quote_results`, `policies`, `travelers`, `links`.
 
+**Stay Postgres-portable — avoid SQLite-specific things:**
+- No raw SQLite syntax in migrations/queries (no `PRAGMA`, no SQLite-only functions in `execute`/`find_by_sql`).
+- Use `add_foreign_key` for every association, as already done — don't rely on implicit FKs.
+- Prefer standard Rails migration DSL (`t.column`, `add_index`, etc.) over adapter-specific SQL so migrations replay unchanged on Postgres.
+- `t.json` columns are fine as-is; when the app actually moves to Postgres, revisit them for `jsonb` (better indexing/query support), but don't over-engineer that now.
+- Solid Queue/Cache/Cable currently each use their own SQLite file (see `config/database.yml`) — keep that separation in mind, since moving to Postgres means deciding whether they share the primary DB or get their own Postgres databases.
+
 ### Multi-tenancy
 
 Every request is scoped to a `Company` via `acts_as_tenant`. `ApplicationController` sets the tenant from `current_user.company` on every authenticated request and also sets `Money.default_currency` from the company's currency. Super admins operate without tenant (`ActsAsTenant.current_tenant = nil`). Models that are tenant-scoped must call `acts_as_tenant :company`.
