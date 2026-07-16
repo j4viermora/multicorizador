@@ -30,6 +30,28 @@ bin/rails db:create db:migrate db:seed
 bin/rails admin:create EMAIL=admin@example.com PASSWORD=secret
 ```
 
+## Local Setup Gotchas
+
+### `bin/dev` fails with `Could not find table 'solid_queue_processes'`
+
+Solid Queue runs on a **separate database** (`storage/development_queue.sqlite3`, see [config/database.yml](config/database.yml)), which uses `db/queue_schema.rb` — **not** the regular migration pipeline. If that file exists but is empty (e.g. after cloning, or the queue DB was created without the schema), `db:migrate` reports success but the worker still crashes because the tables are missing.
+
+Fix when it happens:
+
+```bash
+bin/rails solid_queue:install      # (re)generates db/queue_schema.rb if missing
+rm -f storage/development_queue.sqlite3   # nuke the empty queue DB
+bin/rails db:prepare               # recreates it from db/queue_schema.rb
+```
+
+### `css: bin/rails tailwindcss:watch` exits immediately and tears down `bin/dev`
+
+Without a TTY (terminals spawned by some editors, Docker without `tty: true`, CI), the Tailwind CLI exits as soon as `stdin` closes. The `css` process compiles once and exits, which makes Foreman/overmind SIGTERM **all** other processes (web + worker), so `bin/dev` looks like it crashes right after boot.
+
+`Procfile.dev` is already pinned to `bin/rails tailwindcss:watch[always]` to keep the watcher alive. **Do not revert it to the bare `tailwindcss:watch`** — it will break non-TTY environments again.
+
+> TODO (when we move to a real DB / Postgres): The Solid Queue schema lives in `db/queue_schema.rb` because of the multi-DB SQLite setup. On Postgres we must decide whether the queue shares the primary DB or gets its own, and replace this install/prepare dance with proper migrations under `db/queue_migrate` (already wired as the `migrations_paths`). Revisit the `solid_queue:install` + `db/prepare` flow above at that point.
+
 ## Skills
 
 When working on this project, use these skills for specialized assistance:
