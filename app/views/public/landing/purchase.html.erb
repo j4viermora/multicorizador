@@ -283,6 +283,9 @@
   <form action="<%= public_landing_checkout_path(@company.slug) %>" method="post" data-turbo="false">
     <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
 
+    <%# Cotización persistida %>
+    <input type="hidden" name="quote_token" value="<%= @quote_token %>">
+
     <%# Pass plan + search data through as hidden fields %>
     <input type="hidden" name="plan[provider_name]" value="<%= @plan[:provider_name] %>">
     <input type="hidden" name="plan[provider_slug]" value="<%= @plan[:provider_slug] %>">
@@ -291,6 +294,7 @@
     <input type="hidden" name="plan[currency]" value="<%= @plan[:currency] %>">
     <input type="hidden" name="plan[price_per_person_cents]" value="<%= @plan[:price_per_person_cents] %>">
     <input type="hidden" name="plan[coverage_json]" value="<%= (@plan[:coverage] || []).to_json %>">
+    <input type="hidden" name="plan[quote_result_id]" value="<%= @plan[:quote_result_id] %>">
     <input type="hidden" name="search[origin]" value="<%= @search[:origin] %>">
     <input type="hidden" name="search[destination]" value="<%= @search[:destination] %>">
     <input type="hidden" name="search[departure_date]" value="<%= @search[:departure_date] %>">
@@ -502,6 +506,6 @@
 
   <%# Footer %>
   <div class="text-center mt-6 mb-8 text-xs purchase-fade-in pd5" style="color: var(--wz-ink-muted);">
-    <%= @company.name %> &mdash; Powered by <strong>Asisto</strong>
+    <%= @company.name %> &mdash; Powered by <strong>Ruka</strong>
   </div>
 </div>

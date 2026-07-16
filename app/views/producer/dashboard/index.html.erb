@@ -14,8 +14,8 @@
   </div>
 
   <div class="stat bg-base-100 shadow rounded-box">
-    <div class="stat-title">Comisión Estimada</div>
-    <div class="stat-value text-success">$0.00</div>
-    <div class="stat-desc"><%= link_to "Ver comisiones", producer_commissions_path, class: "link" %></div>
+    <div class="stat-title">Pólizas</div>
+    <div class="stat-value text-success"><%= current_user.quotes.purchased.count %></div>
+    <div class="stat-desc"><%= link_to "Ver pólizas", producer_policies_path, class: "link" %></div>
   </div>
 </div>

@@ -21,18 +21,10 @@
             ┌──────┴──────┐     ┌──────┴──────┐
             │    Link     │     │    Policy   │
             │  (tenant)   │     │  (tenant)   │
-            └─────────────┘     └──────┬──────┘
-                                       │
-                              ┌────────┴────────┐
-                              │ ProducerInvoice │
-                              │   (tenant)      │
-                              └─────────────────┘
-
-┌─────────────────────────┐     ┌─────────────────────────┐
-│   CommissionContract    │     │   PlatformInvoice       │
-│       (global)          │     │      (global)           │
-└─────────────────────────┘     └─────────────────────────┘
+            └─────────────┘     └─────────────┘
 ```
+
+Nota: el modelo de comisiones (`CommissionContract`, `ProducerInvoice`, `PlatformInvoice`) que aparecía acá se eliminó del código — no hay tracking de comisión ni facturación por ahora.
 
 ## Descripción de Modelos
 
@@ -52,20 +44,13 @@
 - `name`, `slug`: string, único
 - `status`: enum `[active, inactive]`
 - `config`: jsonb (endpoint, token, timeout, etc.)
-- Relación: `has_many :insurance_plans`, `has_many :commission_contracts`
+- Relación: `has_many :insurance_plans`
 
 ### InsurancePlan
 - `provider_id`: referencia
 - `name`, `description`
 - `coverage_details`: jsonb
 - `status`: enum `[active, inactive]`
-
-### CommissionContract
-- `provider_id`, `producer_id` (nullable para default)
-- `provider_commission_rate`: decimal (ej: 0.4000)
-- `producer_share_rate`: decimal (ej: 0.5000)
-- `valid_from`, `valid_until`
-- Resolución: específico (provider + producer) → default (provider + null)
 
 ### Traveler
 - `company_id`, `producer_id`
@@ -84,7 +69,7 @@
 - `quote_id`, `provider_id`, `insurance_plan_id`
 - `external_quote_id`, `raw_response`: jsonb
 - `status`: `[pending, success, error]`
-- Monetizados: `price`, `provider_commission`, `platform_commission`, `producer_commission`
+- Monetizados: `price`
 
 ### Link
 - `company_id`, `quote_id`
@@ -95,21 +80,8 @@
 ### Policy
 - `quote_result_id`, `company_id`
 - `policy_number`, `status`, `issued_at`, `starts_at`, `ends_at`
-- Monetizados: `premium`, `total`, `provider_commission`, `platform_commission`, `producer_commission`
-- `producer_commission_status`: `[pending, invoiced, paid]`
+- Monetizados: `premium`, `total`
 - `webhook_payload`: jsonb
-
-### ProducerInvoice
-- `company_id`, `producer_id`
-- `period_start`, `period_end`
-- `total_commission`: monetizado
-- `status`: `[draft, pending, paid]`
-- Relación: `has_many :policies, through: :producer_invoice_policies`
-
-### PlatformInvoice
-- `provider_id`, `period_start`, `period_end`
-- `total_commission`: monetizado
-- `status`: `[draft, pending, paid]`
 
 ## Notas sobre JSONB en SQLite
 

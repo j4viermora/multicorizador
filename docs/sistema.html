@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Asisto — Documentación del Sistema</title>
+<title>Ruka — Documentación del Sistema</title>
 <style>
   :root {
     --bg: #0d1117;
@@ -357,33 +357,6 @@
     white-space: nowrap;
   }
 
-  /* COMMISSION DIAGRAM */
-  .commission-flow {
-    display: flex;
-    align-items: stretch;
-    gap: 2px;
-    height: 80px;
-    border-radius: 8px;
-    overflow: hidden;
-    margin: 16px 0;
-    font-size: 12px;
-  }
-  .cf-block {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 4px;
-    padding: 8px;
-    font-weight: 600;
-  }
-  .cf-block .cf-label { font-size: 10px; opacity: .7; }
-  .cf-block .cf-value { font-size: 13px; }
-  .cf-sale { background: var(--blue-dim); border: 1px solid var(--blue); flex: 5; color: var(--blue); border-radius: 8px 0 0 8px; }
-  .cf-provider { background: var(--green-dim); border: 1px solid var(--green); flex: 3; color: var(--green); }
-  .cf-producer { background: var(--purple-dim); border: 1px solid var(--purple); flex: 2; color: var(--purple); }
-  .cf-platform { background: var(--orange-dim); border: 1px solid var(--orange); flex: 1; color: var(--orange); border-radius: 0 8px 8px 0; }
-
   /* ROUTE TABLE */
   .route-table {
     width: 100%;
@@ -658,11 +631,10 @@
 <body>
 
 <nav>
-  <a href="#" class="logo">✦ <span>Asisto</span></a>
+  <a href="#" class="logo">✦ <span>Ruka</span></a>
   <a href="#overview">Overview</a>
   <a href="#db">Base de datos</a>
   <a href="#lifecycle">Ciclo de vida</a>
-  <a href="#commissions">Comisiones</a>
   <a href="#routes">Rutas</a>
   <a href="#jobs">Jobs</a>
   <a href="#providers">Proveedores</a>
@@ -680,7 +652,6 @@
       <li><a href="#db">Base de datos</a></li>
       <li><a href="#models">Modelos</a></li>
       <li><a href="#lifecycle">Ciclo del Quote</a></li>
-      <li><a href="#commissions">Comisiones</a></li>
       <li><a href="#routes">Rutas</a></li>
       <li><a href="#jobs">Jobs</a></li>
       <li><a href="#providers">Proveedores</a></li>
@@ -704,7 +675,7 @@
         <div class="pill">Solid Queue</div>
         <div class="pill">acts_as_tenant</div>
         <div class="pill">Kamal</div>
-        <div class="pill">Módulo: Asisto</div>
+        <div class="pill">Módulo: Ruka</div>
       </div>
     </div>
 
@@ -739,13 +710,6 @@
           <div class="flow-arrow">→</div>
           <div class="flow-node fn-db">Policy</div>
         </div>
-        <div class="flow-row">
-          <div class="flow-node fn-db">Policy</div>
-          <div class="flow-arrow">→</div>
-          <div class="flow-node fn-actor">Comisión al Productor</div>
-          <div class="flow-arrow">→</div>
-          <div class="flow-node fn-db">ProducerInvoice</div>
-        </div>
       </div>
 
       <div class="grid-3">
@@ -763,7 +727,9 @@
             <li style="padding:4px 0;border-bottom:1px solid rgba(48,54,61,.4)">Cada <strong style="color:var(--text)">Company</strong> es un tenant aislado</li>
             <li style="padding:4px 0;border-bottom:1px solid rgba(48,54,61,.4)">Los productores pertenecen a una company</li>
             <li style="padding:4px 0;border-bottom:1px solid rgba(48,54,61,.4)">Cada registro scoped lleva <code>company_id</code></li>
-            <li style="padding:4px 0">La landing pública se accede vía <code>/cotizar/:slug</code></li>
+            <li style="padding:4px 0;border-bottom:1px solid rgba(48,54,61,.4)">La landing pública se accede vía <code>/cotizar/:slug</code></li>
+            <li style="padding:4px 0;border-bottom:1px solid rgba(48,54,61,.4)"><strong style="color:var(--text)">Venta directa de Ruka:</strong> existe una Company reservada con <code>slug: "ruka"</code> (<code>Company::RUKA_DIRECT_SLUG</code>) con productores in-house. <code>HomeController#index</code> redirige a los visitantes anónimos de <code>/</code> hacia <code>/cotizar/ruka</code>, reutilizando el mismo modelo tenant/producer que cualquier otra agencia</li>
+            <li style="padding:4px 0">Toda búsqueda en la landing pública crea un <code>Quote</code> + sus <code>QuoteResult</code> — ya no es efímera, incluso las búsquedas anónimas quedan registradas para atribución y comisión</li>
           </ul>
         </div>
         <div class="card">
@@ -801,7 +767,6 @@
             <li style="padding:3px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--green)">✓</span> Policy</li>
             <li style="padding:3px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--green)">✓</span> Traveler</li>
             <li style="padding:3px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--green)">✓</span> Link</li>
-            <li style="padding:3px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--green)">✓</span> ProducerInvoice</li>
           </ul>
         </div>
         <div class="card">
@@ -809,8 +774,6 @@
           <ul style="list-style:none;font-size:13px;color:var(--muted)">
             <li style="padding:3px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--muted)">—</span> Provider</li>
             <li style="padding:3px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--muted)">—</span> InsurancePlan</li>
-            <li style="padding:3px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--muted)">—</span> CommissionContract</li>
-            <li style="padding:3px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--muted)">—</span> PlatformInvoice</li>
             <li style="padding:3px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--muted)">—</span> Company</li>
             <li style="padding:3px 0;display:flex;align-items:center;gap:8px"><span style="color:var(--muted)">—</span> User (solo super_admin no tiene company)</li>
           </ul>
@@ -964,9 +927,6 @@
           <div class="db-col fk"><span class="col-name">insurance_plan_id</span><span class="col-type">int (opcional)</span><span class="col-badge fk">FK</span></div>
           <div class="db-col"><span class="col-name">status</span><span class="col-type">string (pending/success/error)</span></div>
           <div class="db-col"><span class="col-name">price_cents</span><span class="col-type">integer</span></div>
-          <div class="db-col"><span class="col-name">provider_commission_cents</span><span class="col-type">integer</span></div>
-          <div class="db-col"><span class="col-name">producer_commission_cents</span><span class="col-type">integer</span></div>
-          <div class="db-col"><span class="col-name">platform_commission_cents</span><span class="col-type">integer</span></div>
           <div class="db-col"><span class="col-name">raw_response</span><span class="col-type">json</span></div>
         </div>
 
@@ -979,8 +939,6 @@
           <div class="db-col"><span class="col-name">policy_number</span><span class="col-type">string</span></div>
           <div class="db-col"><span class="col-name">status</span><span class="col-type">string (active/cancelled/expired)</span></div>
           <div class="db-col"><span class="col-name">premium_cents</span><span class="col-type">integer</span></div>
-          <div class="db-col"><span class="col-name">producer_commission_cents</span><span class="col-type">integer</span></div>
-          <div class="db-col"><span class="col-name">producer_commission_status</span><span class="col-type">string (pending/invoiced/paid)</span></div>
           <div class="db-col"><span class="col-name">starts_at, ends_at</span><span class="col-type">date</span></div>
           <div class="db-col"><span class="col-name">webhook_payload</span><span class="col-type">json</span></div>
         </div>
@@ -994,17 +952,6 @@
           <div class="db-col"><span class="col-name">first_name, last_name</span><span class="col-type">string</span></div>
           <div class="db-col"><span class="col-name">email, phone</span><span class="col-type">string</span></div>
           <div class="db-col"><span class="col-name">document, birth_date</span><span class="col-type">string / date</span></div>
-        </div>
-
-        <!-- commission_contracts -->
-        <div class="db-table global">
-          <div class="db-table-header">commission_contracts <span class="tag">GLOBAL</span></div>
-          <div class="db-col pk"><span class="col-name">id</span><span class="col-type">integer</span><span class="col-badge pk">PK</span></div>
-          <div class="db-col fk"><span class="col-name">provider_id</span><span class="col-type">integer</span><span class="col-badge fk">FK</span></div>
-          <div class="db-col fk"><span class="col-name">producer_id</span><span class="col-type">integer (nullable = default)</span><span class="col-badge fk">FK</span></div>
-          <div class="db-col"><span class="col-name">provider_commission_rate</span><span class="col-type">decimal (0–1)</span></div>
-          <div class="db-col"><span class="col-name">producer_share_rate</span><span class="col-type">decimal (0–1)</span></div>
-          <div class="db-col"><span class="col-name">valid_from, valid_until</span><span class="col-type">date</span></div>
         </div>
 
         <!-- insurance_plans -->
@@ -1029,35 +976,6 @@
           <div class="db-col"><span class="col-name">status</span><span class="col-type">string (active/expired/revoked)</span></div>
           <div class="db-col"><span class="col-name">expires_at</span><span class="col-type">datetime</span></div>
           <div class="db-col"><span class="col-name">access_count</span><span class="col-type">integer</span></div>
-        </div>
-
-        <!-- producer_invoices -->
-        <div class="db-table tenant">
-          <div class="db-table-header">producer_invoices <span class="tag">TENANT</span></div>
-          <div class="db-col pk"><span class="col-name">id</span><span class="col-type">integer</span><span class="col-badge pk">PK</span></div>
-          <div class="db-col fk"><span class="col-name">company_id</span><span class="col-type">integer</span><span class="col-badge fk">FK</span></div>
-          <div class="db-col fk"><span class="col-name">producer_id</span><span class="col-type">integer → users</span><span class="col-badge fk">FK</span></div>
-          <div class="db-col"><span class="col-name">period_start, period_end</span><span class="col-type">date</span></div>
-          <div class="db-col"><span class="col-name">total_commission_cents</span><span class="col-type">integer</span></div>
-          <div class="db-col"><span class="col-name">status</span><span class="col-type">string (draft/pending/paid)</span></div>
-          <div class="db-col"><span class="col-name">paid_at</span><span class="col-type">datetime</span></div>
-        </div>
-
-        <!-- producer_invoice_policies -->
-        <div class="db-table junction">
-          <div class="db-table-header">producer_invoice_policies <span class="tag">JOIN</span></div>
-          <div class="db-col fk"><span class="col-name">producer_invoice_id</span><span class="col-type">integer</span><span class="col-badge fk">FK</span></div>
-          <div class="db-col fk"><span class="col-name">policy_id</span><span class="col-type">integer</span><span class="col-badge fk">FK</span></div>
-        </div>
-
-        <!-- platform_invoices -->
-        <div class="db-table global">
-          <div class="db-table-header">platform_invoices <span class="tag">GLOBAL</span></div>
-          <div class="db-col pk"><span class="col-name">id</span><span class="col-type">integer</span><span class="col-badge pk">PK</span></div>
-          <div class="db-col fk"><span class="col-name">provider_id</span><span class="col-type">integer</span><span class="col-badge fk">FK</span></div>
-          <div class="db-col"><span class="col-name">period_start, period_end</span><span class="col-type">date</span></div>
-          <div class="db-col"><span class="col-name">total_commission_cents</span><span class="col-type">integer</span></div>
-          <div class="db-col"><span class="col-name">status</span><span class="col-type">string (draft/pending/paid)</span></div>
         </div>
 
       </div><!-- /db-diagram -->
@@ -1087,8 +1005,6 @@
             <li><strong>belongs_to</strong> company <em>(optional)</em></li>
             <li><strong>has_many</strong> quotes <em>(as producer)</em></li>
             <li><strong>has_many</strong> travelers <em>(as producer)</em></li>
-            <li><strong>has_many</strong> producer_invoices <em>(as producer)</em></li>
-            <li><strong>has_many</strong> commission_contracts <em>(as producer)</em></li>
           </ul>
         </div>
         <div class="model-card">
@@ -1116,35 +1032,13 @@
           <ul>
             <li><strong>belongs_to</strong> company</li>
             <li><strong>belongs_to</strong> quote_result</li>
-            <li><strong>has_many</strong> producer_invoice_policies</li>
-            <li><strong>has_many</strong> producer_invoices <em>(through)</em></li>
           </ul>
         </div>
         <div class="model-card">
           <h3>Provider</h3>
           <ul>
             <li><strong>has_many</strong> insurance_plans <em>(dependent: destroy)</em></li>
-            <li><strong>has_many</strong> commission_contracts <em>(dependent: destroy)</em></li>
             <li><strong>has_many</strong> quote_results <em>(dependent: nullify)</em></li>
-            <li><strong>has_many</strong> platform_invoices</li>
-          </ul>
-        </div>
-        <div class="model-card">
-          <h3>CommissionContract</h3>
-          <ul>
-            <li><strong>belongs_to</strong> provider</li>
-            <li><strong>belongs_to</strong> producer <em>(User, optional)</em></li>
-            <li><em>producer_id NULL = contrato por defecto del provider</em></li>
-            <li>Resolución: primero busca específico por productor, luego fallback a default</li>
-          </ul>
-        </div>
-        <div class="model-card">
-          <h3>ProducerInvoice</h3>
-          <ul>
-            <li><strong>belongs_to</strong> company</li>
-            <li><strong>belongs_to</strong> producer <em>(User)</em></li>
-            <li><strong>has_many</strong> producer_invoice_policies</li>
-            <li><strong>has_many</strong> policies <em>(through)</em></li>
           </ul>
         </div>
       </div>
@@ -1244,57 +1138,6 @@
 
     <hr class="divider">
 
-    <!-- COMMISSIONS -->
-    <section id="commissions">
-      <h2>
-        <span class="icon" style="background:var(--green-dim)">💰</span>
-        Modelo de Comisiones
-      </h2>
-      <p class="subtitle">Sistema de tres capas: la aseguradora paga a la plataforma, que distribuye al productor.</p>
-
-      <div class="commission-flow">
-        <div class="cf-block cf-sale">
-          <div class="cf-label">PRECIO TOTAL</div>
-          <div class="cf-value">price_cents</div>
-        </div>
-        <div class="cf-block cf-provider">
-          <div class="cf-label">COMISIÓN PROVIDER</div>
-          <div class="cf-value">price × provider_commission_rate</div>
-        </div>
-        <div class="cf-block cf-producer">
-          <div class="cf-label">AL PRODUCTOR</div>
-          <div class="cf-value">provider_comm × producer_share_rate</div>
-        </div>
-        <div class="cf-block cf-platform">
-          <div class="cf-label">PLATAFORMA</div>
-          <div class="cf-value">provider − producer</div>
-        </div>
-      </div>
-
-      <div class="grid-2">
-        <div class="card">
-          <h3>CommissionContract</h3>
-          <ul style="list-style:none;font-size:13px;color:var(--muted)">
-            <li style="padding:4px 0;border-bottom:1px solid rgba(48,54,61,.4)"><strong style="color:var(--text)">provider_commission_rate</strong> — % que paga la aseguradora (ej: 0.15 = 15%)</li>
-            <li style="padding:4px 0;border-bottom:1px solid rgba(48,54,61,.4)"><strong style="color:var(--text)">producer_share_rate</strong> — % de esa comisión que va al productor (ej: 0.60 = 60%)</li>
-            <li style="padding:4px 0;border-bottom:1px solid rgba(48,54,61,.4)"><strong style="color:var(--text)">producer_id NULL</strong> — contrato por defecto del proveedor</li>
-            <li style="padding:4px 0">Resolución: primero busca contrato específico para el productor, luego el default.</li>
-          </ul>
-        </div>
-        <div class="card">
-          <h3>Ciclo de pagos</h3>
-          <ul style="list-style:none;font-size:13px;color:var(--muted)">
-            <li style="padding:4px 0;border-bottom:1px solid rgba(48,54,61,.4)">Policy se crea con <code>producer_commission_status: pending</code></li>
-            <li style="padding:4px 0;border-bottom:1px solid rgba(48,54,61,.4)">Productor crea <code>ProducerInvoice</code> con las policies del período</li>
-            <li style="padding:4px 0;border-bottom:1px solid rgba(48,54,61,.4)">Estado pasa a <code>invoiced</code> → luego <code>paid</code></li>
-            <li style="padding:4px 0">Admin gestiona <code>PlatformInvoice</code> por proveedor separado</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <hr class="divider">
-
     <!-- ROUTES -->
     <section id="routes">
       <h2>
@@ -1310,11 +1153,8 @@
             <div class="ns-route"><span class="method GET">GET</span><span class="r">/admin/dashboard</span></div>
             <div class="ns-route"><span class="method GET">GET</span><span class="r">/admin/providers</span></div>
             <div class="ns-route"><span class="method GET">GET</span><span class="r">/admin/insurance_plans</span></div>
-            <div class="ns-route"><span class="method GET">GET</span><span class="r">/admin/commission_contracts</span></div>
             <div class="ns-route"><span class="method GET">GET</span><span class="r">/admin/users</span></div>
             <div class="ns-route"><span class="method PATCH">PATCH</span><span class="r">/admin/users/:id/approve</span></div>
-            <div class="ns-route"><span class="method GET">GET</span><span class="r">/admin/finances</span></div>
-            <div class="ns-route"><span class="method GET">GET</span><span class="r">/admin/platform_invoices</span></div>
             <div style="padding-top:8px;font-size:11px;color:var(--muted)">Auth: <code>authenticate_super_admin!</code></div>
           </div>
         </div>
@@ -1327,9 +1167,6 @@
             <div class="ns-route"><span class="method POST">POST</span><span class="r">/producer/quotes</span></div>
             <div class="ns-route"><span class="method GET">GET</span><span class="r">/producer/travelers</span></div>
             <div class="ns-route"><span class="method GET">GET</span><span class="r">/producer/policies</span></div>
-            <div class="ns-route"><span class="method GET">GET</span><span class="r">/producer/commissions</span></div>
-            <div class="ns-route"><span class="method GET">GET</span><span class="r">/producer/invoices</span></div>
-            <div class="ns-route"><span class="method POST">POST</span><span class="r">/producer/invoices</span></div>
             <div style="padding-top:8px;font-size:11px;color:var(--muted)">Auth: <code>authenticate_active_producer!</code></div>
           </div>
         </div>
@@ -1343,8 +1180,8 @@
             <div class="ns-route"><span class="method POST">POST</span><span class="r">/cotizar/:slug</span></div>
             <div class="ns-route"><span class="method POST">POST</span><span class="r">/cotizar/:slug/comprar</span></div>
             <div class="ns-route"><span class="method POST">POST</span><span class="r">/cotizar/:slug/checkout</span></div>
-            <div class="ns-route"><span class="method GET">GET</span><span class="r">/cotizar/:slug/gracias</span></div>
             <div style="padding-top:8px;font-size:11px;color:var(--muted)">Sin autenticación. Layout propio.</div>
+            <div style="padding-top:8px;font-size:11px;color:var(--muted)"><code>quote_token</code> (public_token del Quote persistido) y <code>plan[quote_result_id]</code> viajan como campos ocultos a través de <code>comprar</code> → <code>checkout</code>. En <code>checkout</code> se crea el <code>Traveler</code> y el <code>Quote</code> pasa a <code>purchased</code> (compra mock, sin webhook real todavía).</div>
           </div>
         </div>
 
@@ -1383,7 +1220,7 @@
         </div>
         <div class="job-card">
           <h3>ProviderQuoteJob</h3>
-          <p>Llama al API de un proveedor específico. Resuelve el CommissionContract, calcula comisiones y crea un <code>QuoteResult</code>. Cuando todos completan, actualiza el quote a <code>quoted</code>.</p>
+          <p>Llama al API de un proveedor específico y crea un <code>QuoteResult</code> con el precio devuelto. Cuando todos completan, actualiza el quote a <code>quoted</code>.</p>
           <div class="job-meta">
             <div class="job-meta-item"><span class="job-meta-key">Queue</span><span class="job-meta-val">:default</span></div>
             <div class="job-meta-item"><span class="job-meta-key">Retry</span><span class="job-meta-val">3× / 5s backoff</span></div>
@@ -1393,7 +1230,7 @@
         </div>
         <div class="job-card">
           <h3>WebhookProcessorJob</h3>
-          <p>Procesa webhooks de proveedores. Parsea el payload, crea la <code>Policy</code> con todos los datos de comisiones y actualiza el quote a <code>purchased</code>.</p>
+          <p>Procesa webhooks de proveedores. Parsea el payload, crea la <code>Policy</code> y actualiza el quote a <code>purchased</code>.</p>
           <div class="job-meta">
             <div class="job-meta-item"><span class="job-meta-key">Queue</span><span class="job-meta-val">:default</span></div>
             <div class="job-meta-item"><span class="job-meta-key">Trigger</span><span class="job-meta-val">POST /webhooks/:slug</span></div>
@@ -1474,9 +1311,11 @@
           <div class="flow-arrow">→</div>
           <div class="flow-label">origen, destino, fechas, pasajeros</div>
           <div class="flow-arrow">→</div>
-          <div class="flow-node fn-db">Quote creado</div>
+          <div class="flow-node fn-db">Quote creado (status: quoting)</div>
           <div class="flow-arrow">→</div>
-          <div class="flow-node fn-job">QuoteJob</div>
+          <div class="flow-label">consulta síncrona a proveedores activos (sin job)</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node fn-db">QuoteResult ×N (status: quoted)</div>
         </div>
         <div class="flow-row">
           <div class="flow-node fn-event">Resultados</div>
@@ -1485,7 +1324,7 @@
           <div class="flow-arrow">→</div>
           <div class="flow-node fn-event">purchase → checkout</div>
           <div class="flow-arrow">→</div>
-          <div class="flow-label"><code>/gracias</code></div>
+          <div class="flow-label">Traveler creado, Quote → <code>purchased</code></div>
         </div>
       </div>
 

@@ -1,7 +1,7 @@
 # Seeds
 
 # Company para super admin
-admin_company = Company.find_or_create_by!(name: "Asisto Admin") do |c|
+admin_company = Company.find_or_create_by!(name: "Ruka Admin") do |c|
   c.currency = "ARS"
 end
 
@@ -10,8 +10,14 @@ demo_company = Company.find_or_create_by!(name: "Demo Corp") do |c|
   c.currency = "ARS"
 end
 
+# Company propia de Ruka, para venta directa (ruka.com/)
+ruka_company = Company.find_or_create_by!(slug: Company::RUKA_DIRECT_SLUG) do |c|
+  c.name = "Ruka"
+  c.currency = "ARS"
+end
+
 # Super Admin
-super_admin = User.find_or_create_by!(email: "admin@asisto.com") do |user|
+super_admin = User.find_or_create_by!(email: "admin@ruka.com") do |user|
   user.password = "password123"
   user.password_confirmation = "password123"
   user.role = :super_admin
@@ -23,7 +29,7 @@ end
 puts "Super admin creado: #{super_admin.email} / password123"
 
 # Productor de ejemplo
-producer = User.find_or_create_by!(email: "producer@asisto.com") do |user|
+producer = User.find_or_create_by!(email: "producer@ruka.com") do |user|
   user.password = "password123"
   user.password_confirmation = "password123"
   user.role = :producer
@@ -34,6 +40,18 @@ producer = User.find_or_create_by!(email: "producer@asisto.com") do |user|
 end
 puts "Productor creado: #{producer.email} / password123"
 
+# Vendedor in-house de Ruka (venta directa)
+ruka_producer = User.find_or_create_by!(email: "ventas@ruka.com") do |user|
+  user.password = "password123"
+  user.password_confirmation = "password123"
+  user.role = :producer
+  user.status = :active
+  user.first_name = "Ruka"
+  user.last_name = "Ventas"
+  user.company = ruka_company
+end
+puts "Productor directo de Ruka creado: #{ruka_producer.email} / password123"
+
 # Proveedor de ejemplo
 example_provider = Provider.find_or_create_by!(slug: "example_seguros") do |p|
   p.name = "Example Seguros"
@@ -42,13 +60,6 @@ example_provider = Provider.find_or_create_by!(slug: "example_seguros") do |p|
     checkout_url: "https://checkout.example.com",
     webhook_token: "demo_token_123"
   }
-end
-
-# Contrato default
-CommissionContract.find_or_create_by!(provider: example_provider, producer: nil) do |c|
-  c.provider_commission_rate = 0.40
-  c.producer_share_rate = 0.50
-  c.valid_from = Date.today.beginning_of_year
 end
 
 puts "Proveedor de ejemplo creado: #{example_provider.name}"
@@ -62,12 +73,6 @@ puts "Proveedor de ejemplo creado: #{example_provider.name}"
   prov = Provider.find_or_create_by!(slug: attrs[:slug]) do |p|
     p.name = attrs[:name]
     p.config = attrs[:config]
-  end
-
-  CommissionContract.find_or_create_by!(provider: prov, producer: nil) do |c|
-    c.provider_commission_rate = 0.35
-    c.producer_share_rate = 0.50
-    c.valid_from = Date.today.beginning_of_year
   end
 
   puts "Proveedor fake creado: #{prov.name}"

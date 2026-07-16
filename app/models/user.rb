@@ -12,7 +12,6 @@ class User < ApplicationRecord
 
   has_many :quotes, foreign_key: :producer_id, dependent: :nullify
   has_many :travelers, foreign_key: :producer_id, dependent: :nullify
-  has_many :producer_invoices, foreign_key: :producer_id, dependent: :nullify
 
   scope :producers, -> { where(role: :producer) }
   scope :active_producers, -> { producers.where(status: :active) }

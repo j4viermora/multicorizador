@@ -1,6 +1,5 @@
 class Provider < ApplicationRecord
   has_many :insurance_plans, dependent: :destroy
-  has_many :commission_contracts, dependent: :destroy
   has_many :quote_results, dependent: :nullify
 
   validates :name, :slug, presence: true

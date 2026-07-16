@@ -1,8 +1,8 @@
-# Arquitectura de Asisto — Multicotizador de Seguros de Viaje
+# Arquitectura de Ruka — Multicotizador de Seguros de Viaje
 
 ## Visión General
 
-Asisto es una plataforma multi-tenant que permite a productores de seguros cotizar, comparar y gestionar pólizas de viaje de múltiples aseguradoras a través de un único panel. El super admin gestiona proveedores, comisiones y finanzas globales.
+Ruka es una plataforma multi-tenant que permite a productores de seguros cotizar, comparar y gestionar pólizas de viaje de múltiples aseguradoras a través de un único panel. El super admin gestiona proveedores, comisiones y finanzas globales.
 
 ## Stack Tecnológico
 
@@ -22,7 +22,7 @@ Asisto es una plataforma multi-tenant que permite a productores de seguros cotiz
 
 ### 1. Multi-tenancy con Company
 
-Todo modelo de negocio (`Traveler`, `Quote`, `QuoteResult`, `Policy`, `Link`, `ProducerInvoice`) es tenant-scoped vía `acts_as_tenant :company`. Los modelos globales (`Provider`, `InsurancePlan`, `CommissionContract`, `PlatformInvoice`) no tienen tenant.
+Todo modelo de negocio (`Traveler`, `Quote`, `QuoteResult`, `Policy`, `Link`) es tenant-scoped vía `acts_as_tenant :company`. Los modelos globales (`Provider`, `InsurancePlan`) no tienen tenant.
 
 **Excepción:** Los usuarios con `role: super_admin` no tienen `company` asignada (o tienen una dummy) y operan sin tenant. El `ApplicationController` maneja este caso en `set_current_tenant`.
 

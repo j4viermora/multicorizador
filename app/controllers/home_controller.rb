@@ -1,7 +1,7 @@
 class HomeController < ApplicationController
   def index
     if current_user.nil?
-      redirect_to new_user_session_path
+      redirect_to public_landing_path(slug: Company::RUKA_DIRECT_SLUG)
     elsif current_user.super_admin?
       redirect_to admin_dashboard_path
     elsif current_user.producer? && current_user.active?

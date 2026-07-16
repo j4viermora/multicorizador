@@ -15,7 +15,9 @@ class Public::LandingController < ActionController::Base
     @search = QuoteSearch.new(search_params)
 
     if @search.valid?
+      @quote = persist_search(@search)
       @results = QuoteSearchService.new(@search).call
+      persist_results(@quote, @results)
       render :results
     else
       @providers = Provider.active
@@ -29,6 +31,7 @@ class Public::LandingController < ActionController::Base
     @producer = resolve_producer
     @plan = plan_params
     @search = search_context_params
+    @quote_token = params[:quote_token]
   end
 
   def checkout
@@ -37,14 +40,94 @@ class Public::LandingController < ActionController::Base
     @plan = plan_params
     @search = search_context_params
     @passengers = passenger_params
-  end
+    @quote_token = params[:quote_token]
+    @quote = find_quote
 
-  def thanks
-    @company = Company.find_by!(slug: params[:slug])
-    @quote = Quote.find_by!(public_token: params[:token])
+    complete_purchase!(@quote, @plan, @passengers) if @quote
   end
 
   private
+
+  def persist_search(search)
+    ActsAsTenant.with_tenant(@company) do
+      @producer.quotes.create!(
+        origin: search.origin,
+        destination: search.destination,
+        departure_date: search.departure_date,
+        return_date: search.return_date,
+        travelers_count: search.travelers_count,
+        trip_type: search.trip_type,
+        metadata: search.metadata,
+        status: "quoting",
+        created_by: "client"
+      )
+    end
+  end
+
+  def persist_results(quote, results)
+    ActsAsTenant.with_tenant(@company) do
+      results.each do |result|
+        provider = Provider.active.find_by(slug: result[:provider_slug])
+        next unless provider
+
+        price = Money.new(result[:price_cents], result[:currency] || Money.default_currency)
+
+        quote_result = QuoteResult.create!(
+          quote: quote,
+          provider: provider,
+          status: "success",
+          price: price,
+          raw_response: result
+        )
+        result[:quote_result_id] = quote_result.id
+      end
+
+      quote.update!(status: "quoted")
+    end
+  end
+
+  def find_quote
+    return nil if params[:quote_token].blank?
+
+    ActsAsTenant.with_tenant(@company) { Quote.find_by(public_token: params[:quote_token]) }
+  end
+
+  def complete_purchase!(quote, plan, passengers)
+    ActsAsTenant.with_tenant(@company) do
+      primary = passengers.first || {}
+      contact = contact_params
+
+      traveler = Traveler.create!(
+        producer: quote.producer,
+        first_name: primary[:first_name].presence || "Pasajero",
+        last_name: primary[:last_name].presence || "1",
+        email: contact[:email].presence || quote.metadata["email"],
+        phone: contact[:phone],
+        document: primary[:document],
+        birth_date: primary[:birth_date]
+      )
+
+      quote.update!(
+        traveler: traveler,
+        status: "purchased",
+        metadata: quote.metadata.merge(
+          "passengers" => passengers,
+          "contact_email" => contact[:email],
+          "contact_phone" => contact[:phone],
+          "emergency_contact" => emergency_params.to_h,
+          "selected_quote_result_id" => plan[:quote_result_id]
+        )
+      )
+    end
+  end
+
+  def contact_params
+    params.fetch(:contact, {}).permit(:email, :phone)
+  end
+
+  def emergency_params
+    params.fetch(:emergency, {}).permit(:name, :phone)
+  end
 
   def resolve_producer
     if params[:ref].present?
@@ -72,7 +155,7 @@ class Public::LandingController < ActionController::Base
     pp = params.require(:plan).permit(
       :provider_name, :provider_slug, :plan_name,
       :price_cents, :currency, :price_per_person_cents,
-      :coverage_json
+      :coverage_json, :quote_result_id
     ).to_h.with_indifferent_access
     pp[:coverage] = JSON.parse(pp.delete(:coverage_json) || "[]") rescue []
     pp

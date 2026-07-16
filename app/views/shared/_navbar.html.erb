@@ -1,6 +1,6 @@
 <div class="navbar bg-base-100 shadow-lg mb-6">
   <div class="navbar-start">
-    <%= link_to "Asisto", root_path, class: "btn btn-ghost text-xl" %>
+    <%= link_to "Ruka", root_path, class: "btn btn-ghost text-xl" %>
   </div>
 
   <div class="navbar-center hidden lg:flex">
@@ -9,13 +9,11 @@
         <li><%= link_to "Dashboard", admin_dashboard_path %></li>
         <li><%= link_to "Proveedores", admin_providers_path %></li>
         <li><%= link_to "Productores", admin_users_path %></li>
-        <li><%= link_to "Finanzas", admin_finances_path %></li>
       <% elsif current_user.producer? && current_user.active? %>
         <li><%= link_to "Dashboard", producer_dashboard_path %></li>
         <li><%= link_to "Cotizaciones", producer_quotes_path %></li>
         <li><%= link_to "Clientes", producer_travelers_path %></li>
         <li><%= link_to "Pólizas", producer_policies_path %></li>
-        <li><%= link_to "Comisiones", producer_commissions_path %></li>
       <% end %>
     </ul>
   </div>

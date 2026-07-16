@@ -1,8 +1,8 @@
-# Asisto
+# Ruka
 
 Plataforma SaaS multi-tenant para cotización y comparación de seguros de viaje. Los productores (agentes de seguros) crean cotizaciones que se envían a múltiples proveedores en paralelo, comparan resultados y emiten pólizas al momento de la compra.
 
-> **Nota:** El módulo de la aplicación se llama `Asisto` (definido en `config/application.rb`), aunque el directorio del repositorio sea `multicorizador`.
+> **Nota:** El módulo de la aplicación se llama `Ruka` (definido en `config/application.rb`), aunque el directorio del repositorio sea `multicorizador`.
 
 ## Requisitos
 

@@ -66,7 +66,7 @@ Si el `ref` apunta a un usuario inexistente o inactivo, se usa el productor por 
 | Viajero existente | Puede seleccionar de su cartera | Siempre crea nuevo |
 | Datos del viajero | Opcionales (puede agregar después) | Nombre, email requeridos |
 | Lenguaje | Formal ("Datos del viaje") | Cercano ("¿A dónde viajás?") |
-| Branding | Navbar de Asisto | Nombre de la empresa + "Powered by Asisto" |
+| Branding | Navbar de Ruka | Nombre de la empresa + "Powered by Ruka" |
 | `created_by` | `"producer"` | `"client"` |
 
 ## Archivos involucrados

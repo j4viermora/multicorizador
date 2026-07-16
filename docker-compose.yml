@@ -5,11 +5,11 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: asisto
+      POSTGRES_USER: ruka
       POSTGRES_PASSWORD: password
       POSTGRES_DB: asito_development
     volumes:
-      - asisto_postgres_data:/var/lib/postgresql/data
+      - ruka_postgres_data:/var/lib/postgresql/data
 
 volumes:
-  asisto_postgres_data:
+  ruka_postgres_data:

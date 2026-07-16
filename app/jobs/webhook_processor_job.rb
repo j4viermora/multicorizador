@@ -23,9 +23,6 @@ class WebhookProcessorJob < ApplicationJob
       ends_at: parsed[:ends_at],
       premium: quote_result.price,
       total: parsed[:total_cents] ? Money.new(parsed[:total_cents]) : quote_result.price,
-      provider_commission: quote_result.provider_commission,
-      platform_commission: quote_result.platform_commission,
-      producer_commission: quote_result.producer_commission,
       webhook_payload: payload
     )
 

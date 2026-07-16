@@ -12,12 +12,7 @@ class ProviderQuoteJob < ApplicationJob
     ActsAsTenant.with_tenant(quote.company) do
       begin
         result = client.quote(quote)
-        contract = CommissionContract.resolve(provider, quote.producer)
-
         price = Money.new(result[:price_cents], result[:currency] || Money.default_currency)
-        provider_commission = price * contract.provider_commission_rate
-        producer_commission = provider_commission * contract.producer_share_rate
-        platform_commission = provider_commission - producer_commission
 
         QuoteResult.create!(
           quote: quote,
@@ -25,10 +20,7 @@ class ProviderQuoteJob < ApplicationJob
           external_quote_id: result[:external_quote_id],
           raw_response: result,
           status: "success",
-          price: price,
-          provider_commission: provider_commission,
-          platform_commission: platform_commission,
-          producer_commission: producer_commission
+          price: price
         )
       rescue => e
         QuoteResult.create!(

@@ -14,9 +14,8 @@
 
   <div class="card bg-base-100 shadow">
     <div class="card-body">
-      <h2 class="card-title">Comisiones</h2>
-      <p><strong>Tu comisión:</strong> <span class="text-success font-bold"><%= @policy.producer_commission.format %></span></p>
-      <p><strong>Estado:</strong> <span class="badge badge-<%= @policy.pending_commission? ? 'warning' : 'success' %>"><%= @policy.producer_commission_status.humanize %></span></p>
+      <h2 class="card-title">Estado</h2>
+      <p><span class="badge badge-<%= @policy.active? ? 'success' : 'ghost' %>"><%= @policy.status.humanize %></span></p>
     </div>
   </div>
 </div>

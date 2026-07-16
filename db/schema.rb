@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_10_073832) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_08_130848) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -49,21 +49,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_10_073832) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "commission_contracts", force: :cascade do |t|
-    t.integer "provider_id", null: false
-    t.integer "producer_id"
-    t.decimal "provider_commission_rate", precision: 5, scale: 4, null: false
-    t.decimal "producer_share_rate", precision: 5, scale: 4, null: false
-    t.date "valid_from", null: false
-    t.date "valid_until"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["producer_id"], name: "index_commission_contracts_on_producer_id"
-    t.index ["provider_id", "producer_id"], name: "index_commission_contracts_on_provider_and_producer", unique: true, where: "producer_id IS NOT NULL"
-    t.index ["provider_id"], name: "index_commission_contracts_default", unique: true, where: "producer_id IS NULL"
-    t.index ["provider_id"], name: "index_commission_contracts_on_provider_id"
-  end
-
   create_table "companies", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -100,19 +85,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_10_073832) do
     t.index ["token"], name: "index_links_on_token", unique: true
   end
 
-  create_table "platform_invoices", force: :cascade do |t|
-    t.integer "provider_id", null: false
-    t.date "period_start", null: false
-    t.date "period_end", null: false
-    t.integer "total_commission_cents", default: 0, null: false
-    t.string "total_commission_currency", default: "USD", null: false
-    t.string "status", default: "draft", null: false
-    t.datetime "paid_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["provider_id"], name: "index_platform_invoices_on_provider_id"
-  end
-
   create_table "policies", force: :cascade do |t|
     t.integer "quote_result_id", null: false
     t.integer "company_id", null: false
@@ -122,48 +94,15 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_10_073832) do
     t.date "starts_at"
     t.date "ends_at"
     t.integer "premium_cents", default: 0, null: false
-    t.string "premium_currency", default: "USD", null: false
+    t.string "premium_currency", default: "ARS", null: false
     t.integer "total_cents", default: 0, null: false
-    t.string "total_currency", default: "USD", null: false
-    t.integer "provider_commission_cents", default: 0, null: false
-    t.string "provider_commission_currency", default: "USD", null: false
-    t.integer "platform_commission_cents", default: 0, null: false
-    t.string "platform_commission_currency", default: "USD", null: false
-    t.integer "producer_commission_cents", default: 0, null: false
-    t.string "producer_commission_currency", default: "USD", null: false
-    t.string "producer_commission_status", default: "pending", null: false
-    t.datetime "producer_commission_paid_at"
+    t.string "total_currency", default: "ARS", null: false
     t.json "webhook_payload", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["company_id"], name: "index_policies_on_company_id"
     t.index ["policy_number"], name: "index_policies_on_policy_number"
     t.index ["quote_result_id"], name: "index_policies_on_quote_result_id"
-  end
-
-  create_table "producer_invoice_policies", force: :cascade do |t|
-    t.integer "producer_invoice_id", null: false
-    t.integer "policy_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["policy_id"], name: "index_producer_invoice_policies_on_policy_id"
-    t.index ["producer_invoice_id", "policy_id"], name: "idx_on_producer_invoice_id_policy_id_afd3703730", unique: true
-    t.index ["producer_invoice_id"], name: "index_producer_invoice_policies_on_producer_invoice_id"
-  end
-
-  create_table "producer_invoices", force: :cascade do |t|
-    t.integer "company_id", null: false
-    t.integer "producer_id", null: false
-    t.date "period_start", null: false
-    t.date "period_end", null: false
-    t.integer "total_commission_cents", default: 0, null: false
-    t.string "total_commission_currency", default: "USD", null: false
-    t.string "status", default: "draft", null: false
-    t.datetime "paid_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["company_id"], name: "index_producer_invoices_on_company_id"
-    t.index ["producer_id"], name: "index_producer_invoices_on_producer_id"
   end
 
   create_table "providers", force: :cascade do |t|
@@ -184,13 +123,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_10_073832) do
     t.json "raw_response", default: {}
     t.string "status", default: "pending", null: false
     t.integer "price_cents", default: 0, null: false
-    t.string "price_currency", default: "USD", null: false
-    t.integer "provider_commission_cents", default: 0, null: false
-    t.string "provider_commission_currency", default: "USD", null: false
-    t.integer "platform_commission_cents", default: 0, null: false
-    t.string "platform_commission_currency", default: "USD", null: false
-    t.integer "producer_commission_cents", default: 0, null: false
-    t.string "producer_commission_currency", default: "USD", null: false
+    t.string "price_currency", default: "ARS", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "company_id", null: false
@@ -260,18 +193,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_10_073832) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "commission_contracts", "providers"
-  add_foreign_key "commission_contracts", "users", column: "producer_id"
   add_foreign_key "insurance_plans", "providers"
   add_foreign_key "links", "companies"
   add_foreign_key "links", "quotes"
-  add_foreign_key "platform_invoices", "providers"
   add_foreign_key "policies", "companies"
   add_foreign_key "policies", "quote_results"
-  add_foreign_key "producer_invoice_policies", "policies"
-  add_foreign_key "producer_invoice_policies", "producer_invoices"
-  add_foreign_key "producer_invoices", "companies"
-  add_foreign_key "producer_invoices", "users", column: "producer_id"
   add_foreign_key "quote_results", "companies"
   add_foreign_key "quote_results", "insurance_plans"
   add_foreign_key "quote_results", "providers"

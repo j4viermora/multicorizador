@@ -6,8 +6,7 @@ class QuoteResult < ApplicationRecord
   belongs_to :insurance_plan, optional: true
   has_one :policy, dependent: :nullify
 
-  monetize :price_cents, :provider_commission_cents,
-           :platform_commission_cents, :producer_commission_cents
+  monetize :price_cents
 
   enum :status, { pending: "pending", success: "success", error: "error" }
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html data-theme="light">
   <head>
-    <title><%= content_for(:title) || "Cotización - Asisto" %></title>
+    <title><%= content_for(:title) || "Cotización - Ruka" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
@@ -13,6 +13,9 @@
     <%= javascript_importmap_tags %>
   </head>
   <body class="min-h-screen" style="background: oklch(0.96 0.008 80);">
+    <div class="container mx-auto px-4 pt-4 flex justify-end">
+      <%= link_to "Iniciar sesión", new_user_session_path, class: "text-xs opacity-60 hover:opacity-100" %>
+    </div>
     <% if notice %>
       <div class="container mx-auto px-4 pt-4 max-w-2xl">
         <div class="alert alert-success text-sm"><%= notice %></div>

@@ -9,12 +9,9 @@ Rails.application.routes.draw do
     get "dashboard", to: "dashboard#index"
     resources :providers
     resources :insurance_plans
-    resources :commission_contracts
     resources :users, only: [:index, :show, :edit, :update] do
       member { patch :approve }
     end
-    resources :finances, only: [:index]
-    resources :platform_invoices
   end
 
   namespace :producer do
@@ -22,8 +19,6 @@ Rails.application.routes.draw do
     resources :quotes
     resources :travelers
     resources :policies, only: [:index, :show]
-    resources :commissions, only: [:index]
-    resources :invoices, only: [:index, :show, :create]
   end
 
   namespace :public do
@@ -35,7 +30,6 @@ Rails.application.routes.draw do
   post "cotizar/:slug", to: "public/landing#create"
   post "cotizar/:slug/comprar", to: "public/landing#purchase", as: :public_landing_purchase
   post "cotizar/:slug/checkout", to: "public/landing#checkout", as: :public_landing_checkout
-  get  "cotizar/:slug/gracias", to: "public/landing#thanks", as: :public_landing_thanks
 
   resources :webhooks, only: [:create], param: :provider_slug
 

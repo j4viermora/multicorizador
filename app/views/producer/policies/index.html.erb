@@ -7,8 +7,7 @@
         <th>Número</th>
         <th>Proveedor</th>
         <th>Prima</th>
-        <th>Tu Comisión</th>
-        <th>Estado Comisión</th>
+        <th>Estado</th>
         <th>Emitida</th>
       </tr>
     </thead>
@@ -18,10 +17,9 @@
           <td><%= policy.policy_number %></td>
           <td><%= policy.quote_result.provider.name %></td>
           <td><%= policy.premium.format %></td>
-          <td class="text-success font-semibold"><%= policy.producer_commission.format %></td>
           <td>
-            <span class="badge badge-<%= policy.pending_commission? ? 'warning' : policy.paid_commission? ? 'success' : 'info' %>">
-              <%= policy.producer_commission_status.humanize %>
+            <span class="badge badge-<%= policy.active? ? 'success' : 'ghost' %>">
+              <%= policy.status.humanize %>
             </span>
           </td>
           <td><%= l policy.issued_at, format: :short if policy.issued_at %></td>

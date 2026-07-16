@@ -39,7 +39,7 @@ When working on this project, use these skills for specialized assistance:
 
 ## Architecture
 
-**Module name:** `Asisto` (defined in [config/application.rb](config/application.rb)), despite the repo directory being `multicorizador`.
+**Module name:** `Ruka` (defined in [config/application.rb](config/application.rb)), despite the repo directory being `multicorizador`.
 
 **Purpose:** Multi-tenant SaaS platform for travel insurance quotation and comparison. Producers (insurance agents) create quotes that are sent to multiple insurance providers in parallel, results are compared, and policies are issued upon purchase.
 
@@ -47,7 +47,7 @@ When working on this project, use these skills for specialized assistance:
 
 **Engine:** SQLite3 (MVP). Schema is PostgreSQL-compatible for future migration.
 
-**Key tables:** `companies`, `users`, `providers`, `insurance_plans`, `commission_contracts`, `quotes`, `quote_results`, `policies`, `travelers`, `links`, `producer_invoices`, `producer_invoice_policies`, `platform_invoices`.
+**Key tables:** `companies`, `users`, `providers`, `insurance_plans`, `quotes`, `quote_results`, `policies`, `travelers`, `links`.
 
 ### Multi-tenancy
 
@@ -67,16 +67,14 @@ Devise with `User` belonging to `Company` (optional for super_admins).
 
 ### Route Namespaces
 
-- **`/admin/*`** — Super admin: providers, insurance plans, commission contracts, users, finances, platform invoices, dashboard.
-- **`/producer/*`** — Active producers: quotes, travelers, policies, commissions, invoices, dashboard.
+- **`/admin/*`** — Super admin: providers, insurance plans, users, dashboard.
+- **`/producer/*`** — Active producers: quotes, travelers, policies, dashboard.
 - **`/public/quotes/:token`** — Unauthenticated: view/update quotes via public token.
 - **`/webhooks/:provider_slug`** — Provider webhook endpoint.
 
 ### Business Logic
 
 **Quote lifecycle:** `draft` → `quoting` → `quoted` → `pending_payment` → `purchased` / `cancelled`. Also `client_pending` when shared via link.
-
-**Commission model:** `CommissionContract` stores `provider_commission_rate` (0–1) and `producer_share_rate` (0–1). Platform commission = provider commission − producer commission. Contracts resolve per provider+producer or fall back to provider default (null producer).
 
 **Provider integration:** Service objects in `app/services/insurance_providers/`. `BaseProvider` defines the interface (`quote`, `purchase_url`, `parse_webhook`, `valid_webhook?`). Providers register in `REGISTRY` hash by slug. `ExampleProvider` serves as reference implementation.
 
@@ -86,7 +84,7 @@ Solid Queue (DB-backed), started as a separate process in `Procfile.dev`. In pro
 
 **Jobs:**
 - `QuoteJob` — Orchestrates quoting: updates status to `quoting`, enqueues `ProviderQuoteJob` for each active provider.
-- `ProviderQuoteJob` — Calls provider API, resolves commission contract, creates `QuoteResult`. Retries 3x on `ProviderError` with 5s backoff.
+- `ProviderQuoteJob` — Calls provider API, creates `QuoteResult`. Retries 3x on `ProviderError` with 5s backoff.
 - `WebhookProcessorJob` — Processes provider webhooks, creates `Policy` records.
 
 ### Frontend Stack
