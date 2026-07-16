@@ -9,6 +9,7 @@ Rails.application.routes.draw do
     get "dashboard", to: "dashboard#index"
     resources :providers
     resources :insurance_plans
+    resources :policies, only: [:index, :show]
     resources :users, only: [:index, :show, :edit, :update] do
       member { patch :approve }
     end
@@ -28,6 +29,7 @@ Rails.application.routes.draw do
   # Public landing page per company
   get  "cotizar/:slug", to: "public/landing#show", as: :public_landing
   post "cotizar/:slug", to: "public/landing#create"
+  get  "cotizar/:slug/resultados/:token", to: "public/landing#results", as: :public_landing_results
   post "cotizar/:slug/comprar", to: "public/landing#purchase", as: :public_landing_purchase
   post "cotizar/:slug/checkout", to: "public/landing#checkout", as: :public_landing_checkout
 

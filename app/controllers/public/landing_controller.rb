@@ -12,18 +12,22 @@ class Public::LandingController < ActionController::Base
     @company = Company.find_by!(slug: params[:slug])
     @producer = resolve_producer
 
-    @search = QuoteSearch.new(search_params)
+    ActsAsTenant.with_tenant(@company) do
+      @quote = @producer.quotes.build(quote_params.merge(status: "draft", created_by: "client"))
+      QuoteJob.perform_later(@quote.id) if @quote.save
+    end
 
-    if @search.valid?
-      @quote = persist_search(@search)
-      @results = QuoteSearchService.new(@search).call
-      persist_results(@quote, @results)
-      render :results
+    if @quote.persisted?
+      redirect_to public_landing_results_path(@company.slug, @quote.public_token, ref: params[:ref])
     else
       @providers = Provider.active
-      @quote = Quote.new(search_params)
       render :show, status: :unprocessable_entity
     end
+  end
+
+  def results
+    @company = Company.find_by!(slug: params[:slug])
+    @quote = ActsAsTenant.with_tenant(@company) { Quote.find_by!(public_token: params[:token]) }
   end
 
   def purchase
@@ -48,50 +52,6 @@ class Public::LandingController < ActionController::Base
 
   private
 
-  def persist_search(search)
-    ActsAsTenant.with_tenant(@company) do
-      @producer.quotes.create!(
-        origin: search.origin,
-        destination: search.destination,
-        departure_date: search.departure_date,
-        return_date: search.return_date,
-        travelers_count: search.travelers_count,
-        trip_type: search.trip_type,
-        metadata: search.metadata,
-        status: "quoting",
-        created_by: "client"
-      )
-    end
-  end
-
-  def persist_results(quote, results)
-    ActsAsTenant.with_tenant(@company) do
-      results.each do |result|
-        provider = Provider.active.find_by(slug: result[:provider_slug])
-        next unless provider
-
-        price = Money.new(result[:price_cents], result[:currency] || Money.default_currency)
-
-        quote_result = QuoteResult.create!(
-          quote: quote,
-          provider: provider,
-          status: "success",
-          price: price,
-          raw_response: result
-        )
-        result[:quote_result_id] = quote_result.id
-      end
-
-      quote.update!(status: "quoted")
-    end
-  end
-
-  def find_quote
-    return nil if params[:quote_token].blank?
-
-    ActsAsTenant.with_tenant(@company) { Quote.find_by(public_token: params[:quote_token]) }
-  end
-
   def complete_purchase!(quote, plan, passengers)
     ActsAsTenant.with_tenant(@company) do
       primary = passengers.first || {}
@@ -109,16 +69,33 @@ class Public::LandingController < ActionController::Base
 
       quote.update!(
         traveler: traveler,
-        status: "purchased",
         metadata: quote.metadata.merge(
           "passengers" => passengers,
           "contact_email" => contact[:email],
           "contact_phone" => contact[:phone],
-          "emergency_contact" => emergency_params.to_h,
-          "selected_quote_result_id" => plan[:quote_result_id]
+          "emergency_contact" => emergency_params.to_h
         )
       )
+
+      quote_result = quote.quote_results.find(plan[:quote_result_id])
+
+      PolicyIssuer.call(
+        quote_result: quote_result,
+        policy_number: "RK-#{SecureRandom.hex(6).upcase}",
+        issued_at: Time.current,
+        starts_at: quote.departure_date,
+        ends_at: quote.return_date,
+        premium: quote_result.price,
+        total: quote_result.price,
+        sold_via: "direct"
+      )
     end
+  end
+
+  def find_quote
+    return nil if params[:quote_token].blank?
+
+    ActsAsTenant.with_tenant(@company) { Quote.find_by(public_token: params[:quote_token]) }
   end
 
   def contact_params
@@ -142,7 +119,7 @@ class Public::LandingController < ActionController::Base
       @company.users.where(role: :producer).order(:created_at).first
   end
 
-  def search_params
+  def quote_params
     qp = params.require(:quote).permit(
       :origin, :destination, :departure_date, :return_date,
       :travelers_count, :trip_type, metadata: [ :email, :phone, ages: [] ]

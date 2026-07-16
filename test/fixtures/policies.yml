@@ -1,0 +1,29 @@
+direct_policy:
+  quote_result: producer_quote_assist_card
+  company: ruka
+  policy_number: RK-DIRECT-0001
+  status: active
+  issued_at: <%= 1.day.ago %>
+  starts_at: <%= 29.days.from_now.to_date %>
+  ends_at: <%= 39.days.from_now.to_date %>
+  premium_cents: 45000
+  premium_currency: ARS
+  total_cents: 45000
+  total_currency: ARS
+  sold_via: direct
+  webhook_payload: {}
+
+producer_policy:
+  quote_result: demo_quote_travel_ace
+  company: demo_agency
+  policy_number: RK-PRODUCER-0001
+  status: active
+  issued_at: <%= 1.day.ago %>
+  starts_at: <%= 19.days.from_now.to_date %>
+  ends_at: <%= 24.days.from_now.to_date %>
+  premium_cents: 32000
+  premium_currency: ARS
+  total_cents: 32000
+  total_currency: ARS
+  sold_via: producer
+  webhook_payload: {}

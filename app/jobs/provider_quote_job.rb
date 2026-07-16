@@ -42,6 +42,6 @@ class ProviderQuoteJob < ApplicationJob
     pending_count = quote.quote_results.where(status: "pending").count
     return if pending_count > 0
 
-    quote.update!(status: "quoted")
+    quote.update!(status: quote.quote_results.successful.any? ? "quoted" : "no_results")
   end
 end

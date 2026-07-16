@@ -1,0 +1,47 @@
+<h1 class="text-3xl font-bold mb-6">Pólizas Emitidas</h1>
+
+<%= search_form_for @q, url: admin_policies_path, html: { class: "flex items-center gap-3 mb-4" } do |f| %>
+  <%= f.select :sold_via_eq, [["Todas", nil], ["Directo (Ruka)", "direct"], ["Producer", "producer"]],
+      {}, class: "input", onchange: "this.form.requestSubmit()" %>
+<% end %>
+
+<div class="overflow-x-auto bg-white shadow rounded-lg">
+  <table class="table table-zebra">
+    <thead>
+      <tr>
+        <th>Número</th>
+        <th>Canal</th>
+        <th>Producer</th>
+        <th>Proveedor</th>
+        <th>Prima</th>
+        <th>Estado</th>
+        <th>Emitida</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @policies.each do |policy| %>
+        <tr>
+          <td><%= link_to policy.policy_number, admin_policy_path(policy) %></td>
+          <td>
+            <span class="badge <%= policy.sold_via == 'direct' ? 'badge-primary' : 'badge-info' %>">
+              <%= policy.sold_via == "direct" ? "Ruka directo" : "Producer" %>
+            </span>
+          </td>
+          <td><%= policy.sold_via == "direct" ? "—" : policy.producer&.full_name %></td>
+          <td><%= policy.quote_result.provider.name %></td>
+          <td><%= policy.premium.format %></td>
+          <td>
+            <span class="badge badge-<%= policy.active? ? 'success' : 'ghost' %>">
+              <%= policy.status.humanize %>
+            </span>
+          </td>
+          <td><%= l policy.issued_at, format: :short if policy.issued_at %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <% if @policies.empty? %>
+    <p class="p-6 text-center text-gray-500">No hay pólizas para este filtro.</p>
+  <% end %>
+</div>

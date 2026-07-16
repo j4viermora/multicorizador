@@ -1,0 +1,11 @@
+assist_card:
+  name: Assist Card
+  slug: assist_card_fake
+  status: active
+  config: {}
+
+travel_ace:
+  name: Travel Ace
+  slug: travel_ace_fake
+  status: active
+  config: {}

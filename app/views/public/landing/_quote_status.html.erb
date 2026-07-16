@@ -1,0 +1,119 @@
+<% if quote.quoted? || quote.purchased? || quote.pending_payment? %>
+  <% results = quote.quote_results.successful.order(price_cents: :asc).map do |qr|
+       qr.raw_response.deep_symbolize_keys.merge(quote_result_id: qr.id)
+     end %>
+
+  <% if results.any? %>
+    <%# ── Results grid ── %>
+    <div class="grid grid-cols-1 md:grid-cols-<%= [results.size, 3].min %> gap-5 mb-8">
+      <% results.each_with_index do |result, idx| %>
+        <div class="result-card <%= 'is-best' if idx == 0 %> results-fade-in rd<%= idx + 2 %>">
+
+          <%# Header %>
+          <div class="result-card-header">
+            <div class="provider-badge mb-3">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              <%= result[:provider_name] %>
+            </div>
+            <h3 class="text-lg font-bold" style="color: var(--wz-ink); letter-spacing: -0.01em;">
+              <%= result[:plan_name] %>
+            </h3>
+          </div>
+
+          <%# Price %>
+          <div class="px-6 py-5" style="background: oklch(0.985 0.003 80);">
+            <div class="result-price">
+              <span class="result-price-currency"><%= result[:currency] %></span>
+              <%= "%.2f" % (result[:price_cents] / 100.0) %>
+            </div>
+            <div class="result-price-detail mt-1">
+              Total por <%= quote.travelers_count %> pasajero<%= quote.travelers_count > 1 ? "s" : "" %>
+              <% if quote.travelers_count > 1 && result[:price_per_person_cents] %>
+                · <%= result[:currency] %> <%= "%.2f" % (result[:price_per_person_cents] / 100.0) %> c/u
+              <% end %>
+            </div>
+          </div>
+
+          <%# Coverage %>
+          <div class="px-6 py-4">
+            <p class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: var(--wz-ink-muted);">
+              Coberturas incluidas
+            </p>
+            <ul class="coverage-list">
+              <% (result[:coverage] || []).each do |cov| %>
+                <li class="coverage-item">
+                  <span class="coverage-name">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <%= cov[:name] %>
+                  </span>
+                  <span class="coverage-amount"><%= cov[:amount] %></span>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+
+          <%# CTA %>
+          <% if quote.quoted? %>
+            <div class="px-6 pb-6">
+              <form action="<%= public_landing_purchase_path(quote.company.slug) %>" method="post" data-turbo="false">
+                <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+
+                <input type="hidden" name="quote_token" value="<%= quote.public_token %>">
+
+                <input type="hidden" name="plan[provider_name]" value="<%= result[:provider_name] %>">
+                <input type="hidden" name="plan[provider_slug]" value="<%= result[:provider_slug] %>">
+                <input type="hidden" name="plan[plan_name]" value="<%= result[:plan_name] %>">
+                <input type="hidden" name="plan[price_cents]" value="<%= result[:price_cents] %>">
+                <input type="hidden" name="plan[currency]" value="<%= result[:currency] %>">
+                <input type="hidden" name="plan[price_per_person_cents]" value="<%= result[:price_per_person_cents] %>">
+                <input type="hidden" name="plan[coverage_json]" value="<%= (result[:coverage] || []).to_json %>">
+                <input type="hidden" name="plan[quote_result_id]" value="<%= result[:quote_result_id] %>">
+
+                <input type="hidden" name="search[origin]" value="<%= quote.origin %>">
+                <input type="hidden" name="search[destination]" value="<%= quote.destination %>">
+                <input type="hidden" name="search[departure_date]" value="<%= quote.departure_date %>">
+                <input type="hidden" name="search[return_date]" value="<%= quote.return_date %>">
+                <input type="hidden" name="search[travelers_count]" value="<%= quote.travelers_count %>">
+                <input type="hidden" name="search[trip_type]" value="<%= quote.trip_type %>">
+                <input type="hidden" name="search[email]" value="<%= quote.metadata['email'] %>">
+                <input type="hidden" name="search[phone]" value="<%= quote.metadata['phone'] %>">
+
+                <button type="submit" class="result-cta <%= idx == 0 ? 'result-cta-primary' : 'result-cta-secondary' %>">
+                  Comprar este plan
+                </button>
+              </form>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+<% elsif quote.no_results? %>
+  <%# ── No results ── %>
+  <div class="no-results-card results-fade-in rd2">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-4" style="color: var(--wz-ink-muted);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <h2 class="text-lg font-bold mb-2" style="color: var(--wz-ink);">No encontramos resultados</h2>
+    <p class="text-sm mb-5" style="color: var(--wz-ink-muted);">
+      No pudimos obtener cotizaciones para esta búsqueda. Intentá con otras fechas o destino.
+    </p>
+    <%= link_to "Intentar de nuevo", public_landing_path(quote.company.slug),
+        class: "result-cta result-cta-primary", style: "display: inline-block; max-width: 14rem;" %>
+  </div>
+
+<% else %>
+  <%# ── Waiting for provider responses ── %>
+  <div class="no-results-card results-fade-in rd2">
+    <div class="waiting-spinner"></div>
+    <h2 class="text-lg font-bold mb-2" style="color: var(--wz-ink);">Buscando las mejores cotizaciones...</h2>
+    <p class="text-sm" style="color: var(--wz-ink-muted);">
+      Estamos consultando a nuestros proveedores. Esto toma solo unos segundos.
+    </p>
+  </div>
+<% end %>

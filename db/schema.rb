@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_08_130848) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_16_170000) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -100,9 +100,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_08_130848) do
     t.json "webhook_payload", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "sold_via", default: "direct", null: false
     t.index ["company_id"], name: "index_policies_on_company_id"
     t.index ["policy_number"], name: "index_policies_on_policy_number"
     t.index ["quote_result_id"], name: "index_policies_on_quote_result_id"
+    t.index ["sold_via"], name: "index_policies_on_sold_via"
   end
 
   create_table "providers", force: :cascade do |t|

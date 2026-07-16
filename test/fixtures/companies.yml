@@ -1,9 +1,9 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+ruka:
+  name: Ruka
+  currency: ARS
+  slug: ruka
 
-one:
-  name: MyString
-  subdomain: MyString
-
-two:
-  name: MyString
-  subdomain: MyString
+demo_agency:
+  name: Demo Agency
+  currency: ARS
+  slug: demo-agency

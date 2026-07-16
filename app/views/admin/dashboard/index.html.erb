@@ -1,6 +1,6 @@
 <h1 class="text-3xl font-bold mb-6">Panel de Administración</h1>
 
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
   <div class="stat">
     <div class="stat-title">Productores Pendientes</div>
     <div class="stat-value text-amber-600"><%= @pending_producers_count %></div>
@@ -14,8 +14,20 @@
   </div>
 
   <div class="stat">
-    <div class="stat-title">Pólizas Emitidas</div>
-    <div class="stat-value text-green-600"><%= @total_policies %></div>
-    <div class="stat-desc">Total acumulado</div>
+    <div class="stat-title">Pólizas Ruka Directo</div>
+    <div class="stat-value text-green-600"><%= @total_policies_direct %></div>
+    <div class="stat-desc"><%= link_to "Ver pólizas", admin_policies_path(q: { sold_via_eq: "direct" }), class: "link" %></div>
+  </div>
+
+  <div class="stat">
+    <div class="stat-title">Pólizas Producers</div>
+    <div class="stat-value text-blue-600"><%= @total_policies_producer %></div>
+    <div class="stat-desc">
+      <% if @total_policies_producer.zero? %>
+        Aún no hay ventas por productores afiliados
+      <% else %>
+        <%= link_to "Ver pólizas", admin_policies_path(q: { sold_via_eq: "producer" }), class: "link" %>
+      <% end %>
+    </div>
   </div>
 </div>

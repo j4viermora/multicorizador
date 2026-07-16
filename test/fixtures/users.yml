@@ -1,11 +1,27 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+producer_uno:
+  email: producer@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, "password123456") %>
+  company: ruka
+  role: <%= User.roles[:producer] %>
+  status: <%= User.statuses[:active] %>
+  first_name: Producer
+  last_name: Uno
 
-# This model initially had no columns defined. If you add columns to the
-# model remove the "{}" from the fixture names and add the columns immediately
-# below each fixture, per the syntax in the comments below
-#
-one: {}
-# column: value
-#
-two: {}
-# column: value
+producer_dos:
+  email: producer2@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, "password123456") %>
+  company: demo_agency
+  role: <%= User.roles[:producer] %>
+  status: <%= User.statuses[:active] %>
+  first_name: Producer
+  last_name: Dos
+
+admin_uno:
+  email: admin@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, "password123456") %>
+  company: ruka
+  role: <%= User.roles[:super_admin] %>
+  status: <%= User.statuses[:active] %>
+  is_superuser: true
+  first_name: Admin
+  last_name: Ruka

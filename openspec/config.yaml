@@ -1,0 +1,59 @@
+schema: spec-driven
+
+# Project context (optional)
+# This is shown to AI when creating artifacts.
+# Add your tech stack, conventions, style guides, domain knowledge, etc.
+context: |
+  Domain: Ruka (module name; repo dir "multicorizador") — multi-tenant SaaS for travel
+  insurance quotation/comparison. Producers create quotes fanned out to multiple
+  provider APIs in parallel; results are compared; policies are issued on purchase.
+
+  Stack: Ruby 3.3.4, Rails ~> 8.0.4. Propshaft (assets) + Importmap (JS, no Node/webpack
+  build) + TailwindCSS 4 (compiled via tailwindcss-rails, watched by `bin/rails
+  tailwindcss:watch[always]`) + Flowbite (ONLY styling lib — DaisyUI/Bootstrap removed,
+  do not reintroduce) + Hotwire (Turbo + Stimulus). Icons: Tabler Icons only. Puma web
+  server; Kamal for Docker deploys (config/deploy.yml).
+
+  Database: SQLite3 (>= 2.1) for MVP, schema written to stay Postgres-portable (no
+  PRAGMA/SQLite-only SQL, explicit add_foreign_key, standard migration DSL). Solid
+  Queue/Solid Cache/Solid Cable each run on their own separate SQLite DB (see
+  config/database.yml); Solid Queue schema lives in db/queue_schema.rb, not the normal
+  migration pipeline.
+
+  Architecture patterns:
+  - Multi-tenancy via `acts_as_tenant :company`; ApplicationController sets tenant from
+    current_user.company per request (super admins run tenant-less).
+  - Devise auth; User belongs_to Company (optional for super_admin). Roles: producer(0),
+    super_admin(1) integer enum. Statuses: pending(0)/active(1)/suspended(2).
+  - Route namespaces: /admin/* (super admin), /producer/* (active producers),
+    /public/quotes/:token (unauthenticated token access), /webhooks/:provider_slug.
+  - Quote lifecycle state machine: draft -> quoting -> quoted -> pending_payment ->
+    purchased/cancelled (also client_pending when shared via link).
+  - Provider integrations as service objects under app/services/insurance_providers/,
+    implementing BaseProvider's interface (quote, purchase_url, parse_webhook,
+    valid_webhook?), registered by slug in a REGISTRY hash.
+  - Background jobs on Solid Queue (DB-backed): QuoteJob orchestrates, spawns
+    ProviderQuoteJob per active provider (retries 3x on ProviderError, 5s backoff);
+    WebhookProcessorJob creates Policy records from provider webhooks.
+  - Forms: simple_form + Flowbite wrappers only (f.input; never raw form_for/f.text_field).
+    Search: ransack. Pagination: kaminari. Rich text: lexxy. Money: money-rails
+    (_cents/_currency columns). Datepicker: flowbite-datepicker via custom `:datepicker`
+    simple_form input + Stimulus controller (never native <input type="date">).
+  - i18n: default locale :es, also :en; UI text in Spanish, code in English.
+
+  Testing conventions: Minitest (Rails default, NOT RSpec) under test/, mirroring Rails
+  dirs (models/, controllers/, integration/, mailers/, system/). Fixtures in
+  test/fixtures/*.yml, auto-loaded via `fixtures :all` in test_helper.rb. Parallelized
+  by number_of_processors. System tests use Capybara + Selenium WebDriver. Run via
+  `bin/rails test` (whole suite) or `bin/rails test path/to/file.rb:LINE`. Lint with
+  bin/rubocop (rubocop-rails-omakase); security scan with bin/brakeman.
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always include a "Non-goals" section
+#     tasks:
+#       - Break tasks into chunks of max 2 hours

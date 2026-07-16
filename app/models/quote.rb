@@ -1,4 +1,6 @@
 class Quote < ApplicationRecord
+  include TripMetadata
+
   acts_as_tenant :company
 
   belongs_to :producer, class_name: "User"
@@ -17,6 +19,7 @@ class Quote < ApplicationRecord
     client_pending: "client_pending",
     quoting: "quoting",
     quoted: "quoted",
+    no_results: "no_results",
     pending_payment: "pending_payment",
     purchased: "purchased",
     cancelled: "cancelled"
@@ -25,6 +28,8 @@ class Quote < ApplicationRecord
   scope :active, -> { where.not(status: ["purchased", "cancelled"]) }
 
   accepts_nested_attributes_for :traveler
+
+  after_update_commit :broadcast_status_update, if: :saved_change_to_status?
 
   def generate_public_token
     self.public_token = SecureRandom.urlsafe_base64(16)
@@ -43,6 +48,17 @@ class Quote < ApplicationRecord
       token: SecureRandom.urlsafe_base64(24),
       expires_at: expires_in.from_now,
       purpose: "quote_share"
+    )
+  end
+
+  private
+
+  def broadcast_status_update
+    broadcast_replace_to(
+      "quote_#{id}",
+      target: "quote_status_#{id}",
+      partial: "public/landing/quote_status",
+      locals: { quote: self }
     )
   end
 end

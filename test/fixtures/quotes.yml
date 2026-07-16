@@ -1,0 +1,27 @@
+producer_quote:
+  company: ruka
+  producer: producer_uno
+  status: quoted
+  public_token: quote-token-producer-quote
+  origin: EZE
+  destination: MIA
+  departure_date: <%= 30.days.from_now.to_date.iso8601 %>
+  return_date: <%= 40.days.from_now.to_date.iso8601 %>
+  travelers_count: 1
+  trip_type: single
+  metadata: {}
+  created_by: producer
+
+demo_quote:
+  company: demo_agency
+  producer: producer_dos
+  status: quoted
+  public_token: quote-token-demo-quote
+  origin: AEP
+  destination: COR
+  departure_date: <%= 20.days.from_now.to_date.iso8601 %>
+  return_date: <%= 25.days.from_now.to_date.iso8601 %>
+  travelers_count: 1
+  trip_type: single
+  metadata: {}
+  created_by: client

@@ -12,20 +12,16 @@ class WebhookProcessorJob < ApplicationJob
 
     return unless quote_result
 
-    return if Policy.exists?(policy_number: parsed[:policy_number])
-
-    Policy.create!(
+    PolicyIssuer.call(
       quote_result: quote_result,
-      company: quote_result.quote.company,
       policy_number: parsed[:policy_number],
       issued_at: parsed[:issued_at],
       starts_at: parsed[:starts_at],
       ends_at: parsed[:ends_at],
       premium: quote_result.price,
       total: parsed[:total_cents] ? Money.new(parsed[:total_cents]) : quote_result.price,
+      sold_via: "producer",
       webhook_payload: payload
     )
-
-    quote_result.quote.update!(status: "purchased")
   end
 end
