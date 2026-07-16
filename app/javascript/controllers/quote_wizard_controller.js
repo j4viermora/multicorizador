@@ -45,7 +45,7 @@ export default class extends Controller {
         dot.innerHTML = `<span>${i + 1}</span>`
       } else if (i < index) {
         dot.classList.add("is-complete")
-        dot.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>`
+        dot.innerHTML = `<i class="ti ti-check"></i>`
       } else {
         dot.innerHTML = `<span>${i + 1}</span>`
       }

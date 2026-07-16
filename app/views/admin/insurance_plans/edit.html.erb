@@ -1,6 +1,6 @@
 <h1 class="text-3xl font-bold mb-6">Editar Plan</h1>
 
-<%= simple_form_for [:admin, @plan], html: { class: "bg-base-100 p-6 rounded-box shadow max-w-lg" } do |f| %>
+<%= simple_form_for [:admin, @plan], html: { class: "bg-white p-6 rounded-lg shadow max-w-lg" } do |f| %>
   <%= f.association :provider, include_blank: false %>
   <%= f.input :name %>
   <%= f.input :description %>

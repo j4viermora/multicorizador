@@ -9,14 +9,14 @@
   <h2 class="text-xl font-semibold mb-4">Resultados de Cotización</h2>
   <div class="grid grid-cols-1 gap-4">
     <% @quote_results.each do |result| %>
-      <div class="card bg-base-100 shadow">
+      <div class="card">
         <div class="card-body flex flex-row items-center justify-between">
           <div>
             <h3 class="card-title"><%= result.provider.name %></h3>
             <p class="text-sm text-gray-500"><%= result.raw_response["plan_name"] %></p>
           </div>
           <div class="text-right">
-            <p class="text-2xl font-bold text-primary"><%= result.price.format %></p>
+            <p class="text-2xl font-bold text-teal-600"><%= result.price.format %></p>
           </div>
           <div class="card-actions">
             <%= link_to "Seleccionar", "#", class: "btn btn-primary btn-sm" %>
@@ -27,7 +27,7 @@
   </div>
 <% elsif @quote.quoting? %>
   <div class="alert alert-info">
-    <span class="loading loading-spinner loading-sm"></span>
+    <span class="loading loading-sm"></span>
     Consultando proveedores... Esto puede tardar unos segundos.
   </div>
 <% elsif @quote.draft? %>

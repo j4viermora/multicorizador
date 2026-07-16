@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-theme="light">
+<html>
   <head>
     <title><%= content_for(:title) || "Cotización - Ruka" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -9,12 +9,21 @@
     <%= csp_meta_tag %>
     <%= yield :head %>
     <link rel="icon" href="/icon.png" type="image/png">
+    <%# Tabler Icons (webfont) — the icon set for the whole app %>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont/dist/tabler-icons.min.css">
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+
+    <%# Flowbite: interactive components (dropdown, modal, tabs, …) — Turbo build re-inits on navigation %>
+    <script defer src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.turbo.min.js"></script>
+    <%# Flowbite datepicker: calendar CSS (self-contained) + full JS bundle (includes locales) %>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flowbite-datepicker@1.2.2/dist/css/datepicker.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/flowbite-datepicker@1.2.2/dist/js/datepicker-full.min.js"></script>
+
     <%= javascript_importmap_tags %>
   </head>
   <body class="min-h-screen" style="background: oklch(0.96 0.008 80);">
     <div class="container mx-auto px-4 pt-4 flex justify-end">
-      <%= link_to "Iniciar sesión", new_user_session_path, class: "text-xs opacity-60 hover:opacity-100" %>
+      <%= link_to "Iniciar sesión", new_user_session_path, class: "text-xs text-gray-600 hover:text-gray-900" %>
     </div>
     <% if notice %>
       <div class="container mx-auto px-4 pt-4 max-w-2xl">

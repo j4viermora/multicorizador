@@ -1,21 +1,21 @@
 <h1 class="text-3xl font-bold mb-6">Dashboard</h1>
 
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-  <div class="stat bg-base-100 shadow rounded-box">
+  <div class="stat">
     <div class="stat-title">Cotizaciones</div>
-    <div class="stat-value text-primary"><%= @quotes_count %></div>
+    <div class="stat-value text-teal-600"><%= @quotes_count %></div>
     <div class="stat-desc"><%= link_to "Nueva cotización", new_producer_quote_path, class: "link" %></div>
   </div>
 
-  <div class="stat bg-base-100 shadow rounded-box">
+  <div class="stat">
     <div class="stat-title">Clientes</div>
-    <div class="stat-value text-secondary"><%= @travelers_count %></div>
+    <div class="stat-value text-blue-600"><%= @travelers_count %></div>
     <div class="stat-desc"><%= link_to "Ver clientes", producer_travelers_path, class: "link" %></div>
   </div>
 
-  <div class="stat bg-base-100 shadow rounded-box">
+  <div class="stat">
     <div class="stat-title">Pólizas</div>
-    <div class="stat-value text-success"><%= current_user.quotes.purchased.count %></div>
+    <div class="stat-value text-green-600"><%= current_user.quotes.purchased.count %></div>
     <div class="stat-desc"><%= link_to "Ver pólizas", producer_policies_path, class: "link" %></div>
   </div>
 </div>

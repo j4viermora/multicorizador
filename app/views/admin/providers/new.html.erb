@@ -1,13 +1,13 @@
 <h1 class="text-3xl font-bold mb-6">Nuevo Proveedor</h1>
 
-<%= simple_form_for [:admin, @provider], html: { class: "bg-base-100 p-6 rounded-box shadow max-w-lg" } do |f| %>
+<%= simple_form_for [:admin, @provider], html: { class: "bg-white p-6 rounded-lg shadow max-w-lg" } do |f| %>
   <%= f.input :name %>
   <%= f.input :slug %>
   <%= f.input :status, collection: %w[active inactive], include_blank: false %>
 
-  <div class="form-control mb-4">
-    <label class="label">Configuración (JSON)</label>
-    <%= f.text_area :config, value: @provider.config.to_json, class: "textarea textarea-bordered font-mono", rows: 5 %>
+  <div class="mb-4">
+    <label class="label-text">Configuración (JSON)</label>
+    <%= f.text_area :config, value: @provider.config.to_json, class: "textarea font-mono", rows: 5 %>
   </div>
 
   <div class="flex gap-2">

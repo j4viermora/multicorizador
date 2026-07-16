@@ -118,9 +118,15 @@ Solid Queue (DB-backed), started as a separate process in `Procfile.dev`. In pro
 
 ### Frontend Stack
 
-Propshaft (assets) + Importmap (JS) + TailwindCSS 4 + DaisyUI + Hotwire (Turbo + Stimulus). No Node/webpack build step — CSS is compiled by `bin/rails tailwindcss:watch`.
+Propshaft (assets) + Importmap (JS) + TailwindCSS 4 + **Flowbite** + Hotwire (Turbo + Stimulus). No Node/webpack build step — CSS is compiled by `bin/rails tailwindcss:watch`.
 
-**Forms:** `simple_form` gem with DaisyUI wrappers. **ALWAYS use `simple_form_for` and `f.input`** — never use raw `form_for`, `form_with`, or manual `f.text_field`/`f.email_field` helpers. Available wrappers: `:default` (app forms), `:boolean` (checkboxes), `:auth` (Devise auth pages with compact labels). See `config/initializers/simple_form.rb`.
+**Styling: ALWAYS use Flowbite.** Flowbite is the ONLY styling library — do not reintroduce DaisyUI (removed), Bootstrap, or any other CSS framework. Component styling is written with Tailwind utilities in Flowbite's design language. A small set of reusable Flowbite-style component classes lives in `@layer components` at the top of `app/assets/tailwind/application.css` (`.btn`, `.card`, `.badge`, `.table`, `.stat`, `.alert`, `.input`, etc.) — these are OUR classes built with `@apply`, not a third-party plugin. Reuse them; extend that layer rather than scattering long utility strings across views.
+- **Colors:** use real Tailwind palette tokens (`teal` is the brand/primary, matching the wizard's `--wz-teal`). Never use DaisyUI semantic classes (`bg-base-100`, `text-primary`, `text-error`, `data-theme`, etc.) — they no longer exist.
+- **Icons:** **ALWAYS use Tabler Icons** (https://tabler.io/icons). Never inline hand-written SVGs, Heroicons, or other icon sets. Use the icon font classes (e.g. `<i class="ti ti-icon-name"></i>`) — pick whichever wiring is in place and stay consistent. Search Tabler for the most semantically accurate name before falling back to a generic one.
+- **Flowbite JS (interactive components):** loaded via CDN (`flowbite.turbo.min.js`) in the layouts — use Flowbite's data-attributes (e.g. `data-dropdown-toggle`, `data-modal-target`) for dropdowns, modals, tabs, etc. The `.turbo` build re-initializes components on Turbo navigation, so prefer it over the plain `flowbite.min.js`.
+- **Datepicker:** ALWAYS use the Flowbite datepicker (the `flowbite-datepicker` package). Date inputs are rendered as text fields via the `DatepickerInput` simple_form input (`as: :datepicker`) + the `datepicker` Stimulus controller, configured for `es` locale and ISO `yyyy-mm-dd` values (so Rails parses them natively). Never use `as: :date` (3 select boxes) or native `<input type="date">`.
+
+**Forms:** `simple_form` gem with Flowbite wrappers. **ALWAYS use `simple_form_for` and `f.input`** — never use raw `form_for`, `form_with`, or manual `f.text_field`/`f.email_field` helpers. Available wrappers: `:default` (app forms), `:boolean` (checkboxes), `:auth` (Devise auth pages with compact labels), `:select`. See `config/initializers/simple_form.rb` and the custom inputs under `app/inputs/`.
 **Search/filter:** `ransack` gem.
 **Pagination:** `kaminari` gem.
 **Rich text:** `lexxy` gem (not ActionText's Trix).

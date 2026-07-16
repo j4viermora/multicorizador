@@ -32,9 +32,7 @@
         <div class="wizard-step is-active" data-quote-wizard-target="step">
           <div class="flex items-start gap-3.5 mb-7">
             <div class="wizard-icon-badge travel">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-              </svg>
+              <i class="ti ti-plane-departure text-xl"></i>
             </div>
             <div>
               <h2 class="wizard-section-title">Datos del viaje</h2>
@@ -51,12 +49,13 @@
                 placeholder: "Ej: Europa",
                 input_html: { required: true, data: { action: "focus->quote-wizard#clearError" } } %>
 
-            <%= f.input :departure_date, label: "Fecha de salida", as: :string,
-                input_html: { type: "date", required: true, min: Date.today,
-                              data: { action: "focus->quote-wizard#clearError" } } %>
+            <%= f.input :departure_date, label: "Fecha de salida", as: :datepicker,
+                input_html: { required: true,
+                              data: { datepicker_min_value: Date.today.iso8601,
+                                      action: "focus->quote-wizard#clearError" } } %>
 
-            <%= f.input :return_date, label: "Fecha de regreso", as: :string,
-                input_html: { type: "date", min: Date.today } %>
+            <%= f.input :return_date, label: "Fecha de regreso", as: :datepicker,
+                input_html: { data: { datepicker_min_value: Date.today.iso8601 } } %>
 
             <%= f.input :trip_type, label: "Tipo de viaje",
                 collection: [["Viaje único", "single"], ["Multi-viaje", "multi_trip"], ["Anual", "annual"]],
@@ -66,7 +65,7 @@
             <%= f.input :travelers_count, label: "Cantidad de pasajeros",
                 input_html: {
                   min: 1, max: 10, value: 1, required: true,
-                  class: "input input-bordered w-full",
+                  class: "input w-full",
                   "data-travelers-count": "",
                   "data-action": "change->quote-wizard#updateAges focus->quote-wizard#clearError"
                 } %>
@@ -79,9 +78,7 @@
           <%# Edades %>
           <div class="flex items-start gap-3.5 mb-6">
             <div class="wizard-icon-badge passengers">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
+              <i class="ti ti-users text-xl"></i>
             </div>
             <div>
               <h2 class="wizard-section-title">Edades de los pasajeros</h2>
@@ -103,9 +100,7 @@
           <%# Viajero principal %>
           <div class="flex items-start gap-3.5 mb-5">
             <div class="wizard-icon-badge contact">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
+              <i class="ti ti-user text-xl"></i>
             </div>
             <div>
               <h2 class="wizard-section-title">Viajero principal</h2>
@@ -126,8 +121,7 @@
                 <%= tf.input :email, label: "Email", placeholder: "juan@ejemplo.com" %>
                 <%= tf.input :phone, label: "Teléfono", placeholder: "+54 9 11 1234-5678" %>
                 <%= tf.input :document, label: "Documento", placeholder: "DNI o Pasaporte" %>
-                <%= tf.input :birth_date, label: "Fecha de nacimiento", as: :string,
-                    input_html: { type: "date" } %>
+                <%= tf.input :birth_date, label: "Fecha de nacimiento", as: :datepicker %>
               </div>
             <% end %>
           </div>
@@ -141,7 +135,7 @@
                 class="wizard-nav-btn btn btn-ghost btn-sm gap-1.5 invisible"
                 data-action="quote-wizard#prev"
                 data-quote-wizard-target="prevBtn">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
+          <i class="ti ti-chevron-left text-base"></i>
           Anterior
         </button>
 
@@ -153,13 +147,13 @@
                   data-action="quote-wizard#next"
                   data-quote-wizard-target="nextBtn">
             Siguiente
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+            <i class="ti ti-chevron-right text-base"></i>
           </button>
 
           <button type="submit"
                   class="wizard-nav-btn btn btn-primary btn-sm gap-1.5 hidden"
                   data-quote-wizard-target="submitBtn">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            <i class="ti ti-search text-base"></i>
             Cotizar ahora
           </button>
         </div>

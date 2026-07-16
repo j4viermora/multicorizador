@@ -168,7 +168,7 @@
 /* ── Inputs inside wizard ── */
 .wizard-card .input,
 .wizard-card .select,
-.wizard-card select.input {
+.wizard-card select {
   background: white;
   border-color: var(--wz-border);
   border-radius: var(--wz-radius);
@@ -177,7 +177,7 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.wizard-card select.input {
+.wizard-card select {
   appearance: auto;
   padding-right: 2rem;
   background-image: none;
@@ -187,14 +187,14 @@
 
 .wizard-card .input:focus,
 .wizard-card .select:focus,
-.wizard-card select.input:focus {
+.wizard-card select:focus {
   border-color: var(--wz-teal);
   box-shadow: 0 0 0 3px var(--wz-teal-glow);
   outline: none;
 }
 
 .wizard-card .input.input-error,
-.wizard-card .select.input-error {
+.wizard-card .select.select-error {
   border-color: var(--wz-coral);
   box-shadow: 0 0 0 3px oklch(0.65 0.18 25 / 0.1);
 }

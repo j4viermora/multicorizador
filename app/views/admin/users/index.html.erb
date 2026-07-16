@@ -1,6 +1,6 @@
 <h1 class="text-3xl font-bold mb-6">Productores</h1>
 
-<div class="overflow-x-auto bg-base-100 shadow rounded-box">
+<div class="overflow-x-auto bg-white shadow rounded-lg">
   <table class="table table-zebra">
     <thead>
       <tr>
@@ -21,7 +21,7 @@
             <% if user.company %>
               <span class="font-mono text-sm"><%= user.company.slug %></span>
             <% else %>
-              <span class="text-base-content/40">—</span>
+              <span class="text-gray-400">—</span>
             <% end %>
           </td>
           <td>
@@ -36,7 +36,7 @@
                         title="Copiar enlace">⎘</button>
               </div>
             <% else %>
-              <span class="text-base-content/40">Sin slug</span>
+              <span class="text-gray-400">Sin slug</span>
             <% end %>
           </td>
           <td>

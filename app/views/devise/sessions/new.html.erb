@@ -30,15 +30,15 @@
   </div>
 
   <%# ── Right Form Panel (1/4) ── %>
-  <div class="w-full lg:w-1/4 flex flex-col justify-center bg-base-100 px-10 overflow-y-auto">
+  <div class="w-full lg:w-1/4 flex flex-col justify-center bg-white px-10 overflow-y-auto">
 
     <div class="lg:hidden mb-10">
-      <span class="font-sans text-xs tracking-[0.35em] uppercase text-base-content">RUKA</span>
+      <span class="font-sans text-xs tracking-[0.35em] uppercase text-gray-900">RUKA</span>
     </div>
 
     <div class="mb-9">
-      <h2 class="font-serif text-3xl font-light text-base-content mb-1">Iniciar sesión</h2>
-      <p class="font-sans text-xs text-base-content/40">Ingresa tus credenciales para continuar</p>
+      <h2 class="font-serif text-3xl font-light text-gray-900 mb-1">Iniciar sesión</h2>
+      <p class="font-sans text-xs text-gray-500">Ingresa tus credenciales para continuar</p>
     </div>
 
     <%= simple_form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "flex flex-col gap-5" }) do |f| %>
@@ -50,17 +50,14 @@
                   wrapper: :auth, input_html: { autocomplete: "current-password" } %>
 
       <% if devise_mapping.rememberable? %>
-        <%= f.input :remember_me, as: :boolean, label: "Recordarme",
-                    wrapper_html: { class: "form-control mb-0" },
-                    label_html: { class: "label cursor-pointer justify-start gap-2" },
-                    input_html: { class: "checkbox checkbox-sm" } %>
+        <%= f.input :remember_me, as: :boolean, label: "Recordarme" %>
       <% end %>
 
       <%= f.button :submit, "Entrar →", class: "btn btn-neutral w-full mt-2 text-xs tracking-widest uppercase" %>
 
     <% end %>
 
-    <div class="mt-8 pt-6 border-t border-base-200 flex flex-col gap-2">
+    <div class="mt-8 pt-6 border-t border-gray-200 flex flex-col gap-2">
       <%= render "devise/shared/links" %>
     </div>
 

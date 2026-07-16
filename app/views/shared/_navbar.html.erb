@@ -1,35 +1,49 @@
-<div class="navbar bg-base-100 shadow-lg mb-6">
-  <div class="navbar-start">
-    <%= link_to "Ruka", root_path, class: "btn btn-ghost text-xl" %>
-  </div>
+<nav class="bg-white border-b border-gray-200 mb-6">
+  <div class="container mx-auto px-4">
+    <div class="flex items-center justify-between h-16">
+      <%# Brand + primary nav %>
+      <div class="flex items-center gap-6">
+        <%= link_to "Ruka", root_path, class: "text-xl font-bold text-gray-900" %>
 
-  <div class="navbar-center hidden lg:flex">
-    <ul class="menu menu-horizontal px-1">
-      <% if current_user.super_admin? %>
-        <li><%= link_to "Dashboard", admin_dashboard_path %></li>
-        <li><%= link_to "Proveedores", admin_providers_path %></li>
-        <li><%= link_to "Productores", admin_users_path %></li>
-      <% elsif current_user.producer? && current_user.active? %>
-        <li><%= link_to "Dashboard", producer_dashboard_path %></li>
-        <li><%= link_to "Cotizaciones", producer_quotes_path %></li>
-        <li><%= link_to "Clientes", producer_travelers_path %></li>
-        <li><%= link_to "Pólizas", producer_policies_path %></li>
-      <% end %>
-    </ul>
-  </div>
+        <ul class="hidden lg:flex items-center gap-1">
+          <% if current_user.super_admin? %>
+            <li><%= link_to "Dashboard", admin_dashboard_path, class: "px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100" %></li>
+            <li><%= link_to "Proveedores", admin_providers_path, class: "px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100" %></li>
+            <li><%= link_to "Productores", admin_users_path, class: "px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100" %></li>
+          <% elsif current_user.producer? && current_user.active? %>
+            <li><%= link_to "Dashboard", producer_dashboard_path, class: "px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100" %></li>
+            <li><%= link_to "Cotizaciones", producer_quotes_path, class: "px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100" %></li>
+            <li><%= link_to "Clientes", producer_travelers_path, class: "px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100" %></li>
+            <li><%= link_to "Pólizas", producer_policies_path, class: "px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100" %></li>
+          <% end %>
+        </ul>
+      </div>
 
-  <div class="navbar-end">
-    <div class="dropdown dropdown-end">
-      <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
-        <div class="w-10 rounded-full bg-primary text-primary-content flex items-center justify-center">
-          <span class="text-lg font-bold"><%= current_user.first_name&.first || current_user.email.first %></span>
+      <%# User dropdown (Flowbite) %>
+      <div class="flex items-center">
+        <button id="user-menu-button" type="button"
+                data-dropdown-toggle="user-dropdown"
+                class="flex text-sm rounded-full focus:ring-4 focus:ring-gray-300">
+          <span class="w-9 h-9 rounded-full bg-teal-600 text-white flex items-center justify-center font-bold">
+            <%= current_user.first_name&.first || current_user.email.first %>
+          </span>
+        </button>
+
+        <div id="user-dropdown"
+             class="z-50 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-lg w-52 border border-gray-100">
+          <div class="px-4 py-3">
+            <span class="block text-sm font-semibold text-gray-900"><%= current_user.full_name %></span>
+            <span class="block text-xs text-gray-500 truncate"><%= current_user.email %></span>
+          </div>
+          <ul class="py-2 text-sm text-gray-700">
+            <li><%= link_to "Editar perfil", edit_user_registration_path, class: "block px-4 py-2 hover:bg-gray-100" %></li>
+            <li>
+              <%= button_to "Cerrar sesión", destroy_user_session_path, method: :delete,
+                    class: "w-full text-left px-4 py-2 hover:bg-gray-100" %>
+            </li>
+          </ul>
         </div>
       </div>
-      <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-        <li class="menu-title"><%= current_user.full_name %></li>
-        <li><%= link_to "Editar perfil", edit_user_registration_path %></li>
-        <li><%= button_to "Cerrar sesión", destroy_user_session_path, method: :delete, class: "w-full text-left" %></li>
-      </ul>
     </div>
   </div>
-</div>
+</nav>

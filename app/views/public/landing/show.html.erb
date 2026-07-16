@@ -315,7 +315,7 @@
               <%= f.input :travelers_count, label: "Cantidad de pasajeros",
                   input_html: {
                     min: 1, max: 10, value: 1, required: true,
-                    class: "input input-bordered w-full",
+                    class: "input w-full",
                     "data-travelers-count": "",
                     "data-action": "change->quote-wizard#updateAges focus->quote-wizard#clearError"
                   } %>
@@ -358,10 +358,10 @@
               <div class="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-0">
                 <div class="form-control w-full mb-4">
                   <label class="label label-text text-sm font-medium">
-                    <span class="text-error">*</span> Email
+                    <span class="text-red-500">*</span> Email
                   </label>
                   <input type="email" name="quote[metadata][email]"
-                         class="input input-bordered w-full"
+                         class="input w-full"
                          placeholder="juan@ejemplo.com" required
                          data-action="focus->quote-wizard#clearError" />
                 </div>

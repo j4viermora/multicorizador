@@ -2,7 +2,7 @@
 <p class="text-gray-500 mb-6">Emitida el <%= l @policy.issued_at, format: :long if @policy.issued_at %></p>
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-  <div class="card bg-base-100 shadow">
+  <div class="card">
     <div class="card-body">
       <h2 class="card-title">Detalles</h2>
       <p><strong>Proveedor:</strong> <%= @policy.quote_result.provider.name %></p>
@@ -12,7 +12,7 @@
     </div>
   </div>
 
-  <div class="card bg-base-100 shadow">
+  <div class="card">
     <div class="card-body">
       <h2 class="card-title">Estado</h2>
       <p><span class="badge badge-<%= @policy.active? ? 'success' : 'ghost' %>"><%= @policy.status.humanize %></span></p>

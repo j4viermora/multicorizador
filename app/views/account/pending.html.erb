@@ -30,28 +30,26 @@
   </div>
 
   <%# ── Right Panel (1/4) ── %>
-  <div class="w-full lg:w-1/4 flex flex-col justify-center bg-base-100 px-10 overflow-y-auto">
+  <div class="w-full lg:w-1/4 flex flex-col justify-center bg-white px-10 overflow-y-auto">
 
     <div class="lg:hidden mb-10">
-      <span class="font-sans text-xs tracking-[0.35em] uppercase text-base-content">RUKA</span>
+      <span class="font-sans text-xs tracking-[0.35em] uppercase text-gray-900">RUKA</span>
     </div>
 
     <div class="text-center lg:text-left">
-      <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-warning/10 mb-6">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-        </svg>
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-50 mb-6">
+        <i class="ti ti-clock-hour-4 w-8 h-8 text-amber-600"></i>
       </div>
 
-      <h2 class="font-serif text-3xl font-light text-base-content mb-3">Tu cuenta está en proceso de verificación</h2>
+      <h2 class="font-serif text-3xl font-light text-gray-900 mb-3">Tu cuenta está en proceso de verificación</h2>
 
-      <p class="font-sans text-sm text-base-content/50 leading-relaxed mb-6">
+      <p class="font-sans text-sm text-gray-500 leading-relaxed mb-6">
         Hemos recibido tu registro correctamente. Nuestro equipo revisará tu información y te contactaremos por correo electrónico cuando tu cuenta esté activa.
       </p>
 
-      <div class="bg-base-200/50 rounded-box p-4 mb-8">
-        <p class="font-sans text-xs text-base-content/40 uppercase tracking-widest mb-2">Tu correo registrado</p>
-        <p class="font-sans text-sm text-base-content font-medium"><%= current_user&.email %></p>
+      <div class="bg-gray-100 rounded-lg p-4 mb-8">
+        <p class="font-sans text-xs text-gray-500 uppercase tracking-widest mb-2">Tu correo registrado</p>
+        <p class="font-sans text-sm text-gray-900 font-medium"><%= current_user&.email %></p>
       </div>
 
       <div class="flex flex-col gap-3">

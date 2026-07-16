@@ -30,15 +30,15 @@
   </div>
 
   <%# ── Right Form Panel (1/4) ── %>
-  <div class="w-full lg:w-1/4 flex flex-col justify-center bg-base-100 px-10 overflow-y-auto">
+  <div class="w-full lg:w-1/4 flex flex-col justify-center bg-white px-10 overflow-y-auto">
 
     <div class="lg:hidden mb-10">
-      <span class="font-sans text-xs tracking-[0.35em] uppercase text-base-content">RUKA</span>
+      <span class="font-sans text-xs tracking-[0.35em] uppercase text-gray-900">RUKA</span>
     </div>
 
     <div class="mb-9">
-      <h2 class="font-serif text-3xl font-light text-base-content mb-1">Reenviar confirmación</h2>
-      <p class="font-sans text-xs text-base-content/40">Ingresa tu correo para recibir las instrucciones</p>
+      <h2 class="font-serif text-3xl font-light text-gray-900 mb-1">Reenviar confirmación</h2>
+      <p class="font-sans text-xs text-gray-500">Ingresa tu correo para recibir las instrucciones</p>
     </div>
 
     <%= simple_form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post, class: "flex flex-col gap-5" }) do |f| %>
@@ -52,7 +52,7 @@
 
     <% end %>
 
-    <div class="mt-8 pt-6 border-t border-base-200 flex flex-col gap-2">
+    <div class="mt-8 pt-6 border-t border-gray-200 flex flex-col gap-2">
       <%= render "devise/shared/links" %>
     </div>
 
