@@ -41,13 +41,35 @@
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-0">
-            <%= f.input :origin, label: "Origen",
-                placeholder: "Ej: Argentina",
-                input_html: { required: true, data: { action: "focus->quote-wizard#clearError" } } %>
+            <div data-controller="country-autocomplete"
+                 data-country-autocomplete-items-value="<%= countries_autocomplete_data %>"
+                 class="ac-wrapper">
+              <%= f.input :origin, label: "Origen",
+                  placeholder: "Ej: Argentina",
+                  input_html: {
+                    required: true, autocomplete: "off",
+                    data: {
+                      country_autocomplete_target: "input",
+                      action: "input->country-autocomplete#filter focus->country-autocomplete#open keydown->country-autocomplete#keydown focus->quote-wizard#clearError"
+                    }
+                  } %>
+              <ul data-country-autocomplete-target="list" class="ac-list hidden"></ul>
+            </div>
 
-            <%= f.input :destination, label: "Destino",
-                placeholder: "Ej: Europa",
-                input_html: { required: true, data: { action: "focus->quote-wizard#clearError" } } %>
+            <div data-controller="country-autocomplete"
+                 data-country-autocomplete-items-value="<%= countries_autocomplete_data %>"
+                 class="ac-wrapper">
+              <%= f.input :destination, label: "Destino",
+                  placeholder: "Ej: Europa",
+                  input_html: {
+                    required: true, autocomplete: "off",
+                    data: {
+                      country_autocomplete_target: "input",
+                      action: "input->country-autocomplete#filter focus->country-autocomplete#open keydown->country-autocomplete#keydown focus->quote-wizard#clearError"
+                    }
+                  } %>
+              <ul data-country-autocomplete-target="list" class="ac-list hidden"></ul>
+            </div>
 
             <%= f.input :departure_date, label: "Fecha de salida", as: :datepicker,
                 input_html: { required: true,

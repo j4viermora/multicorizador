@@ -11,17 +11,19 @@ class ProviderQuoteJob < ApplicationJob
 
     ActsAsTenant.with_tenant(quote.company) do
       begin
-        result = client.quote(quote)
-        price = Money.new(result[:price_cents], result[:currency] || Money.default_currency)
+        results = Array.wrap(client.quote(quote))
+        results.each do |result|
+          price = Money.new(result[:price_cents], result[:currency] || Money.default_currency)
 
-        QuoteResult.create!(
-          quote: quote,
-          provider: provider,
-          external_quote_id: result[:external_quote_id],
-          raw_response: result,
-          status: "success",
-          price: price
-        )
+          QuoteResult.create!(
+            quote: quote,
+            provider: provider,
+            external_quote_id: result[:external_quote_id],
+            raw_response: result,
+            status: "success",
+            price: price
+          )
+        end
       rescue => e
         QuoteResult.create!(
           quote: quote,

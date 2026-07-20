@@ -77,3 +77,25 @@ puts "Proveedor de ejemplo creado: #{example_provider.name}"
 
   puts "Proveedor fake creado: #{prov.name}"
 end
+
+# Omint Assistance — proveedor real (CreateQuotationB2B). Credenciales en
+# Provider#config por ahora (ver docs/09-omint-integration-plan.md); el
+# client_secret se lee de ENV para no commitear el secret real al repo —
+# seteá OMINT_CLIENT_SECRET en tu .env local con el valor del manual PDF.
+# Arranca "inactive": activalo manualmente una vez validado contra el
+# ambiente de test.
+omint_provider = Provider.find_or_create_by!(slug: "omint") do |p|
+  p.name = "Omint Assistance"
+  p.status = "inactive"
+  p.config = {
+    base_url: "https://oaapp.eastus2.cloudapp.azure.com:8448", # test; prod: https://api.omintassistance.com.ar
+    token_endpoint: "https://core.omintassistance.com.ar/connect/token",
+    client_id: "c92cbe04-c81d-428d-8c3f-453b0d45cf9e",
+    client_secret: ENV.fetch("OMINT_CLIENT_SECRET", "CHANGEME"),
+    scope: "OACoreApi IntegrationWebApi",
+    agreement_number: 3329,
+    timeout: 30
+  }
+end
+
+puts "Proveedor Omint creado: #{omint_provider.name} (status: #{omint_provider.status})"

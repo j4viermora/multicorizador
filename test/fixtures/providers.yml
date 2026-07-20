@@ -9,3 +9,16 @@ travel_ace:
   slug: travel_ace_fake
   status: active
   config: {}
+
+omint:
+  name: Omint Assistance
+  slug: omint
+  status: active
+  config:
+    base_url: "https://oaapp.test.example.com"
+    token_endpoint: "https://core.omintassistance.com.ar/connect/token"
+    client_id: "test-client-id"
+    client_secret: "test-client-secret"
+    scope: "OACoreApi IntegrationWebApi"
+    agreement_number: 3329
+    timeout: 30

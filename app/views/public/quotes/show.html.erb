@@ -5,8 +5,33 @@
 
     <%= simple_form_for @quote, url: public_quote_path(@link.token), method: :patch do |f| %>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <%= f.input :origin, label: "Origen" %>
-        <%= f.input :destination, label: "Destino" %>
+        <div data-controller="country-autocomplete"
+             data-country-autocomplete-items-value="<%= countries_autocomplete_data %>"
+             class="ac-wrapper">
+          <%= f.input :origin, label: "Origen",
+              input_html: {
+                autocomplete: "off",
+                data: {
+                  country_autocomplete_target: "input",
+                  action: "input->country-autocomplete#filter focus->country-autocomplete#open keydown->country-autocomplete#keydown"
+                }
+              } %>
+          <ul data-country-autocomplete-target="list" class="ac-list hidden"></ul>
+        </div>
+
+        <div data-controller="country-autocomplete"
+             data-country-autocomplete-items-value="<%= countries_autocomplete_data %>"
+             class="ac-wrapper">
+          <%= f.input :destination, label: "Destino",
+              input_html: {
+                autocomplete: "off",
+                data: {
+                  country_autocomplete_target: "input",
+                  action: "input->country-autocomplete#filter focus->country-autocomplete#open keydown->country-autocomplete#keydown"
+                }
+              } %>
+          <ul data-country-autocomplete-target="list" class="ac-list hidden"></ul>
+        </div>
         <%= f.input :departure_date, label: "Fecha de salida", as: :datepicker %>
         <%= f.input :return_date, label: "Fecha de regreso", as: :datepicker %>
         <%= f.input :travelers_count, label: "Viajeros", input_html: { min: 1 } %>

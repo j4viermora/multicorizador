@@ -101,3 +101,7 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+gem "faraday", "~> 2.14"
+
+gem "dotenv-rails", "~> 3.2", groups: [:development, :test]
