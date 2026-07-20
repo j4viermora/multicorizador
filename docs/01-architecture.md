@@ -1,4 +1,4 @@
-# Arquitectura de Ruka — Multicotizador de Seguros de Viaje
+# Arquitectura de Ruka — Seguros de Viaje
 
 ## Visión General
 
