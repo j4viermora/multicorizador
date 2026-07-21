@@ -18,8 +18,20 @@ test:
 
 production:
   primary: &production_mysql
+    <%
+      # Deliberately NOT named DATABASE_URL: Rails auto-merges any env var called
+      # DATABASE_URL (or PRIMARY_DATABASE_URL) into the primary config and lets
+      # the URL's scheme override `adapter:` above — which breaks when the URL
+      # uses a "mariadb://" scheme instead of "mysql2://". Parsing it ourselves
+      # under a different env var name sidesteps that entirely.
+      db_url = URI.parse(ENV.fetch("APP_DATABASE_URL"))
+    %>
     adapter: mysql2
-    url: <%= ENV["DATABASE_URL"] %>
+    host: <%= db_url.host %>
+    port: <%= db_url.port || 3306 %>
+    database: <%= db_url.path.delete_prefix("/") %>
+    username: <%= URI.decode_www_form_component(db_url.user.to_s) %>
+    password: <%= URI.decode_www_form_component(db_url.password.to_s) %>
     pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   cache:
     <<: *production_mysql
