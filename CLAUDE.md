@@ -52,6 +52,19 @@ config: "{}"        # not: config: {}
 
 `config/database.yml` sets `collation: utf8mb4_unicode_ci`. MariaDB 11.4's default for utf8mb4 is `utf8mb4_uca1400_ai_ci`, which does not exist on MariaDB 10.x — and Rails bakes whatever it finds into `db/schema.rb`, producing a schema that only loads on 11.4+. Do not remove the pin.
 
+### Boot loops on `Cannot delete or update a parent row`
+
+A `db:schema:load` that fails partway through leaves the database half-built: MariaDB DDL is not transactional, so the tables it managed to create stay, but `schema_migrations` — written last — never appears. On the next boot `db:prepare` sees no `schema_migrations`, concludes the database is empty and replays the schema, whose `force: :cascade` DROPs now fail against the leftover foreign keys. Every subsequent boot fails the same way.
+
+Recover with:
+
+```bash
+bin/rails db:reset_hard                                    # development
+DISABLE_DATABASE_ENVIRONMENT_CHECK=1 bin/rails db:reset_hard   # anywhere else
+```
+
+It drops every table with `FOREIGN_KEY_CHECKS=0` (sidestepping the ordering problem) and reloads the schema. **Destructive** — it is a recovery tool, not routine maintenance.
+
 ### Do not chain `db:drop db:prepare` in one invocation
 
 With multiple databases configured, `bin/rails db:drop db:prepare` runs the seeds but ends with an empty database. Run them separately:
