@@ -11,7 +11,7 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[8.0].define(version: 2026_07_16_170000) do
-  create_table "action_text_rich_texts", force: :cascade do |t|
+  create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
     t.string "record_type", null: false
@@ -21,7 +21,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_16_170000) do
     t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
   end
 
-  create_table "active_storage_attachments", force: :cascade do |t|
+  create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
     t.bigint "record_id", null: false
@@ -31,7 +31,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_16_170000) do
     t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
   end
 
-  create_table "active_storage_blobs", force: :cascade do |t|
+  create_table "active_storage_blobs", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "key", null: false
     t.string "filename", null: false
     t.string "content_type"
@@ -43,13 +43,13 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_16_170000) do
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
-  create_table "active_storage_variant_records", force: :cascade do |t|
+  create_table "active_storage_variant_records", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "companies", force: :cascade do |t|
+  create_table "companies", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -58,20 +58,21 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_16_170000) do
     t.index ["slug"], name: "index_companies_on_slug", unique: true
   end
 
-  create_table "insurance_plans", force: :cascade do |t|
-    t.integer "provider_id", null: false
+  create_table "insurance_plans", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.bigint "provider_id", null: false
     t.string "name", null: false
     t.text "description"
-    t.json "coverage_details", default: {}
+    t.text "coverage_details", size: :long, default: "{}", collation: "utf8mb4_bin"
     t.string "status", default: "active", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["provider_id"], name: "index_insurance_plans_on_provider_id"
+    t.check_constraint "json_valid(`coverage_details`)", name: "coverage_details"
   end
 
-  create_table "links", force: :cascade do |t|
-    t.integer "company_id", null: false
-    t.integer "quote_id", null: false
+  create_table "links", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.bigint "company_id", null: false
+    t.bigint "quote_id", null: false
     t.string "token", null: false
     t.string "purpose", default: "quote_share", null: false
     t.datetime "expires_at"
@@ -85,9 +86,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_16_170000) do
     t.index ["token"], name: "index_links_on_token", unique: true
   end
 
-  create_table "policies", force: :cascade do |t|
-    t.integer "quote_result_id", null: false
-    t.integer "company_id", null: false
+  create_table "policies", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.bigint "quote_result_id", null: false
+    t.bigint "company_id", null: false
     t.string "policy_number", null: false
     t.string "status", default: "active", null: false
     t.datetime "issued_at"
@@ -97,7 +98,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_16_170000) do
     t.string "premium_currency", default: "ARS", null: false
     t.integer "total_cents", default: 0, null: false
     t.string "total_currency", default: "ARS", null: false
-    t.json "webhook_payload", default: {}
+    t.text "webhook_payload", size: :long, default: "{}", collation: "utf8mb4_bin"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "sold_via", default: "direct", null: false
@@ -105,40 +106,43 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_16_170000) do
     t.index ["policy_number"], name: "index_policies_on_policy_number"
     t.index ["quote_result_id"], name: "index_policies_on_quote_result_id"
     t.index ["sold_via"], name: "index_policies_on_sold_via"
+    t.check_constraint "json_valid(`webhook_payload`)", name: "webhook_payload"
   end
 
-  create_table "providers", force: :cascade do |t|
+  create_table "providers", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "slug", null: false
     t.string "status", default: "active", null: false
-    t.json "config", default: {}
+    t.text "config", size: :long, default: "{}", collation: "utf8mb4_bin"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["slug"], name: "index_providers_on_slug", unique: true
+    t.check_constraint "json_valid(`config`)", name: "config"
   end
 
-  create_table "quote_results", force: :cascade do |t|
-    t.integer "quote_id", null: false
-    t.integer "provider_id", null: false
-    t.integer "insurance_plan_id"
+  create_table "quote_results", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.bigint "quote_id", null: false
+    t.bigint "provider_id", null: false
+    t.bigint "insurance_plan_id"
     t.string "external_quote_id"
-    t.json "raw_response", default: {}
+    t.text "raw_response", size: :long, default: "{}", collation: "utf8mb4_bin"
     t.string "status", default: "pending", null: false
     t.integer "price_cents", default: 0, null: false
     t.string "price_currency", default: "ARS", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "company_id", null: false
+    t.bigint "company_id", null: false
     t.index ["company_id"], name: "index_quote_results_on_company_id"
     t.index ["insurance_plan_id"], name: "index_quote_results_on_insurance_plan_id"
     t.index ["provider_id"], name: "index_quote_results_on_provider_id"
     t.index ["quote_id"], name: "index_quote_results_on_quote_id"
+    t.check_constraint "json_valid(`raw_response`)", name: "raw_response"
   end
 
-  create_table "quotes", force: :cascade do |t|
-    t.integer "company_id", null: false
-    t.integer "producer_id", null: false
-    t.integer "traveler_id"
+  create_table "quotes", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.bigint "company_id", null: false
+    t.bigint "producer_id", null: false
+    t.bigint "traveler_id"
     t.string "status", default: "draft", null: false
     t.string "public_token"
     t.string "origin", null: false
@@ -147,7 +151,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_16_170000) do
     t.date "return_date"
     t.integer "travelers_count", default: 1, null: false
     t.string "trip_type", default: "single", null: false
-    t.json "metadata", default: {}
+    t.text "metadata", size: :long, default: "{}", collation: "utf8mb4_bin"
     t.datetime "completed_at"
     t.string "created_by", default: "producer", null: false
     t.datetime "created_at", null: false
@@ -156,11 +160,12 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_16_170000) do
     t.index ["producer_id"], name: "index_quotes_on_producer_id"
     t.index ["public_token"], name: "index_quotes_on_public_token", unique: true
     t.index ["traveler_id"], name: "index_quotes_on_traveler_id"
+    t.check_constraint "json_valid(`metadata`)", name: "metadata"
   end
 
-  create_table "travelers", force: :cascade do |t|
-    t.integer "company_id", null: false
-    t.integer "producer_id", null: false
+  create_table "travelers", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.bigint "company_id", null: false
+    t.bigint "producer_id", null: false
     t.string "first_name", null: false
     t.string "last_name", null: false
     t.string "email", null: false
@@ -173,7 +178,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_16_170000) do
     t.index ["producer_id"], name: "index_travelers_on_producer_id"
   end
 
-  create_table "users", force: :cascade do |t|
+  create_table "users", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
@@ -182,7 +187,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_16_170000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "is_superuser", default: false, null: false
-    t.integer "company_id", null: false
+    t.bigint "company_id", null: false
     t.integer "role", default: 0, null: false
     t.integer "status", default: 0, null: false
     t.string "first_name"

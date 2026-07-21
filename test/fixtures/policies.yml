@@ -11,7 +11,7 @@ direct_policy:
   total_cents: 45000
   total_currency: ARS
   sold_via: direct
-  webhook_payload: {}
+  webhook_payload: "{}"
 
 producer_policy:
   quote_result: demo_quote_travel_ace
@@ -26,4 +26,4 @@ producer_policy:
   total_cents: 32000
   total_currency: ARS
   sold_via: producer
-  webhook_payload: {}
+  webhook_payload: "{}"

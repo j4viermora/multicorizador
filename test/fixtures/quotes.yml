@@ -9,7 +9,7 @@ producer_quote:
   return_date: <%= 40.days.from_now.to_date.iso8601 %>
   travelers_count: 1
   trip_type: single
-  metadata: {}
+  metadata: "{}"
   created_by: producer
 
 demo_quote:
@@ -23,5 +23,5 @@ demo_quote:
   return_date: <%= 25.days.from_now.to_date.iso8601 %>
   travelers_count: 1
   trip_type: single
-  metadata: {}
+  metadata: "{}"
   created_by: client

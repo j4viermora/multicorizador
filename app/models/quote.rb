@@ -1,4 +1,6 @@
 class Quote < ApplicationRecord
+  attribute :metadata, :json
+
   include TripMetadata
 
   acts_as_tenant :company

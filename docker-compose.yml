@@ -1,15 +1,28 @@
 services:
   db:
-    image: postgres:18-alpine
+    image: mariadb:11.4
     restart: unless-stopped
+    # MariaDB 11.4 defaults to utf8mb4_uca1400_ai_ci, which does not exist on
+    # MariaDB 10.x. Rails bakes the collation into db/schema.rb, so leaving the
+    # default would produce a schema that only loads on 11.4+. utf8mb4_unicode_ci
+    # exists on every MariaDB/MySQL version we might deploy against.
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     ports:
-      - "5432:5432"
+      # 3306 on the host is taken by another project's MySQL, so map to 3307.
+      - "3307:3306"
     environment:
-      POSTGRES_USER: ruka
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: asito_development
+      MARIADB_ROOT_PASSWORD: password
+      MARIADB_DATABASE: ruka_development
+      MARIADB_USER: ruka
+      MARIADB_PASSWORD: password
     volumes:
-      - ruka_postgres_data:/var/lib/postgresql/data
+      - ruka_mariadb_data:/var/lib/mysql
+      - ./config/mariadb/development-grants.sql:/docker-entrypoint-initdb.d/10-grants.sql:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
 volumes:
-  ruka_postgres_data:
+  ruka_mariadb_data:

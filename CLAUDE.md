@@ -23,25 +23,42 @@ bin/rubocop
 # Security scan
 bin/brakeman
 
-# Database
-bin/rails db:create db:migrate db:seed
-
-# Create super admin
-bin/rails admin:create EMAIL=admin@example.com PASSWORD=secret
+# Database (MariaDB runs in Docker — start it first)
+docker compose up -d
+bin/rails db:prepare
 ```
 
 ## Local Setup Gotchas
 
-### `bin/dev` fails with `Could not find table 'solid_queue_processes'`
+### Development and test run MariaDB, not SQLite
 
-Solid Queue runs on a **separate database** (`storage/development_queue.sqlite3`, see [config/database.yml](config/database.yml)), which uses `db/queue_schema.rb` — **not** the regular migration pipeline. If that file exists but is empty (e.g. after cloning, or the queue DB was created without the schema), `db:migrate` reports success but the worker still crashes because the tables are missing.
+`docker-compose.yml` provides MariaDB 11.4 on **host port 3307** (3306 is usually taken by another project). Credentials default to `ruka` / `password` and are overridable via `DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`.
 
-Fix when it happens:
+**Never move development back to SQLite.** SQLite cannot distinguish `INTEGER` from `BIGINT`, so dumping `db/schema.rb` from it rewrites every `t.references` foreign key as `t.integer`. On MariaDB that is `INT(11)` against `BIGINT(20)` primary keys, and `db:prepare` then dies with `errno: 150 "Foreign key constraint is incorrectly formed"` — at deploy time, long after the bad schema was committed.
+
+### JSON columns need an explicit `attribute ..., :json`
+
+MariaDB has no native JSON type: it is an alias for `longtext` plus a `CHECK (json_valid(...))` constraint. Because `SHOW CREATE TABLE` reports `longtext`, Rails treats such columns as plain strings and stores `to_s` output (Ruby hash syntax), which fails the CHECK.
+
+Every model with a JSON column therefore declares the cast explicitly — `attribute :config, :json` in `Provider`, and likewise in `InsurancePlan`, `Policy`, `Quote`, `QuoteResult`. **Add the same line whenever you introduce a new JSON column.**
+
+Fixtures bypass the model, so they must contain JSON **strings**, not YAML hashes (Rails' fixture loader falls back to `to_yaml` for Hash values, producing `--- {}` which is not valid JSON):
+
+```yaml
+config: "{}"        # not: config: {}
+```
+
+### The collation is pinned on purpose
+
+`config/database.yml` sets `collation: utf8mb4_unicode_ci`. MariaDB 11.4's default for utf8mb4 is `utf8mb4_uca1400_ai_ci`, which does not exist on MariaDB 10.x — and Rails bakes whatever it finds into `db/schema.rb`, producing a schema that only loads on 11.4+. Do not remove the pin.
+
+### Do not chain `db:drop db:prepare` in one invocation
+
+With multiple databases configured, `bin/rails db:drop db:prepare` runs the seeds but ends with an empty database. Run them separately:
 
 ```bash
-bin/rails solid_queue:install      # (re)generates db/queue_schema.rb if missing
-rm -f storage/development_queue.sqlite3   # nuke the empty queue DB
-bin/rails db:prepare               # recreates it from db/queue_schema.rb
+bin/rails db:drop
+bin/rails db:prepare
 ```
 
 ### `css: bin/rails tailwindcss:watch` exits immediately and tears down `bin/dev`
@@ -50,7 +67,7 @@ Without a TTY (terminals spawned by some editors, Docker without `tty: true`, CI
 
 `Procfile.dev` is already pinned to `bin/rails tailwindcss:watch[always]` to keep the watcher alive. **Do not revert it to the bare `tailwindcss:watch`** — it will break non-TTY environments again.
 
-> TODO (when we move to a real DB / Postgres): The Solid Queue schema lives in `db/queue_schema.rb` because of the multi-DB SQLite setup. On Postgres we must decide whether the queue shares the primary DB or gets its own, and replace this install/prepare dance with proper migrations under `db/queue_migrate` (already wired as the `migrations_paths`). Revisit the `solid_queue:install` + `db/prepare` flow above at that point.
+> TODO: Solid Queue's schema still lives in `db/queue_schema.rb` rather than real migrations under `db/queue_migrate` (already wired as `migrations_paths`, but the directory does not exist yet). Worth converting now that every environment is on MariaDB.
 
 ## Skills
 
@@ -67,16 +84,16 @@ When working on this project, use these skills for specialized assistance:
 
 ### Database
 
-**Engine:** SQLite3 (MVP). Schema is PostgreSQL-compatible for future migration.
+**Engine:** MariaDB (`mysql2` adapter) in every environment — development and test via `docker-compose.yml`, production via `APP_DATABASE_URL`.
 
 **Key tables:** `companies`, `users`, `providers`, `insurance_plans`, `quotes`, `quote_results`, `policies`, `travelers`, `links`.
 
-**Stay Postgres-portable — avoid SQLite-specific things:**
-- No raw SQLite syntax in migrations/queries (no `PRAGMA`, no SQLite-only functions in `execute`/`find_by_sql`).
+**Conventions:**
 - Use `add_foreign_key` for every association, as already done — don't rely on implicit FKs.
-- Prefer standard Rails migration DSL (`t.column`, `add_index`, etc.) over adapter-specific SQL so migrations replay unchanged on Postgres.
-- `t.json` columns are fine as-is; when the app actually moves to Postgres, revisit them for `jsonb` (better indexing/query support), but don't over-engineer that now.
-- Solid Queue/Cache/Cable currently each use their own SQLite file (see `config/database.yml`) — keep that separation in mind, since moving to Postgres means deciding whether they share the primary DB or get their own Postgres databases.
+- Prefer the standard Rails migration DSL (`t.column`, `add_index`, etc.) over adapter-specific SQL.
+- Foreign keys must be `bigint`, matching the `bigint` primary keys. `t.references` does this automatically; never hand-write `t.integer` for an FK.
+- JSON columns need `attribute :name, :json` on the model — see the Local Setup Gotchas above.
+- Solid Queue/Cache/Cable each get their **own physical database** (`<primary>_queue`, `_cache`, `_cable`). Sharing one database makes all four roles write to the same `ar_internal_metadata` row, so Rails' schema-up-to-date check disagrees with itself and re-runs `schema.rb` (`force: :cascade` DROP) on every boot. Keep them separate. Development only needs `primary` + `queue`, since dev uses `memory_store` for cache and the `async` cable adapter.
 
 ### Multi-tenancy
 
@@ -142,4 +159,4 @@ Resend in production, `letter_opener` in development (emails open in browser). N
 
 ### Deployment
 
-Kamal (`bin/kamal`). Config in [config/deploy.yml](config/deploy.yml). Rails master key is the only required secret (`RAILS_MASTER_KEY`). SQLite database persisted via Docker volume. SSL via Let's Encrypt proxy.
+Kamal (`bin/kamal`). Config in [config/deploy.yml](config/deploy.yml). Requires `RAILS_MASTER_KEY` and `APP_DATABASE_URL` (deliberately *not* named `DATABASE_URL` — Rails auto-merges that one into the primary config and lets the URL scheme override the adapter, which breaks on `mariadb://` URLs; see the comment in `config/database.yml`). SSL via Let's Encrypt proxy.

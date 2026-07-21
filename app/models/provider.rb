@@ -1,4 +1,8 @@
 class Provider < ApplicationRecord
+  # MariaDB reports JSON columns as longtext, so Rails would treat this as a
+  # plain string and store `to_s` output. Declare the cast explicitly.
+  attribute :config, :json
+
   has_many :insurance_plans, dependent: :destroy
   has_many :quote_results, dependent: :nullify
 

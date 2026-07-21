@@ -2,23 +2,28 @@ assist_card:
   name: Assist Card
   slug: assist_card_fake
   status: active
-  config: {}
+  config: "{}"
 
 travel_ace:
   name: Travel Ace
   slug: travel_ace_fake
   status: active
-  config: {}
+  config: "{}"
 
 omint:
   name: Omint Assistance
   slug: omint
   status: active
-  config:
-    base_url: "https://oaapp.test.example.com"
-    token_endpoint: "https://core.omintassistance.com.ar/connect/token"
-    client_id: "test-client-id"
-    client_secret: "test-client-secret"
-    scope: "OACoreApi IntegrationWebApi"
-    agreement_number: 3329
-    timeout: 30
+  # JSON columns must be written as JSON strings, not YAML hashes: MariaDB
+  # exposes them as longtext, so Rails' fixture loader falls back to to_yaml
+  # and the resulting value fails the column's json_valid CHECK.
+  config: |
+    {
+      "base_url": "https://oaapp.test.example.com",
+      "token_endpoint": "https://core.omintassistance.com.ar/connect/token",
+      "client_id": "test-client-id",
+      "client_secret": "test-client-secret",
+      "scope": "OACoreApi IntegrationWebApi",
+      "agreement_number": 3329,
+      "timeout": 30
+    }

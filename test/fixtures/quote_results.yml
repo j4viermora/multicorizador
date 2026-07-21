@@ -6,16 +6,19 @@ producer_quote_assist_card:
   external_quote_id: AC-TEST-0001
   price_cents: 45000
   price_currency: ARS
-  raw_response:
-    provider_name: Assist Card
-    provider_slug: assist_card_fake
-    plan_name: Assist Card AC 150
-    price_cents: 45000
-    price_per_person_cents: 45000
-    currency: ARS
-    coverage:
-      - name: Asistencia médica
-        amount: USD 150.000
+  # JSON columns must be written as JSON strings — see the note in providers.yml.
+  raw_response: |
+    {
+      "provider_name": "Assist Card",
+      "provider_slug": "assist_card_fake",
+      "plan_name": "Assist Card AC 150",
+      "price_cents": 45000,
+      "price_per_person_cents": 45000,
+      "currency": "ARS",
+      "coverage": [
+        { "name": "Asistencia médica", "amount": "USD 150.000" }
+      ]
+    }
 
 demo_quote_travel_ace:
   company: demo_agency
@@ -25,13 +28,15 @@ demo_quote_travel_ace:
   external_quote_id: TA-TEST-0001
   price_cents: 32000
   price_currency: ARS
-  raw_response:
-    provider_name: Travel Ace
-    provider_slug: travel_ace_fake
-    plan_name: Travel Ace Essential
-    price_cents: 32000
-    price_per_person_cents: 32000
-    currency: ARS
-    coverage:
-      - name: Asistencia médica
-        amount: USD 50.000
+  raw_response: |
+    {
+      "provider_name": "Travel Ace",
+      "provider_slug": "travel_ace_fake",
+      "plan_name": "Travel Ace Essential",
+      "price_cents": 32000,
+      "price_per_person_cents": 32000,
+      "currency": "ARS",
+      "coverage": [
+        { "name": "Asistencia médica", "amount": "USD 50.000" }
+      ]
+    }

@@ -1,4 +1,6 @@
 class Policy < ApplicationRecord
+  attribute :webhook_payload, :json
+
   acts_as_tenant :company
 
   belongs_to :quote_result

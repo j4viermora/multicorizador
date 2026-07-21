@@ -1,4 +1,6 @@
 class QuoteResult < ApplicationRecord
+  attribute :raw_response, :json
+
   acts_as_tenant :company
 
   belongs_to :quote
