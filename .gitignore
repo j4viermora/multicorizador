@@ -42,3 +42,5 @@
 
 # Nested git repo (Engram plugin source, not part of this project)
 /engram/
+
+/config/credentials/production.key

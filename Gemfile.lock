@@ -270,6 +270,8 @@ GEM
     msgpack (1.8.0)
     multi_xml (0.8.1)
       bigdecimal (>= 3.1, < 5)
+    mysql2 (0.5.7)
+      bigdecimal
     net-http (0.9.1)
       uri (>= 0.11.1)
     net-imap (0.6.3)
@@ -542,6 +544,7 @@ DEPENDENCIES
   lexxy (~> 0.1.26.beta)
   mission_control-jobs
   money-rails (~> 3.0)
+  mysql2 (~> 0.5)
   propshaft
   puma (>= 5.0)
   rails (~> 8.0.4)
