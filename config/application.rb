@@ -6,6 +6,15 @@ require "rails/all"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+# Some hosting providers (e.g. Dokploy) inject a DATABASE_URL with a
+# "mariadb://" scheme when linking a MariaDB service. Rails auto-merges that
+# URL into the primary db config and resolves the adapter from its scheme, so
+# without this alias it looks for a nonexistent "mariadb" adapter instead of
+# reusing the mysql2 one (which works fine against MariaDB).
+ActiveRecord::ConnectionAdapters.register(
+  "mariadb", "ActiveRecord::ConnectionAdapters::Mysql2Adapter", "active_record/connection_adapters/mysql2_adapter"
+)
+
 module Ruka
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
