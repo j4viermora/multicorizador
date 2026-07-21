@@ -24,7 +24,9 @@ production:
       # the URL's scheme override `adapter:` above — which breaks when the URL
       # uses a "mariadb://" scheme instead of "mysql2://". Parsing it ourselves
       # under a different env var name sidesteps that entirely.
-      db_url = URI.parse(ENV.fetch("APP_DATABASE_URL"))
+      # Falls back to a placeholder at asset-precompile time (Docker build),
+      # when the real URL isn't available yet and no DB connection is needed.
+      db_url = URI.parse(ENV.fetch("APP_DATABASE_URL", "mysql2://placeholder/placeholder"))
     %>
     adapter: mysql2
     host: <%= db_url.host %>
