@@ -1,15 +1,20 @@
-# Development and test run MariaDB (via docker-compose.yml) to match production.
-# Do NOT move them back to SQLite: SQLite cannot distinguish INTEGER from BIGINT,
-# so dumping db/schema.rb from it rewrites every `t.references` foreign key as
-# `t.integer`. On MariaDB that is INT(11) against BIGINT(20) primary keys, and
-# db:prepare then dies with errno 150 "Foreign key constraint is incorrectly
+# Every environment runs MariaDB on a SINGLE database. Solid Queue, Solid Cache
+# and Solid Cable keep their tables here alongside the application's, created by
+# regular migrations, because the production database user is only granted
+# privileges on its own schema and cannot create the extra databases the
+# multi-database setup required.
+#
+# Do NOT move development back to SQLite: SQLite cannot distinguish INTEGER from
+# BIGINT, so dumping db/schema.rb from it rewrites every `t.references` foreign
+# key as `t.integer`. On MariaDB that is INT(11) against BIGINT(20) primary keys,
+# and db:prepare then dies with errno 150 "Foreign key constraint is incorrectly
 # formed" — at deploy time, long after the bad schema was committed.
 default: &default
   adapter: mysql2
   encoding: utf8mb4
   # Pin the collation: `encoding: utf8mb4` alone makes Rails emit CHARACTER SET
   # utf8mb4 on CREATE TABLE, which picks the charset's default collation —
-  # utf8mb4_uca1400_ai_ci on MariaDB 11.4, and that does not exist on 10.x.
+  # utf8mb4_uca1400_ai_ci on MariaDB 11.4+, and that does not exist on 10.x.
   # Rails bakes whatever it finds into db/schema.rb, so pinning a collation that
   # exists everywhere keeps the dumped schema loadable on any server version.
   collation: utf8mb4_unicode_ci
@@ -20,53 +25,27 @@ default: &default
   password: <%= ENV.fetch("DB_PASSWORD", "password") %>
 
 development:
-  primary:
-    <<: *default
-    database: ruka_development
-  queue:
-    <<: *default
-    database: ruka_development_queue
-    migrations_paths: db/queue_migrate
+  <<: *default
+  database: ruka_development
 
 test:
   <<: *default
   database: ruka_test
 
 production:
-  primary: &production_mysql
-    <%
-      # Deliberately NOT named DATABASE_URL: Rails auto-merges any env var called
-      # DATABASE_URL (or PRIMARY_DATABASE_URL) into the primary config and lets
-      # the URL's scheme override `adapter:` above — which breaks when the URL
-      # uses a "mariadb://" scheme instead of "mysql2://". Parsing it ourselves
-      # under a different env var name sidesteps that entirely.
-      # Falls back to a placeholder at asset-precompile time (Docker build),
-      # when the real URL isn't available yet and no DB connection is needed.
-      db_url = URI.parse(ENV.fetch("APP_DATABASE_URL", "mysql2://placeholder/placeholder"))
-      primary_database = db_url.path.delete_prefix("/")
-    %>
-    adapter: mysql2
-    host: <%= db_url.host %>
-    port: <%= db_url.port || 3306 %>
-    database: <%= primary_database %>
-    username: <%= URI.decode_www_form_component(db_url.user.to_s) %>
-    password: <%= URI.decode_www_form_component(db_url.password.to_s) %>
-    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  # Solid Queue/Cache/Cable get their own physical database (same server,
-  # same credentials, different schema) instead of sharing primary's. When
-  # they shared one physical database, all 4 roles wrote to the same
-  # ar_internal_metadata row, so Rails' "is the schema up to date?" check
-  # kept disagreeing with itself and re-ran schema.rb (force: :cascade DROP)
-  # on every boot, crashing on foreign keys from data already loaded.
-  cache:
-    <<: *production_mysql
-    database: <%= primary_database %>_cache
-    migrations_paths: db/cache_migrate
-  queue:
-    <<: *production_mysql
-    database: <%= primary_database %>_queue
-    migrations_paths: db/queue_migrate
-  cable:
-    <<: *production_mysql
-    database: <%= primary_database %>_cable
-    migrations_paths: db/cable_migrate
+  <%
+    # Deliberately NOT named DATABASE_URL: Rails auto-merges any env var called
+    # DATABASE_URL (or PRIMARY_DATABASE_URL) into the primary config and lets
+    # the URL's scheme override `adapter:` above — which breaks when the URL
+    # uses a "mariadb://" scheme instead of "mysql2://". Parsing it ourselves
+    # under a different env var name sidesteps that entirely.
+    # Falls back to a placeholder at asset-precompile time (Docker build),
+    # when the real URL isn't available yet and no DB connection is needed.
+    db_url = URI.parse(ENV.fetch("APP_DATABASE_URL", "mysql2://placeholder/placeholder"))
+  %>
+  <<: *default
+  host: <%= db_url.host %>
+  port: <%= db_url.port || 3306 %>
+  database: <%= db_url.path.delete_prefix("/") %>
+  username: <%= URI.decode_www_form_component(db_url.user.to_s) %>
+  password: <%= URI.decode_www_form_component(db_url.password.to_s) %>

@@ -80,7 +80,6 @@ Without a TTY (terminals spawned by some editors, Docker without `tty: true`, CI
 
 `Procfile.dev` is already pinned to `bin/rails tailwindcss:watch[always]` to keep the watcher alive. **Do not revert it to the bare `tailwindcss:watch`** — it will break non-TTY environments again.
 
-> TODO: Solid Queue's schema still lives in `db/queue_schema.rb` rather than real migrations under `db/queue_migrate` (already wired as `migrations_paths`, but the directory does not exist yet). Worth converting now that every environment is on MariaDB.
 
 ## Skills
 
@@ -106,7 +105,8 @@ When working on this project, use these skills for specialized assistance:
 - Prefer the standard Rails migration DSL (`t.column`, `add_index`, etc.) over adapter-specific SQL.
 - Foreign keys must be `bigint`, matching the `bigint` primary keys. `t.references` does this automatically; never hand-write `t.integer` for an FK.
 - JSON columns need `attribute :name, :json` on the model — see the Local Setup Gotchas above.
-- Solid Queue/Cache/Cable each get their **own physical database** (`<primary>_queue`, `_cache`, `_cable`). Sharing one database makes all four roles write to the same `ar_internal_metadata` row, so Rails' schema-up-to-date check disagrees with itself and re-runs `schema.rb` (`force: :cascade` DROP) on every boot. Keep them separate. Development only needs `primary` + `queue`, since dev uses `memory_store` for cache and the `async` cable adapter.
+- **Single database.** Solid Queue/Cache/Cable keep their tables alongside the application's, created by ordinary migrations in `db/migrate`. The production database user is only granted privileges on its own schema and cannot create the extra databases a multi-database setup needs.
+- Because of that, none of the Solid engines declare `connects_to` — not in `config/environments/*.rb`, not in `cache.yml`, not in `cable.yml`. **Do not add it back**, and do not reintroduce `queue`/`cache`/`cable` entries in `database.yml`: that is what made all four connection roles write to the same `ar_internal_metadata` row, so Rails' schema-up-to-date check disagreed with itself and replayed `schema.rb` (`force: :cascade` DROP) on every boot.
 
 ### Multi-tenancy
 

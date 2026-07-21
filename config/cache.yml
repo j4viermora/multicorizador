@@ -12,5 +12,5 @@ test:
   <<: *default
 
 production:
-  database: cache
+  # No `database:` key — the cache table lives in the primary database.
   <<: *default
