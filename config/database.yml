@@ -27,20 +27,30 @@ production:
       # Falls back to a placeholder at asset-precompile time (Docker build),
       # when the real URL isn't available yet and no DB connection is needed.
       db_url = URI.parse(ENV.fetch("APP_DATABASE_URL", "mysql2://placeholder/placeholder"))
+      primary_database = db_url.path.delete_prefix("/")
     %>
     adapter: mysql2
     host: <%= db_url.host %>
     port: <%= db_url.port || 3306 %>
-    database: <%= db_url.path.delete_prefix("/") %>
+    database: <%= primary_database %>
     username: <%= URI.decode_www_form_component(db_url.user.to_s) %>
     password: <%= URI.decode_www_form_component(db_url.password.to_s) %>
     pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  # Solid Queue/Cache/Cable get their own physical database (same server,
+  # same credentials, different schema) instead of sharing primary's. When
+  # they shared one physical database, all 4 roles wrote to the same
+  # ar_internal_metadata row, so Rails' "is the schema up to date?" check
+  # kept disagreeing with itself and re-ran schema.rb (force: :cascade DROP)
+  # on every boot, crashing on foreign keys from data already loaded.
   cache:
     <<: *production_mysql
+    database: <%= primary_database %>_cache
     migrations_paths: db/cache_migrate
   queue:
     <<: *production_mysql
+    database: <%= primary_database %>_queue
     migrations_paths: db/queue_migrate
   cable:
     <<: *production_mysql
+    database: <%= primary_database %>_cable
     migrations_paths: db/cable_migrate
