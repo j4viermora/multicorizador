@@ -18,7 +18,14 @@ default: &default
   # Rails bakes whatever it finds into db/schema.rb, so pinning a collation that
   # exists everywhere keeps the dumped schema loadable on any server version.
   collation: utf8mb4_unicode_ci
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  # Solid Queue shares this pool with Puma's web threads, because it runs inside
+  # the Puma process (SOLID_QUEUE_IN_PUMA) and no longer has a database of its
+  # own. It needs one connection per worker thread plus one per dispatcher plus
+  # one for the supervisor — 5 with the current config/queue.yml. Sizing the
+  # pool to just RAILS_MAX_THREADS makes Solid Queue refuse to boot and take
+  # Puma down with it: "configured to use 5 threads but the database connection
+  # pool is N". Raise the +5 if config/queue.yml grows more threads.
+  pool: <%= ENV.fetch("DB_POOL") { ENV.fetch("RAILS_MAX_THREADS", 5).to_i + 5 } %>
   host: <%= ENV.fetch("DB_HOST", "127.0.0.1") %>
   port: <%= ENV.fetch("DB_PORT", 3307) %>
   username: <%= ENV.fetch("DB_USERNAME", "ruka") %>
