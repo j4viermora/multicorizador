@@ -59,6 +59,26 @@ SimpleForm.setup do |config|
     b.use :error, wrap_with: { tag: :p, class: "mt-1 text-xs text-red-600" }
   end
 
+  # ── Quote bar wrapper (cotizador en una sola pantalla) ──
+  # La caja .qbar-field dibuja el borde; el input va sin chrome propio.
+  config.wrappers :qbar, class: "qbar-field" do |b|
+    b.use :html5
+    b.use :placeholder
+    b.optional :readonly
+
+    b.use :label, class: "qbar-label"
+    b.use :input, error_class: "qbar-invalid"
+  end
+
+  # ── Input pelado, para agrupar varios bajo una misma etiqueta :qbar ──
+  config.wrappers :qbar_plain, class: "qbar-plain" do |b|
+    b.use :html5
+    b.use :placeholder
+    b.optional :readonly
+
+    b.use :input, error_class: "qbar-invalid"
+  end
+
   config.default_wrapper = :default
   config.boolean_style = :inline
 

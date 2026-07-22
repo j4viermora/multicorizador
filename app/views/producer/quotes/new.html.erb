@@ -5,180 +5,148 @@
   <style>.wizard-root, .wizard-root * { font-family: 'Outfit', sans-serif; }</style>
 <% end %>
 
-<div class="wizard-root max-w-2xl mx-auto py-6" data-controller="quote-wizard">
+<div class="wizard-root max-w-4xl mx-auto py-6" data-controller="quote-form">
 
-  <%# ── Stepper ── %>
-  <div class="mb-10 wizard-animate-in">
-    <div class="wizard-stepper">
-      <div class="flex flex-col items-center">
-        <div class="wizard-stepper-dot is-active" data-quote-wizard-target="stepDot"><span>1</span></div>
-        <span class="wizard-stepper-label is-active" data-quote-wizard-target="stepLabel">Viaje</span>
+  <div class="wizard-card p-6 md:p-8 wizard-animate-in">
+    <%= simple_form_for [:producer, @quote],
+        html: { novalidate: true, data: { action: "submit->quote-form#validate" } } do |f| %>
+
+      <%# ── Encabezado ── %>
+      <div class="flex items-start gap-3.5 mb-6">
+        <div class="wizard-icon-badge travel">
+          <i class="ti ti-plane-departure text-xl"></i>
+        </div>
+        <div>
+          <h2 class="wizard-section-title">Nueva cotización</h2>
+          <p class="wizard-section-subtitle mt-0.5">Completá el viaje y las edades de los pasajeros para cotizar con todos los proveedores.</p>
+        </div>
       </div>
-      <div class="wizard-stepper-line" data-quote-wizard-target="stepLine"></div>
-      <div class="flex flex-col items-center">
-        <div class="wizard-stepper-dot" data-quote-wizard-target="stepDot"><span>2</span></div>
-        <span class="wizard-stepper-label" data-quote-wizard-target="stepLabel">Pasajeros</span>
-      </div>
-    </div>
-  </div>
 
-  <%# ── Card ── %>
-  <div class="wizard-card p-6 md:p-10 wizard-animate-in delay-1">
-    <%= simple_form_for [:producer, @quote], html: { class: "relative", novalidate: true } do |f| %>
+      <%= f.hidden_field :travelers_count, data: { quote_form_target: "count" } %>
 
-      <div data-quote-wizard-target="stepContainer" class="relative">
+      <%# ── Barra de cotización ── %>
+      <div class="qbar grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12">
+        <%# Origen %>
+        <div data-controller="country-autocomplete"
+             data-country-autocomplete-items-value="<%= countries_autocomplete_data %>"
+             class="ac-wrapper lg:col-span-3">
+          <%= f.input :origin, label: "Origen", wrapper: :qbar,
+              placeholder: "Ej: Argentina",
+              input_html: {
+                required: true, autocomplete: "off",
+                data: {
+                  country_autocomplete_target: "input",
+                  action: "input->country-autocomplete#filter focus->country-autocomplete#open keydown->country-autocomplete#keydown focus->quote-form#clearError"
+                }
+              } %>
+          <ul data-country-autocomplete-target="list" class="ac-list hidden"></ul>
+        </div>
 
-        <%# ══════════ PASO 1 ══════════ %>
-        <div class="wizard-step is-active" data-quote-wizard-target="step">
-          <div class="flex items-start gap-3.5 mb-7">
-            <div class="wizard-icon-badge travel">
-              <i class="ti ti-plane-departure text-xl"></i>
-            </div>
-            <div>
-              <h2 class="wizard-section-title">Datos del viaje</h2>
-              <p class="wizard-section-subtitle mt-0.5">Completá origen, destino y fechas para obtener las mejores cotizaciones.</p>
-            </div>
-          </div>
+        <%# Destino %>
+        <div data-controller="country-autocomplete"
+             data-country-autocomplete-items-value="<%= countries_autocomplete_data %>"
+             class="ac-wrapper lg:col-span-3">
+          <%= f.input :destination, label: "Destino", wrapper: :qbar,
+              placeholder: "Ej: Europa",
+              input_html: {
+                required: true, autocomplete: "off",
+                data: {
+                  country_autocomplete_target: "input",
+                  action: "input->country-autocomplete#filter focus->country-autocomplete#open keydown->country-autocomplete#keydown focus->quote-form#clearError"
+                }
+              } %>
+          <ul data-country-autocomplete-target="list" class="ac-list hidden"></ul>
+        </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-0">
-            <div data-controller="country-autocomplete"
-                 data-country-autocomplete-items-value="<%= countries_autocomplete_data %>"
-                 class="ac-wrapper">
-              <%= f.input :origin, label: "Origen",
-                  placeholder: "Ej: Argentina",
-                  input_html: {
-                    required: true, autocomplete: "off",
-                    data: {
-                      country_autocomplete_target: "input",
-                      action: "input->country-autocomplete#filter focus->country-autocomplete#open keydown->country-autocomplete#keydown focus->quote-wizard#clearError"
-                    }
-                  } %>
-              <ul data-country-autocomplete-target="list" class="ac-list hidden"></ul>
-            </div>
-
-            <div data-controller="country-autocomplete"
-                 data-country-autocomplete-items-value="<%= countries_autocomplete_data %>"
-                 class="ac-wrapper">
-              <%= f.input :destination, label: "Destino",
-                  placeholder: "Ej: Europa",
-                  input_html: {
-                    required: true, autocomplete: "off",
-                    data: {
-                      country_autocomplete_target: "input",
-                      action: "input->country-autocomplete#filter focus->country-autocomplete#open keydown->country-autocomplete#keydown focus->quote-wizard#clearError"
-                    }
-                  } %>
-              <ul data-country-autocomplete-target="list" class="ac-list hidden"></ul>
-            </div>
-
-            <%= f.input :departure_date, label: "Fecha de salida", as: :datepicker,
+        <%# Fechas %>
+        <div class="qbar-field lg:col-span-4">
+          <span class="qbar-label"><i class="ti ti-calendar-event"></i> Fecha de viaje</span>
+          <div class="qbar-dates">
+            <%= f.input :departure_date, label: false, as: :datepicker, wrapper: :qbar_plain,
+                placeholder: "Salida",
                 input_html: { required: true,
                               data: { datepicker_min_value: Date.today.iso8601,
-                                      action: "focus->quote-wizard#clearError" } } %>
-
-            <%= f.input :return_date, label: "Fecha de regreso", as: :datepicker,
+                                      action: "focus->quote-form#clearError" } } %>
+            <i class="ti ti-arrow-narrow-right qbar-dates-sep"></i>
+            <%= f.input :return_date, label: false, as: :datepicker, wrapper: :qbar_plain,
+                placeholder: "Regreso",
                 input_html: { data: { datepicker_min_value: Date.today.iso8601 } } %>
-
-            <%= f.input :trip_type, label: "Tipo de viaje",
-                collection: [["Viaje único", "single"], ["Multi-viaje", "multi_trip"], ["Anual", "annual"]],
-                include_blank: false,
-                wrapper: :select %>
-
-            <%= f.input :travelers_count, label: "Cantidad de pasajeros",
-                input_html: {
-                  min: 1, max: 10, value: 1, required: true,
-                  class: "input w-full",
-                  "data-travelers-count": "",
-                  "data-action": "change->quote-wizard#updateAges focus->quote-wizard#clearError"
-                } %>
           </div>
         </div>
 
-        <%# ══════════ PASO 2 ══════════ %>
-        <div class="wizard-step" data-quote-wizard-target="step">
+        <%# Tipo de viaje %>
+        <div class="lg:col-span-2">
+          <%= f.input :trip_type, label: "Tipo de viaje", wrapper: :qbar,
+              collection: [["Viaje único", "single"], ["Multi-viaje", "multi_trip"], ["Anual", "annual"]],
+              include_blank: false %>
+        </div>
 
-          <%# Edades %>
-          <div class="flex items-start gap-3.5 mb-6">
-            <div class="wizard-icon-badge passengers">
-              <i class="ti ti-users text-xl"></i>
-            </div>
-            <div>
-              <h2 class="wizard-section-title">Edades de los pasajeros</h2>
-              <p class="wizard-section-subtitle mt-0.5">Ingresá la edad de cada viajero para calcular la cobertura adecuada.</p>
-            </div>
-          </div>
-
-          <div class="wizard-age-grid mb-6" data-quote-wizard-target="agesContainer">
-            <div data-age-field class="wizard-age-card">
-              <label>Pasajero 1</label>
-              <input type="number" name="quote[metadata][ages][]" min="0" max="120"
-                     placeholder="—" required
-                     data-action="focus->quote-wizard#clearError" />
-            </div>
-          </div>
-
-          <div class="wizard-divider"></div>
-
-          <%# Viajero principal %>
-          <div class="flex items-start gap-3.5 mb-5">
-            <div class="wizard-icon-badge contact">
-              <i class="ti ti-user text-xl"></i>
-            </div>
-            <div>
-              <h2 class="wizard-section-title">Viajero principal</h2>
-              <p class="wizard-section-subtitle mt-0.5">Opcional &mdash; podés completar estos datos luego al compartir la cotización.</p>
-            </div>
-          </div>
-
-          <div class="wizard-optional-section p-4 md:p-5">
-            <%= f.association :traveler, collection: current_user.travelers,
-                label: "Viajero existente",
-                include_blank: "Crear nuevo",
-                wrapper: :select %>
-
-            <%= f.simple_fields_for :traveler do |tf| %>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-0">
-                <%= tf.input :first_name, label: "Nombre", placeholder: "Juan" %>
-                <%= tf.input :last_name, label: "Apellido", placeholder: "Pérez" %>
-                <%= tf.input :email, label: "Email", placeholder: "juan@ejemplo.com" %>
-                <%= tf.input :phone, label: "Teléfono", placeholder: "+54 9 11 1234-5678" %>
-                <%= tf.input :document, label: "Documento", placeholder: "DNI o Pasaporte" %>
-                <%= tf.input :birth_date, label: "Fecha de nacimiento", as: :datepicker %>
+        <%# Edades %>
+        <div class="qbar-field lg:col-span-12">
+          <span class="qbar-label">
+            <i class="ti ti-users"></i> Edades de los pasajeros
+            <button type="button" class="qbar-add ml-1"
+                    aria-label="Agregar pasajero"
+                    data-quote-form-target="addBtn"
+                    data-action="quote-form#add">
+              <i class="ti ti-plus"></i>
+            </button>
+          </span>
+          <div class="qbar-ages" data-quote-form-target="ages">
+            <% 6.times do |i| %>
+              <div class="qbar-age" data-age-field>
+                <input type="number" name="quote[metadata][ages][]" min="0" max="120"
+                       placeholder="—" required inputmode="numeric"
+                       aria-label="Edad del pasajero <%= i + 1 %>"
+                       data-action="focus->quote-form#clearError">
+                <button type="button" class="qbar-age-remove hidden" tabindex="-1"
+                        aria-label="Quitar pasajero" data-action="quote-form#remove">
+                  <i class="ti ti-x"></i>
+                </button>
               </div>
             <% end %>
           </div>
         </div>
-
       </div>
 
-      <%# ── Navegación ── %>
-      <div class="flex items-center justify-between mt-8 pt-5" style="border-top: 1px solid var(--wz-border);">
-        <button type="button"
-                class="wizard-nav-btn btn btn-ghost btn-sm gap-1.5 invisible"
-                data-action="quote-wizard#prev"
-                data-quote-wizard-target="prevBtn">
-          <i class="ti ti-chevron-left text-base"></i>
-          Anterior
-        </button>
+      <div class="wizard-divider"></div>
 
-        <div class="flex items-center gap-2.5">
-          <%= link_to "Cancelar", producer_quotes_path, class: "wizard-nav-btn btn btn-ghost btn-sm" %>
-
-          <button type="button"
-                  class="wizard-nav-btn btn btn-primary btn-sm gap-1.5"
-                  data-action="quote-wizard#next"
-                  data-quote-wizard-target="nextBtn">
-            Siguiente
-            <i class="ti ti-chevron-right text-base"></i>
-          </button>
-
-          <button type="submit"
-                  class="wizard-nav-btn btn btn-primary btn-sm gap-1.5 hidden"
-                  data-quote-wizard-target="submitBtn">
-            <i class="ti ti-search text-base"></i>
-            Cotizar ahora
-          </button>
+      <%# ── Viajero principal (opcional) ── %>
+      <div class="flex items-start gap-3.5 mb-5">
+        <div class="wizard-icon-badge contact">
+          <i class="ti ti-user text-xl"></i>
         </div>
+        <div>
+          <h2 class="wizard-section-title">Viajero principal</h2>
+          <p class="wizard-section-subtitle mt-0.5">Opcional &mdash; podés completar estos datos luego al compartir la cotización.</p>
+        </div>
+      </div>
+
+      <div class="wizard-optional-section p-4 md:p-5">
+        <%= f.association :traveler, collection: current_user.travelers,
+            label: "Viajero existente",
+            include_blank: "Crear nuevo",
+            wrapper: :select %>
+
+        <%= f.simple_fields_for :traveler do |tf| %>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-0">
+            <%= tf.input :first_name, label: "Nombre", placeholder: "Juan" %>
+            <%= tf.input :last_name, label: "Apellido", placeholder: "Pérez" %>
+            <%= tf.input :email, label: "Email", placeholder: "juan@ejemplo.com" %>
+            <%= tf.input :phone, label: "Teléfono", placeholder: "+54 9 11 1234-5678" %>
+            <%= tf.input :document, label: "Documento", placeholder: "DNI o Pasaporte" %>
+            <%= tf.input :birth_date, label: "Fecha de nacimiento", as: :datepicker %>
+          </div>
+        <% end %>
+      </div>
+
+      <%# ── Acciones ── %>
+      <div class="flex items-center justify-end gap-2.5 mt-8 pt-5" style="border-top: 1px solid var(--wz-border);">
+        <%= link_to "Cancelar", producer_quotes_path, class: "wizard-nav-btn btn btn-ghost btn-sm" %>
+        <button type="submit" class="wizard-nav-btn btn btn-primary btn-sm gap-1.5">
+          <i class="ti ti-search text-base"></i>
+          Cotizar ahora
+        </button>
       </div>
 
     <% end %>

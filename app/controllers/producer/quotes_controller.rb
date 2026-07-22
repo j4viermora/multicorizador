@@ -1,6 +1,6 @@
 class Producer::QuotesController < ApplicationController
   before_action :authenticate_active_producer!
-  before_action :set_quote, only: [:show, :edit, :update, :destroy]
+  before_action :set_quote, only: [ :show, :edit, :update, :destroy ]
 
   def index
     @quotes = current_user.quotes.order(created_at: :desc)
@@ -11,7 +11,7 @@ class Producer::QuotesController < ApplicationController
   end
 
   def new
-    @quote = current_user.quotes.build
+    @quote = current_user.quotes.build(travelers_count: 6)
     @quote.build_traveler
   end
 
@@ -57,7 +57,7 @@ class Producer::QuotesController < ApplicationController
       :origin, :destination, :departure_date, :return_date,
       :travelers_count, :trip_type, :traveler_id,
       metadata: {},
-      traveler_attributes: [:id, :first_name, :last_name, :email, :phone, :document, :birth_date]
+      traveler_attributes: [ :id, :first_name, :last_name, :email, :phone, :document, :birth_date ]
     )
   end
 end

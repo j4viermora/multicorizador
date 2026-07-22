@@ -19,124 +19,18 @@
   --wz-ink-muted: oklch(0.6 0.01 250);
   --wz-border: oklch(0.88 0.015 80);
   --wz-radius: 0.75rem;
+  /* Hero de la landing: colores planos, sin degradados */
+  --wz-hero: oklch(0.29 0.07 215);
+  --wz-hero-soft: oklch(0.34 0.065 215);
+  --wz-hero-line: oklch(0.42 0.06 215);
 }
 
 /* ── Card ── */
 .wizard-card {
-  background: var(--wz-sand);
-  border: 1px solid var(--wz-border);
-  border-radius: 1.25rem;
-  box-shadow:
-    0 1px 2px oklch(0 0 0 / 0.03),
-    0 4px 16px oklch(0 0 0 / 0.04),
-    0 12px 40px oklch(0 0 0 / 0.03);
-  position: relative;
-  /* overflow: hidden; */
-}
-
-/* Decorative top accent bar */
-.wizard-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--wz-teal), var(--wz-coral), var(--wz-amber));
-  border-radius: 1.25rem 1.25rem 0 0;
-}
-
-/* ── Step transitions ── */
-.wizard-step {
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  pointer-events: none;
-  position: absolute;
-  width: 100%;
-}
-
-.wizard-step.is-active {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-  position: relative;
-}
-
-.wizard-step.slide-out-left {
-  opacity: 0;
-  transform: translateY(-6px);
-}
-
-/* ── Stepper ── */
-.wizard-stepper {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 0;
-}
-
-.wizard-stepper-dot {
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 0.9rem;
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  border: 2.5px solid var(--wz-border);
   background: white;
-  color: var(--wz-ink-muted);
-  flex-shrink: 0;
+  border: 1px solid var(--wz-border);
+  border-radius: 0.75rem;
   position: relative;
-  z-index: 2;
-}
-
-.wizard-stepper-dot.is-active {
-  border-color: var(--wz-teal);
-  background: var(--wz-teal);
-  color: white;
-  box-shadow: 0 0 0 5px var(--wz-teal-glow), 0 2px 8px oklch(0 0 0 / 0.08);
-  transform: scale(1.05);
-}
-
-.wizard-stepper-dot.is-complete {
-  border-color: var(--wz-teal);
-  background: var(--wz-teal-light);
-  color: var(--wz-teal);
-}
-
-.wizard-stepper-line {
-  height: 2.5px;
-  width: 6rem;
-  margin-top: 1.3rem;
-  background: var(--wz-border);
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  flex-shrink: 0;
-  position: relative;
-  z-index: 1;
-  border-radius: 2px;
-}
-
-.wizard-stepper-line.is-complete {
-  background: var(--wz-teal);
-}
-
-.wizard-stepper-label {
-  font-size: 0.65rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  margin-top: 0.6rem;
-  transition: color 0.3s ease;
-  color: var(--wz-ink-muted);
-}
-
-.wizard-stepper-label.is-active {
-  color: var(--wz-teal);
 }
 
 /* ── Section icon badges ── */
@@ -171,94 +65,41 @@
 .wizard-card select {
   background: white;
   border-color: var(--wz-border);
-  border-radius: var(--wz-radius);
+  border-radius: 0.4rem;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.8rem;
   font-weight: 500;
   color: var(--wz-ink);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.15s ease;
 }
 
 .wizard-card select {
   appearance: auto;
-  padding-right: 2rem;
+  padding-right: 1.75rem;
   background-image: none;
   height: auto;
-  min-height: 3rem;
+  min-height: 2.2rem;
 }
 
 .wizard-card .input:focus,
 .wizard-card .select:focus,
 .wizard-card select:focus {
   border-color: var(--wz-teal);
-  box-shadow: 0 0 0 3px var(--wz-teal-glow);
+  box-shadow: none;
   outline: none;
 }
 
 .wizard-card .input.input-error,
 .wizard-card .select.select-error {
   border-color: var(--wz-coral);
-  box-shadow: 0 0 0 3px oklch(0.65 0.18 25 / 0.1);
+  box-shadow: none;
 }
 
 .wizard-card .label-text {
   color: var(--wz-ink-soft);
   font-weight: 600;
-  font-size: 0.8rem;
-  letter-spacing: 0.01em;
-}
-
-/* ── Age fields ── */
-.wizard-age-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
-  gap: 0.75rem;
-}
-
-.wizard-age-card {
-  background: white;
-  border: 1.5px solid var(--wz-border);
-  border-radius: var(--wz-radius);
-  padding: 0.75rem;
-  text-align: center;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.wizard-age-card:focus-within {
-  border-color: var(--wz-teal);
-  box-shadow: 0 0 0 3px var(--wz-teal-glow);
-}
-
-.wizard-age-card label {
-  display: block;
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--wz-ink-muted);
+  font-size: 0.75rem;
   margin-bottom: 0.25rem;
-}
-
-.wizard-age-card input {
-  width: 100%;
-  text-align: center;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--wz-ink);
-  border: none;
-  outline: none;
-  background: transparent;
-  padding: 0.125rem 0;
-  -moz-appearance: textfield;
-}
-
-.wizard-age-card input::placeholder {
-  color: var(--wz-border);
-  font-weight: 400;
-}
-
-.wizard-age-card input::-webkit-outer-spin-button,
-.wizard-age-card input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
 }
 
 @keyframes age-card-in {
@@ -292,22 +133,16 @@
 }
 
 .wizard-nav-btn.btn-primary:hover {
-  background: oklch(0.42 0.12 195);
-  border-color: oklch(0.42 0.12 195);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 14px oklch(0.47 0.12 195 / 0.25);
-}
-
-.wizard-nav-btn:active:not(:disabled) {
-  transform: translateY(0) !important;
+  background: oklch(0.40 0.11 195);
+  border-color: oklch(0.40 0.11 195);
 }
 
 /* ── Divider ── */
 .wizard-divider {
   border: none;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--wz-border), transparent);
-  margin: 1.75rem 0;
+  background: var(--wz-border);
+  margin: 1.5rem 0;
 }
 
 /* ── Section title ── */
@@ -337,3 +172,263 @@
 
 .wizard-animate-in.delay-1 { animation-delay: 0.08s; }
 .wizard-animate-in.delay-2 { animation-delay: 0.16s; }
+
+/* ══════════════════════════════════════════════════════════════
+   Quote bar — el formulario de cotización en una sola pantalla
+   ══════════════════════════════════════════════════════════════ */
+
+.qbar {
+  display: grid;
+  gap: 0.5rem;
+}
+
+/* Las celdas comparten alto aunque el input vaya envuelto (autocompletado) */
+.qbar > * { min-width: 0; }
+.qbar .ac-wrapper { display: flex; flex-direction: column; }
+
+/* Cada campo es una caja blanca con su etiqueta arriba */
+.qbar-field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+  min-height: 3rem;
+  background: white;
+  border: 1px solid var(--wz-border);
+  border-radius: 0.4rem;
+  padding: 0.3rem 0.6rem;
+  transition: border-color 0.15s ease;
+}
+
+.qbar-field:focus-within { border-color: var(--wz-teal); }
+
+.qbar-field.qbar-invalid { border-color: var(--wz-coral); }
+
+.qbar-label {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--wz-ink-muted);
+  margin-bottom: 0.05rem;
+  white-space: nowrap;
+}
+
+/* En la barra casi todo es obligatorio: el asterisco sólo agrega ruido */
+.qbar-label abbr { display: none; }
+
+/* Los inputs pierden su chrome: la caja .qbar-field es el borde visible */
+.qbar-field input,
+.qbar-field select,
+.qbar-field .input,
+.qbar-field .select {
+  width: 100%;
+  min-width: 0;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  height: auto !important;
+  min-height: 1.25rem;
+  border-radius: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--wz-ink);
+}
+
+.qbar-field input::placeholder {
+  color: oklch(0.75 0.01 250);
+  font-weight: 500;
+}
+
+/* El select conserva su flecha nativa */
+.qbar-field select {
+  appearance: auto;
+  background-image: none;
+  cursor: pointer;
+}
+
+.qbar-field .input.qbar-invalid { color: var(--wz-coral); }
+
+/* Wrapper sin decoración, para agrupar dos inputs bajo una misma etiqueta */
+.qbar-plain {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Celda de fechas (salida → regreso) ── */
+.qbar-dates {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.qbar-dates-sep {
+  color: var(--wz-ink-muted);
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+/* ── Celda de edades ── */
+.qbar-ages {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.qbar-age { position: relative; }
+
+.qbar-age input {
+  width: 2.1rem !important;
+  text-align: center;
+  background: var(--wz-sand) !important;
+  border: 1px solid var(--wz-border) !important;
+  border-radius: 0.25rem;
+  padding: 0.1rem 0 !important;
+  font-size: 0.78rem;
+  font-weight: 700;
+  -moz-appearance: textfield;
+}
+
+.qbar-age input::-webkit-outer-spin-button,
+.qbar-age input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.qbar-age.qbar-invalid input { border-color: var(--wz-coral) !important; }
+
+.qbar-age-remove {
+  position: absolute;
+  top: -0.3rem;
+  right: -0.3rem;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 50%;
+  background: var(--wz-coral);
+  color: white;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  line-height: 1;
+}
+
+.qbar-age:hover .qbar-age-remove,
+.qbar-age:focus-within .qbar-age-remove { display: flex; }
+
+.qbar-age-remove.hidden { display: none !important; }
+
+.qbar-add {
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--wz-teal);
+  color: var(--wz-teal);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  transition: background 0.15s ease;
+}
+
+.qbar-add:hover:not(:disabled) { background: var(--wz-teal-light); }
+.qbar-add:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ── Botón COTIZAR ── */
+.qbar-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  min-height: 3rem;
+  border-radius: 0.4rem;
+  background: var(--wz-teal);
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: background 0.15s ease;
+}
+
+.qbar-submit:hover { background: oklch(0.40 0.11 195); }
+
+/* Fix Flowbite datepicker hide: it keeps `.active` while adding `.hidden`, so we need
+   higher specificity to actually hide the calendar after a date is selected. */
+.datepicker.active.hidden {
+  display: none;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Autocompletado de países (origen / destino)
+   ══════════════════════════════════════════════════════════════ */
+.ac-wrapper { position: relative; }
+
+.ac-list {
+  position: absolute;
+  z-index: 50;
+  top: 100%;
+  left: 0;
+  right: 0;
+  min-width: 14rem;
+  max-height: 15rem;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid var(--wz-border);
+  border-radius: 0.4rem;
+  box-shadow: 0 4px 12px oklch(0 0 0 / 0.08);
+  list-style: none;
+  padding: 0.25rem;
+  margin-top: 0.2rem;
+}
+
+.ac-list.hidden { display: none; }
+
+.ac-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  font-size: 0.82rem;
+  color: var(--wz-ink);
+  transition: background 0.12s;
+}
+
+.ac-item:hover,
+.ac-item.is-highlighted { background: var(--wz-teal-light); }
+
+.ac-item.hidden { display: none; }
+
+.ac-flag { font-size: 1.1rem; line-height: 1; flex-shrink: 0; }
+
+.ac-header {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--wz-ink-muted);
+  padding: 0.5rem 0.65rem 0.25rem;
+}
+
+.ac-divider {
+  height: 1px;
+  background: var(--wz-border);
+  margin: 0.3rem 0.5rem;
+}
+
+.ac-list::-webkit-scrollbar { width: 5px; }
+.ac-list::-webkit-scrollbar-track { background: transparent; }
+.ac-list::-webkit-scrollbar-thumb {
+  background: oklch(0.8 0.01 80);
+  border-radius: 3px;
+}
