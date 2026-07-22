@@ -367,9 +367,9 @@
   </div>
 
   <%= turbo_stream_from "quote_#{@quote.id}" %>
-  <div id="quote_status_<%= @quote.id %>">
-    <%= render partial: "public/landing/quote_status", locals: { quote: @quote } %>
-  </div>
+  <%# El partial trae su propio wrapper con el id, para que cada broadcast lo
+      reponga y el siguiente encuentre su target. %>
+  <%= render partial: "public/landing/quote_status", locals: { quote: @quote } %>
 
   <%# Footer %>
   <div class="text-center mt-4 mb-8 text-xs results-fade-in rd4" style="color: var(--wz-ink-muted);">

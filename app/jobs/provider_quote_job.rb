@@ -46,11 +46,24 @@ class ProviderQuoteJob < ApplicationJob
   # Re-renderiza el bloque de resultados completo en lugar de agregar la fila
   # nueva al final: las filas se ordenan por precio, así que un proveedor que
   # responde tarde pero cotiza más barato tiene que ubicarse arriba.
+  #
+  # Se emite en cada respuesta, y a las dos pantallas. La pública dependía de un
+  # único mensaje —el de `Quote#broadcast_status_update`, que solo dispara al
+  # cambiar el estado— así que una entrega perdida dejaba al cliente mirando el
+  # spinner para siempre, sin nada que lo corrigiera. Con un mensaje por
+  # proveedor, el siguiente repara lo que el anterior no haya alcanzado.
   def broadcast_results(quote)
     Turbo::StreamsChannel.broadcast_replace_to(
       quote, :results,
       target: ActionView::RecordIdentifier.dom_id(quote, :results),
       partial: "producer/quotes/results",
+      locals: { quote: quote }
+    )
+
+    Turbo::StreamsChannel.broadcast_replace_to(
+      "quote_#{quote.id}",
+      target: "quote_status_#{quote.id}",
+      partial: "public/landing/quote_status",
       locals: { quote: quote }
     )
   end

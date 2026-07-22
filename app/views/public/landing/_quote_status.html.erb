@@ -1,8 +1,16 @@
-<% if quote.quoted? || quote.purchased? || quote.pending_payment? %>
+<%#
+  El wrapper con el id vive acá adentro y no en results.html.erb porque
+  ProviderQuoteJob reemplaza este bloque en cada respuesta de proveedor: si el
+  contenido nuevo no repusiera el id, el segundo mensaje no encontraría a qué
+  apuntar y la pantalla se congelaría en el primer estado recibido.
+%>
+<div id="quote_status_<%= quote.id %>">
+<% offers = quote.quoted? || quote.purchased? || quote.pending_payment? || quote.quoting? ? quote.offers_by_provider : [] %>
+
+<% if offers.any? || quote.quoted? || quote.purchased? || quote.pending_payment? %>
   <%# Una fila por proveedor, con sus planes ordenados de más económico a más
       caro. Antes era una lista plana por precio, que con varios planes por
       proveedor intercalaba a los mismos proveedores y hacía imposible comparar. %>
-  <% offers = quote.offers_by_provider %>
 
   <% if offers.any? %>
     <% offers.each_with_index do |offer, row_idx| %>
@@ -111,6 +119,17 @@
     <% end %>
   <% end %>
 
+  <%# Mientras siguen llegando proveedores se muestra lo que ya hay, con el aviso
+      debajo, en lugar de esconder todo detrás del spinner hasta el final. %>
+  <% if quote.quoting? %>
+    <div class="no-results-card results-fade-in rd2" style="padding: 1.5rem;">
+      <div class="waiting-spinner" style="width: 2rem; height: 2rem; margin-bottom: 0.75rem;"></div>
+      <p class="text-sm" style="color: var(--wz-ink-muted);">
+        Seguimos consultando proveedores...
+      </p>
+    </div>
+  <% end %>
+
 <% elsif quote.no_results? %>
   <%# ── No results ── %>
   <div class="no-results-card results-fade-in rd2">
@@ -135,3 +154,4 @@
     </p>
   </div>
 <% end %>
+</div>
