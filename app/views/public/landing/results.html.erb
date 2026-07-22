@@ -241,6 +241,53 @@
     to { transform: rotate(360deg); }
   }
 
+  /* ── Fila por proveedor ── */
+  /* Cada proveedor cotiza varios planes. Se agrupan en una fila propia para que
+     los planes de un mismo proveedor se comparen entre sí, en vez de quedar
+     intercalados con los de otros en una lista plana ordenada por precio. */
+  .provider-row {
+    margin-bottom: 2.25rem;
+  }
+  .provider-row-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.9rem;
+    flex-wrap: wrap;
+  }
+  .provider-row-from {
+    font-size: 0.82rem;
+    color: var(--wz-ink-muted);
+    font-weight: 500;
+  }
+  .provider-row-from strong {
+    color: var(--wz-ink);
+    font-weight: 700;
+  }
+  /* La fila scrollea dentro de sí misma: el número de planes lo decide el
+     proveedor, así que no se fija una grilla de N columnas. El padding-top deja
+     lugar al translateY(-4px) del hover, que si no se recorta. */
+  .provider-row-cards {
+    display: flex;
+    align-items: stretch;
+    gap: 1.25rem;
+    overflow-x: auto;
+    padding: 0.5rem 0.25rem 0.85rem;
+    scroll-snap-type: x mandatory;
+  }
+  .provider-row-cards > .result-card {
+    flex: 0 0 17.5rem;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+  }
+  /* Empuja el CTA al pie para que todas las tarjetas de la fila lo alineen,
+     aunque tengan distinta cantidad de coberturas. */
+  .result-card-coverage {
+    flex: 1 1 auto;
+  }
+
   /* Back link */
   .back-link {
     display: inline-flex;

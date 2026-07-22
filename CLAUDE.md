@@ -143,8 +143,14 @@ Solid Queue (DB-backed), started as a separate process in `Procfile.dev`. In pro
 
 **Jobs:**
 - `QuoteJob` — Orchestrates quoting: updates status to `quoting`, enqueues `ProviderQuoteJob` for each active provider.
-- `ProviderQuoteJob` — Calls provider API, creates `QuoteResult`. Retries 3x on `ProviderError` with 5s backoff.
+- `ProviderQuoteJob` — Calls provider API, creates `QuoteResult` per option returned, broadcasts the results block over Turbo Streams. Retries 3x on `ProviderError` with 5s backoff.
 - `WebhookProcessorJob` — Processes provider webhooks, creates `Policy` records.
+
+#### Raising job concurrency also means raising the DB pool
+
+`config/queue.yml` runs `threads: 3, processes: 1`, so **three provider calls happen in parallel**. With six providers that is two rounds — roughly twice the slowest API, not the sum of all six. The real bottleneck is a *slow* provider, not a numerous one: a 30s Faraday timeout plus 3 retries at 5s backoff can hold one of the three slots for ~100s.
+
+If you raise `threads` to fan out wider, you **must** raise the `+5` in `config/database.yml`'s `pool` by the same amount. Solid Queue runs inside Puma (`SOLID_QUEUE_IN_PUMA`) and shares that pool; the current `+5` covers exactly 3 workers + 1 dispatcher + 1 supervisor. Raise one without the other and Solid Queue refuses to boot **and takes Puma down with it**. Six threads need `+8`.
 
 ### Frontend Stack
 

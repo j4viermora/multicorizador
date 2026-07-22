@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  devise_for :users, controllers: { registrations: 'users/registrations' }
+  devise_for :users, controllers: { registrations: "users/registrations" }
 
   authenticate :user, ->(user) { user.super_admin? } do
     mount MissionControl::Jobs::Engine, at: "/jobs"
@@ -7,10 +7,12 @@ Rails.application.routes.draw do
 
   namespace :admin do
     get "dashboard", to: "dashboard#index"
-    resources :providers
+    resources :providers do
+      member { patch :toggle_active }
+    end
     resources :insurance_plans
-    resources :policies, only: [:index, :show]
-    resources :users, only: [:index, :show, :edit, :update] do
+    resources :policies, only: [ :index, :show ]
+    resources :users, only: [ :index, :show, :edit, :update ] do
       member { patch :approve }
     end
   end
@@ -19,11 +21,11 @@ Rails.application.routes.draw do
     get "dashboard", to: "dashboard#index"
     resources :quotes
     resources :travelers
-    resources :policies, only: [:index, :show]
+    resources :policies, only: [ :index, :show ]
   end
 
   namespace :public do
-    resources :quotes, only: [:show, :update], param: :token
+    resources :quotes, only: [ :show, :update ], param: :token
   end
 
   # Public landing page per company
@@ -33,7 +35,7 @@ Rails.application.routes.draw do
   post "cotizar/:slug/comprar", to: "public/landing#purchase", as: :public_landing_purchase
   post "cotizar/:slug/checkout", to: "public/landing#checkout", as: :public_landing_checkout
 
-  resources :webhooks, only: [:create], param: :provider_slug
+  resources :webhooks, only: [ :create ], param: :provider_slug
 
   get "account/pending", to: "account#pending", as: :account_pending
 

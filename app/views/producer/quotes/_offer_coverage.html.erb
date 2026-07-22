@@ -1,0 +1,14 @@
+<%# Un item de cobertura. El monto puede faltar o ser textual ("No incluida"). %>
+<% amount = coverage["amount"].presence %>
+<% excluded = amount.blank? || amount.to_s.casecmp?("no incluida") %>
+
+<div class="offer-coverage">
+  <span class="offer-coverage-name"><%= coverage["name"] %></span>
+  <span class="offer-coverage-amount <%= "offer-coverage-off" if excluded %>">
+    <% if excluded %>
+      <i class="ti ti-x"></i><%= amount || "Sin dato" %>
+    <% else %>
+      <%= amount %>
+    <% end %>
+  </span>
+</div>

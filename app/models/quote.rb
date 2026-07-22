@@ -27,7 +27,33 @@ class Quote < ApplicationRecord
     cancelled: "cancelled"
   }
 
-  scope :active, -> { where.not(status: ["purchased", "cancelled"]) }
+  scope :active, -> { where.not(status: [ "purchased", "cancelled" ]) }
+
+  # Una fila de la comparación: un proveedor con todas las opciones de plan que
+  # cotizó, ya ordenadas de más económica a más cara.
+  ProviderOffer = Struct.new(:provider, :options) do
+    def cheapest_price_cents
+      options.first.price_cents
+    end
+  end
+
+  # Resultados exitosos agrupados en una fila por proveedor. Las opciones de cada
+  # fila van de menor a mayor precio, y las filas se ordenan por su opción más
+  # económica, de modo que el proveedor con la entrada más barata quede primero.
+  def offers_by_provider
+    quote_results.successful
+                 .includes(:provider)
+                 .group_by(&:provider)
+                 .map { |provider, options| ProviderOffer.new(provider, options.sort_by(&:price_cents)) }
+                 .sort_by(&:cheapest_price_cents)
+  end
+
+  # Proveedores que no pudieron cotizar. Se exponen aparte porque un resultado
+  # fallido no tiene precio con el cual ordenarse, y su unidad de presentación es
+  # el proveedor y no la opción.
+  def failed_providers
+    quote_results.where(status: "error").includes(:provider).map(&:provider).uniq
+  end
 
   accepts_nested_attributes_for :traveler
 
@@ -38,7 +64,7 @@ class Quote < ApplicationRecord
   end
 
   def editable?
-    !["purchased", "cancelled"].include?(status)
+    ![ "purchased", "cancelled" ].include?(status)
   end
 
   def deletable?

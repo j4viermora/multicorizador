@@ -1,0 +1,82 @@
+<%#
+  Bloque de resultados de una cotización.
+
+  Deriva las filas de la propia cotización en lugar de recibirlas por variable de
+  instancia, porque ProviderQuoteJob lo re-renderiza fuera de un request para
+  emitirlo por Turbo Stream a medida que cada proveedor responde.
+%>
+<% offers = quote.offers_by_provider %>
+<% failed_providers = quote.failed_providers %>
+<% no_active_providers = offers.empty? && failed_providers.empty? && !Provider.active.exists? %>
+
+<div id="<%= dom_id(quote, :results) %>">
+  <%# Sin proveedores activos, QuoteJob no encola nada y la cotización se queda
+      en `quoting` para siempre. Quien cotiza no ve el aviso del admin, así que
+      necesita saber acá por qué no llega nada. %>
+  <% if no_active_providers %>
+    <div class="alert alert-warning mb-4">
+      <p class="font-medium mb-1">
+        <i class="ti ti-plug-connected-x"></i>
+        No hay proveedores activos
+      </p>
+      <%# Sin `current_user`: ProviderQuoteJob renderiza este partial fuera de un
+          request, donde ese helper no existe. %>
+      <p class="text-sm">
+        Ningún proveedor está habilitado para cotizar, así que esta búsqueda no va a recibir resultados.
+        Pedile a un administrador que habilite al menos uno.
+      </p>
+    </div>
+  <% end %>
+
+  <% if quote.quoting? && !no_active_providers %>
+    <div class="alert alert-info mb-4 flex items-center gap-2">
+      <span class="loading loading-sm"></span>
+      Consultando proveedores... los resultados aparecen a medida que responden.
+    </div>
+  <% end %>
+
+  <% if offers.any? %>
+    <h2 class="text-xl font-semibold mb-4">
+      Resultados
+      <span class="text-sm font-normal text-gray-500">
+        · <%= offers.sum { |o| o.options.size } %> opciones de <%= pluralize(offers.size, "proveedor", plural: "proveedores") %>
+      </span>
+    </h2>
+
+    <% offers.each_with_index do |offer, index| %>
+      <%= render "producer/quotes/offer_row",
+                 offer: offer,
+                 quote: quote,
+                 cheapest_overall: index.zero? %>
+    <% end %>
+  <% end %>
+
+  <% if failed_providers.any? %>
+    <div class="alert alert-warning mt-4">
+      <p class="font-medium mb-1">
+        <i class="ti ti-alert-triangle"></i>
+        <%= pluralize(failed_providers.size, "proveedor no pudo cotizar", plural: "proveedores no pudieron cotizar") %>
+      </p>
+      <p class="text-sm">
+        <%= failed_providers.map(&:name).to_sentence %>.
+        <% if offers.any? %>
+          El resto de los resultados no se ve afectado.
+        <% end %>
+      </p>
+    </div>
+  <% end %>
+
+  <% if offers.empty? && !quote.quoting? && !no_active_providers %>
+    <% if failed_providers.any? %>
+      <div class="alert alert-error">
+        Ningún proveedor pudo cotizar esta búsqueda. Volvé a intentarlo en unos minutos.
+      </div>
+    <% elsif quote.draft? %>
+      <div class="alert alert-warning">Esta cotización está en borrador. Editala para enviarla.</div>
+    <% elsif quote.purchased? %>
+      <div class="alert alert-success">Esta cotización ya tiene una póliza emitida.</div>
+    <% else %>
+      <div class="alert alert-info">No hay resultados disponibles.</div>
+    <% end %>
+  <% end %>
+</div>

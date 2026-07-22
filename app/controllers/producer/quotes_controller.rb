@@ -7,7 +7,6 @@ class Producer::QuotesController < ApplicationController
   end
 
   def show
-    @quote_results = @quote.quote_results.successful
   end
 
   def new

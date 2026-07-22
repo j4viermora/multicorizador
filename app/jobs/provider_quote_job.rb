@@ -35,10 +35,25 @@ class ProviderQuoteJob < ApplicationJob
       end
     end
 
-    ActsAsTenant.with_tenant(quote.company) { check_all_results_complete(quote) }
+    ActsAsTenant.with_tenant(quote.company) do
+      check_all_results_complete(quote)
+      broadcast_results(quote)
+    end
   end
 
   private
+
+  # Re-renderiza el bloque de resultados completo en lugar de agregar la fila
+  # nueva al final: las filas se ordenan por precio, así que un proveedor que
+  # responde tarde pero cotiza más barato tiene que ubicarse arriba.
+  def broadcast_results(quote)
+    Turbo::StreamsChannel.broadcast_replace_to(
+      quote, :results,
+      target: ActionView::RecordIdentifier.dom_id(quote, :results),
+      partial: "producer/quotes/results",
+      locals: { quote: quote }
+    )
+  end
 
   def check_all_results_complete(quote)
     pending_count = quote.quote_results.where(status: "pending").count
