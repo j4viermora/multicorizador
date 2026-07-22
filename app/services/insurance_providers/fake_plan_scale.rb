@@ -14,6 +14,7 @@ module InsuranceProviders
     # Montos de cobertura que escalan con el nivel. Los que no son numéricos
     # (una cobertura que está incluida o no) se resuelven contra `covered_from`.
     def quote(search)
+      simulate_latency
       base = base_price(search)
 
       self.class::TIERS.map do |tier|
@@ -37,6 +38,18 @@ module InsuranceProviders
     end
 
     private
+
+    # Simula el tiempo de respuesta de una API real. La demora se lee de
+    # `Provider#config` en lugar de una constante para poder ajustarla desde el
+    # admin sin tocar código, y para que quede en cero donde no se declara: las
+    # fixtures de test traen `config: "{}"`, así que la suite no se ralentiza y
+    # no hace falta condicionar por entorno.
+    def simulate_latency
+      seconds = provider.config_for(:latency_seconds).to_f
+      return if seconds <= 0
+
+      sleep(seconds)
+    end
 
     def base_price(search)
       age_factor = search.max_age >= 65 ? self.class::SENIOR_SURCHARGE : 1.0
