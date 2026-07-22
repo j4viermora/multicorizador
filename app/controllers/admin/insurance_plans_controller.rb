@@ -1,6 +1,6 @@
 class Admin::InsurancePlansController < ApplicationController
   before_action :authenticate_super_admin!
-  before_action :set_plan, only: [:edit, :update, :destroy]
+  before_action :set_plan, only: [ :edit, :update, :destroy ]
 
   def index
     @plans = InsurancePlan.includes(:provider).order(:provider_id)

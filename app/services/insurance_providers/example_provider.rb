@@ -8,7 +8,7 @@ module InsuranceProviders
         external_quote_id: "EXT-#{SecureRandom.hex(8).upcase}",
         price_cents: rand(5000..50000),
         currency: Money.default_currency.iso_code,
-        plan_name: "Plan #{['Básico', 'Estándar', 'Premium'].sample}",
+        plan_name: "Plan #{[ 'Básico', 'Estándar', 'Premium' ].sample}",
         valid_until: 24.hours.from_now
       }
     end
