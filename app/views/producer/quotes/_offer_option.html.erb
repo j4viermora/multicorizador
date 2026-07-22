@@ -28,8 +28,10 @@
     <div class="mb-3"></div>
   <% end %>
 
+  <%# `flex-1` empuja el bloque del CTA al pie de la tarjeta, para que todas las
+      opciones de una fila lo alineen aunque tengan distinta cantidad de coberturas. %>
   <% if coverages.any? %>
-    <div class="mt-1">
+    <div class="mt-1 flex-1">
       <% highlighted.each do |coverage| %>
         <%= render "producer/quotes/offer_coverage", coverage: coverage %>
       <% end %>
@@ -52,7 +54,7 @@
 
   <%# El flujo de compra todavía no existe: este botón no navega a ninguna parte,
       así que se presenta como acción secundaria y no como llamada a la acción. %>
-  <div class="mt-4 pt-3 border-t border-gray-100">
+  <div class="mt-4 pt-3 border-t border-gray-100 shrink-0">
     <%= link_to "#", class: "btn btn-outline btn-sm w-full !me-0 !mb-0", aria: { disabled: true } do %>
       <i class="ti ti-shopping-cart-plus"></i>Seleccionar
     <% end %>

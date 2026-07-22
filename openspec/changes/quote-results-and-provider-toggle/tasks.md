@@ -28,7 +28,7 @@
 
 - [x] 4.1 Construir el layout de una fila por proveedor con sus opciones dentro, alineado al lenguaje visual del buscador (paleta `teal`, iconos Tabler)
 - [x] 4.2 Hacer que la fila fluya (scroll horizontal contenido o wrap) en lugar de una grilla de cuatro columnas fijas, para tolerar proveedores con 1, 4 o 7 opciones
-- [ ] 4.3 Verificar que en viewport angosto la fila no provoca scroll horizontal del `body` — **pendiente de verificación visual**: la extensión de Chrome se colgó al sacar el screenshot. El CSS lo garantiza por construcción (`.offer-row` tiene `overflow-x-auto`, `.offer-card` tiene `shrink-0 w-72`), pero no está confirmado en pantalla real
+- [x] 4.3 Verificar que en viewport angosto la fila no provoca scroll horizontal del `body` — verificado en el navegador: con el contenedor a 390px cada fila scrollea internamente (`scrollWidth` 1200 vs `clientWidth` 316) y cabe en su contenedor; el `body` no desborda. La verificación además destapó que los botones no se alineaban entre tarjetas de una misma fila, corregido con `flex-1` en el bloque de coberturas
 - [x] 4.4 Renderizar las coberturas de cada opción desde `raw_response["coverage"]`, con nombre y monto
 - [x] 4.5 Tolerar de forma defensiva que falte `coverage`, venga vacía, o que un item no traiga `amount` — cubierto también para items que no son hashes
 - [x] 4.6 Presentar los proveedores fallidos de forma diferenciada, identificando cuál falló
