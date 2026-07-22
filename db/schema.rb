@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_21_070200) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_22_163917) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -156,6 +156,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_21_070200) do
     t.string "created_by", default: "producer", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "expected_providers_count"
     t.index ["company_id"], name: "index_quotes_on_company_id"
     t.index ["producer_id"], name: "index_quotes_on_producer_id"
     t.index ["public_token"], name: "index_quotes_on_public_token", unique: true

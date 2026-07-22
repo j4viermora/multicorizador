@@ -142,6 +142,56 @@ class ProviderQuoteJobTest < ActiveJob::TestCase
     assert_operator offers.first.cheapest_price_cents, :<, offers.last.cheapest_price_cents
   end
 
+  test "no cierra la cotización mientras falten proveedores por responder" do
+    fast = create_provider(MultiOptionProvider)
+    slow = create_provider(ExpensiveProvider)
+    @quote.update!(status: "quoting", expected_providers_count: 2)
+
+    ProviderQuoteJob.perform_now(@quote.id, fast.id)
+
+    assert_equal "quoting", @quote.reload.status,
+      "un proveedor que responde primero no puede dar por terminada la cotización"
+
+    ProviderQuoteJob.perform_now(@quote.id, slow.id)
+
+    assert_equal "quoted", @quote.reload.status
+  end
+
+  test "cierra la cotización cuando todos los proveedores fallan" do
+    broken = create_provider(FailingProvider)
+    @quote.update!(status: "quoting", expected_providers_count: 1)
+
+    ProviderQuoteJob.perform_now(@quote.id, broken.id)
+
+    assert_equal "no_results", @quote.reload.status
+  end
+
+  test "un proveedor con varias opciones cuenta como uno solo" do
+    multi = create_provider(MultiOptionProvider)
+    other = create_provider(SingleOptionProvider)
+    @quote.update!(status: "quoting", expected_providers_count: 2)
+
+    # MultiOptionProvider crea 3 resultados: si se contaran resultados en lugar
+    # de proveedores, ya alcanzaría el umbral de 2 y cerraría de más.
+    ProviderQuoteJob.perform_now(@quote.id, multi.id)
+
+    assert_equal "quoting", @quote.reload.status
+
+    ProviderQuoteJob.perform_now(@quote.id, other.id)
+
+    assert_equal "quoted", @quote.reload.status
+  end
+
+  test "una cotización sin expected_providers_count conserva el cierre anterior" do
+    provider = create_provider(MultiOptionProvider)
+    @quote.update!(status: "quoting", expected_providers_count: nil)
+
+    ProviderQuoteJob.perform_now(@quote.id, provider.id)
+
+    assert_equal "quoted", @quote.reload.status,
+      "las cotizaciones previas a la migración no deben quedarse colgadas"
+  end
+
   test "los fakes del proyecto producen cuatro resultados por proveedor" do
     provider = providers(:assist_card)
     before = @quote.quote_results.where(provider: provider).count

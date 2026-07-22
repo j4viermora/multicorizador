@@ -55,10 +55,22 @@ class ProviderQuoteJob < ApplicationJob
     )
   end
 
+  # La cotización se cierra recién cuando respondieron todos los proveedores que
+  # se encolaron, no cuando responde el primero.
+  #
+  # Se cuentan proveedores distintos y no resultados, porque un proveedor puede
+  # devolver varias opciones de plan. El lock evita que dos jobs que terminan a
+  # la vez lean el conteo antes de que el otro haya commiteado y ninguno cierre.
   def check_all_results_complete(quote)
-    pending_count = quote.quote_results.where(status: "pending").count
-    return if pending_count > 0
+    quote.with_lock do
+      expected = quote.expected_providers_count
 
-    quote.update!(status: quote.quote_results.successful.any? ? "quoted" : "no_results")
+      if expected.present?
+        responded = quote.quote_results.distinct.count(:provider_id)
+        next if responded < expected
+      end
+
+      quote.update!(status: quote.quote_results.successful.any? ? "quoted" : "no_results")
+    end
   end
 end
