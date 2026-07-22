@@ -106,7 +106,7 @@ bin/brakeman
 - **Auth:** Devise
 - **Forms:** SimpleForm con wrappers Flowbite
 - **Iconos:** Tabler Icons
-- **Deploy:** Kamal
+- **Deploy:** Dokploy
 
 ### Multi-tenancy
 
@@ -132,11 +132,15 @@ Service objects en `app/services/insurance_providers/`. Cada proveedor implement
 
 ## Deploy
 
-Kamal (`bin/kamal`). Config en `config/deploy.yml`.
+El deploy se hace con **Dokploy**. La configuración (variables de entorno, dominios, build) vive en el panel de Dokploy, fuera de este repositorio.
+
+> `config/deploy.yml` y `bin/kamal` siguen en el repo porque vienen con Rails 8, pero **no se usan**. Editarlos no cambia nada del deploy.
 
 Variables requeridas:
 
 - `RAILS_MASTER_KEY`
 - `APP_DATABASE_URL` — deliberadamente **no** se llama `DATABASE_URL`: Rails auto-fusiona esa variable en la config primaria y deja que el esquema de la URL pise el adapter, lo que rompe con URLs `mariadb://`.
+- `SOLID_QUEUE_IN_PUMA=true` — corre el supervisor de Solid Queue dentro de Puma, sin proceso worker aparte.
+- Almacenamiento: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_ENDPOINT`, `AWS_BUCKET` y `AWS_REGION=auto`. Apuntan a Cloudflare R2, que es S3-compatible; los nombres `AWS_*` son los que espera el SDK y no deben renombrarse. Ver `.env.example`.
 
-Solid Queue corre dentro de Puma (`SOLID_QUEUE_IN_PUMA=true`), así que comparte el pool de conexiones con los threads web. Si subís `threads` en `config/queue.yml`, subí en la misma medida el `+5` del `pool` en `config/database.yml`, o Solid Queue no arranca y se lleva puesto el servidor web.
+Solid Queue comparte el pool de conexiones con los threads web. Si subís `threads` en `config/queue.yml`, subí en la misma medida el `+5` del `pool` en `config/database.yml`, o Solid Queue no arranca y se lleva puesto el servidor web.

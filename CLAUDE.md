@@ -178,4 +178,11 @@ Resend in production, `letter_opener` in development (emails open in browser). N
 
 ### Deployment
 
-Kamal (`bin/kamal`). Config in [config/deploy.yml](config/deploy.yml). Requires `RAILS_MASTER_KEY` and `APP_DATABASE_URL` (deliberately *not* named `DATABASE_URL` — Rails auto-merges that one into the primary config and lets the URL scheme override the adapter, which breaks on `mariadb://` URLs; see the comment in `config/database.yml`). SSL via Let's Encrypt proxy.
+**Deploys go through Dokploy, not Kamal.** `config/deploy.yml` and `bin/kamal` are still in the repo because they ship with Rails 8, but nothing uses them — do not edit them expecting a deploy to change, and do not suggest `bin/kamal` commands. Deployment config (env vars, domains, build) lives in the Dokploy panel, outside this repository.
+
+What the app needs at runtime, wherever it runs:
+
+- `RAILS_MASTER_KEY`
+- `APP_DATABASE_URL` — deliberately *not* named `DATABASE_URL`: Rails auto-merges that one into the primary config and lets the URL scheme override the adapter, which breaks on `mariadb://` URLs. See the comment in `config/database.yml`.
+- `SOLID_QUEUE_IN_PUMA=true` — runs the Solid Queue supervisor inside Puma (`config/puma.rb` loads the plugin when this is set), so there is no separate worker process in production. Note this differs from development, where `Procfile.dev` *does* run a separate worker — which is why `config/cable.yml` must not use the `async` adapter there.
+- Storage uses `AWS_*` variable names against Cloudflare R2, including `AWS_ENDPOINT`. The names stay `AWS_*` on purpose; do not rename them to `R2_*`.
