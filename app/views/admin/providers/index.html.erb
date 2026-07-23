@@ -1,29 +1,63 @@
-<h1 class="text-3xl font-bold mb-6">Proveedores</h1>
+<div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+  <div>
+    <h1 class="text-3xl font-bold">Proveedores</h1>
+    <p class="text-gray-500 mt-1 text-sm">
+      Solo los proveedores activos reciben las cotizaciones.
+      <% active_count = @providers.count(&:active?) %>
+      <% if active_count.zero? %>
+        <span class="text-red-600 font-medium">
+          <i class="ti ti-alert-triangle"></i>
+          No hay ninguno activo: las cotizaciones quedarán sin resultados.
+        </span>
+      <% else %>
+        Hoy cotizan <span class="font-medium text-gray-900"><%= active_count %></span>
+        de <%= @providers.size %>.
+      <% end %>
+    </p>
+  </div>
 
-<%= link_to "Nuevo Proveedor", new_admin_provider_path, class: "btn btn-primary mb-4" %>
+  <%= link_to new_admin_provider_path, class: "btn btn-primary !mb-0" do %>
+    <i class="ti ti-plus"></i>Nuevo proveedor
+  <% end %>
+</div>
 
-<div class="overflow-x-auto bg-white shadow rounded-lg">
+<div class="overflow-x-auto card">
   <table class="table table-zebra">
     <thead>
       <tr>
         <th>Nombre</th>
         <th>Slug</th>
         <th>Estado</th>
-        <th>Acciones</th>
+        <th class="text-right">Acciones</th>
       </tr>
     </thead>
     <tbody>
       <% @providers.each do |provider| %>
-        <tr>
-          <td><%= provider.name %></td>
-          <td><code><%= provider.slug %></code></td>
+        <tr class="<%= "opacity-60" unless provider.active? %>">
+          <td class="font-medium text-gray-900"><%= provider.name %></td>
+          <td><code class="text-xs"><%= provider.slug %></code></td>
           <td>
-            <span class="badge badge-<%= provider.active? ? 'success' : 'error' %>">
-              <%= provider.status %>
+            <span class="badge <%= provider.active? ? "badge-success" : "badge-ghost" %>">
+              <i class="ti <%= provider.active? ? "ti-circle-check" : "ti-circle-minus" %> me-1"></i>
+              <%= provider.active? ? "Cotiza" : "No cotiza" %>
             </span>
           </td>
           <td>
-            <%= link_to "Editar", edit_admin_provider_path(provider), class: "btn btn-sm btn-outline" %>
+            <div class="flex items-center justify-end gap-1">
+              <%# Activar/desactivar sin pasar por el formulario: el editor de
+                  config expone las credenciales a un error de tipeo. %>
+              <%= button_to toggle_active_admin_provider_path(provider),
+                            method: :patch,
+                            class: "btn btn-sm #{provider.active? ? "btn-ghost" : "btn-success"} !me-0 !mb-0",
+                            form: { data: { turbo_confirm: provider.active? ? "#{provider.name} dejará de recibir cotizaciones. ¿Continuar?" : nil } } do %>
+                <i class="ti <%= provider.active? ? "ti-toggle-right" : "ti-toggle-left" %>"></i>
+                <%= provider.active? ? "Desactivar" : "Activar" %>
+              <% end %>
+
+              <%= link_to edit_admin_provider_path(provider), class: "btn btn-sm btn-outline !me-0 !mb-0" do %>
+                <i class="ti ti-pencil"></i>Editar
+              <% end %>
+            </div>
           </td>
         </tr>
       <% end %>

@@ -1,95 +1,132 @@
-<% if quote.quoted? || quote.purchased? || quote.pending_payment? %>
-  <% results = quote.quote_results.successful.order(price_cents: :asc).map do |qr|
-       qr.raw_response.deep_symbolize_keys.merge(quote_result_id: qr.id)
-     end %>
+<%#
+  El wrapper con el id vive acá adentro y no en results.html.erb porque
+  ProviderQuoteJob reemplaza este bloque en cada respuesta de proveedor: si el
+  contenido nuevo no repusiera el id, el segundo mensaje no encontraría a qué
+  apuntar y la pantalla se congelaría en el primer estado recibido.
+%>
+<div id="quote_status_<%= quote.id %>">
+<% offers = quote.quoted? || quote.purchased? || quote.pending_payment? || quote.quoting? ? quote.offers_by_provider : [] %>
 
-  <% if results.any? %>
-    <%# ── Results grid ── %>
-    <div class="grid grid-cols-1 md:grid-cols-<%= [results.size, 3].min %> gap-5 mb-8">
-      <% results.each_with_index do |result, idx| %>
-        <div class="result-card <%= 'is-best' if idx == 0 %> results-fade-in rd<%= idx + 2 %>">
+<% if offers.any? || quote.quoted? || quote.purchased? || quote.pending_payment? %>
+  <%# Una fila por proveedor, con sus planes ordenados de más económico a más
+      caro. Antes era una lista plana por precio, que con varios planes por
+      proveedor intercalaba a los mismos proveedores y hacía imposible comparar. %>
 
-          <%# Header %>
-          <div class="result-card-header">
-            <div class="provider-badge mb-3">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-              <%= result[:provider_name] %>
-            </div>
-            <h3 class="text-lg font-bold" style="color: var(--wz-ink); letter-spacing: -0.01em;">
-              <%= result[:plan_name] %>
-            </h3>
+  <% if offers.any? %>
+    <% offers.each_with_index do |offer, row_idx| %>
+      <section class="provider-row results-fade-in rd<%= [row_idx + 2, 4].min %>">
+        <header class="provider-row-header">
+          <div class="provider-badge">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <%= offer.provider.name %>
           </div>
 
-          <%# Price %>
-          <div class="px-6 py-5" style="background: oklch(0.985 0.003 80);">
-            <div class="result-price">
-              <span class="result-price-currency"><%= result[:currency] %></span>
-              <%= "%.2f" % (result[:price_cents] / 100.0) %>
-            </div>
-            <div class="result-price-detail mt-1">
-              Total por <%= quote.travelers_count %> pasajero<%= quote.travelers_count > 1 ? "s" : "" %>
-              <% if quote.travelers_count > 1 && result[:price_per_person_cents] %>
-                · <%= result[:currency] %> <%= "%.2f" % (result[:price_per_person_cents] / 100.0) %> c/u
+          <span class="provider-row-from">
+            <%= pluralize(offer.options.size, "plan", plural: "planes") %> ·
+            desde <strong><%= offer.options.first.price.format %></strong>
+          </span>
+        </header>
+
+        <div class="provider-row-cards">
+          <% offer.options.each_with_index do |quote_result, idx| %>
+            <% result = quote_result.raw_response.deep_symbolize_keys.merge(quote_result_id: quote_result.id) %>
+            <% best = row_idx.zero? && idx.zero? %>
+
+            <div class="result-card <%= "is-best" if best %>">
+
+              <%# Header — el proveedor ya está en la cabecera de la fila %>
+              <div class="result-card-header">
+                <h3 class="text-lg font-bold" style="color: var(--wz-ink); letter-spacing: -0.01em;">
+                  <%= result[:plan_name] %>
+                </h3>
+              </div>
+
+              <%# Price %>
+              <div class="px-6 py-5" style="background: oklch(0.985 0.003 80);">
+                <div class="result-price">
+                  <span class="result-price-currency"><%= result[:currency] %></span>
+                  <%= "%.2f" % (result[:price_cents].to_i / 100.0) %>
+                </div>
+                <div class="result-price-detail mt-1">
+                  Total por <%= quote.travelers_count %> pasajero<%= quote.travelers_count > 1 ? "s" : "" %>
+                  <% if quote.travelers_count > 1 && result[:price_per_person_cents] %>
+                    · <%= result[:currency] %> <%= "%.2f" % (result[:price_per_person_cents] / 100.0) %> c/u
+                  <% end %>
+                </div>
+              </div>
+
+              <%# Coverage %>
+              <div class="result-card-coverage px-6 py-4">
+                <% coverages = Array(result[:coverage]).select { |c| c.is_a?(Hash) && c[:name].present? } %>
+                <% if coverages.any? %>
+                  <p class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: var(--wz-ink-muted);">
+                    Coberturas incluidas
+                  </p>
+                  <ul class="coverage-list">
+                    <% coverages.each do |cov| %>
+                      <li class="coverage-item">
+                        <span class="coverage-name">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                          </svg>
+                          <%= cov[:name] %>
+                        </span>
+                        <span class="coverage-amount"><%= cov[:amount] %></span>
+                      </li>
+                    <% end %>
+                  </ul>
+                <% end %>
+              </div>
+
+              <%# CTA %>
+              <% if quote.quoted? %>
+                <div class="px-6 pb-6">
+                  <form action="<%= public_landing_purchase_path(quote.company.slug) %>" method="post" data-turbo="false">
+                    <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+
+                    <input type="hidden" name="quote_token" value="<%= quote.public_token %>">
+
+                    <input type="hidden" name="plan[provider_name]" value="<%= result[:provider_name] || offer.provider.name %>">
+                    <input type="hidden" name="plan[provider_slug]" value="<%= result[:provider_slug] || offer.provider.slug %>">
+                    <input type="hidden" name="plan[plan_name]" value="<%= result[:plan_name] %>">
+                    <input type="hidden" name="plan[price_cents]" value="<%= result[:price_cents] %>">
+                    <input type="hidden" name="plan[currency]" value="<%= result[:currency] %>">
+                    <input type="hidden" name="plan[price_per_person_cents]" value="<%= result[:price_per_person_cents] %>">
+                    <input type="hidden" name="plan[coverage_json]" value="<%= Array(result[:coverage]).to_json %>">
+                    <input type="hidden" name="plan[quote_result_id]" value="<%= result[:quote_result_id] %>">
+
+                    <input type="hidden" name="search[origin]" value="<%= quote.origin %>">
+                    <input type="hidden" name="search[destination]" value="<%= quote.destination %>">
+                    <input type="hidden" name="search[departure_date]" value="<%= quote.departure_date %>">
+                    <input type="hidden" name="search[return_date]" value="<%= quote.return_date %>">
+                    <input type="hidden" name="search[travelers_count]" value="<%= quote.travelers_count %>">
+                    <input type="hidden" name="search[trip_type]" value="<%= quote.trip_type %>">
+                    <input type="hidden" name="search[email]" value="<%= quote.metadata['email'] %>">
+                    <input type="hidden" name="search[phone]" value="<%= quote.metadata['phone'] %>">
+
+                    <button type="submit" class="result-cta <%= best ? "result-cta-primary" : "result-cta-secondary" %>">
+                      Comprar este plan
+                    </button>
+                  </form>
+                </div>
               <% end %>
-            </div>
-          </div>
-
-          <%# Coverage %>
-          <div class="px-6 py-4">
-            <p class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: var(--wz-ink-muted);">
-              Coberturas incluidas
-            </p>
-            <ul class="coverage-list">
-              <% (result[:coverage] || []).each do |cov| %>
-                <li class="coverage-item">
-                  <span class="coverage-name">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                    <%= cov[:name] %>
-                  </span>
-                  <span class="coverage-amount"><%= cov[:amount] %></span>
-                </li>
-              <% end %>
-            </ul>
-          </div>
-
-          <%# CTA %>
-          <% if quote.quoted? %>
-            <div class="px-6 pb-6">
-              <form action="<%= public_landing_purchase_path(quote.company.slug) %>" method="post" data-turbo="false">
-                <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
-
-                <input type="hidden" name="quote_token" value="<%= quote.public_token %>">
-
-                <input type="hidden" name="plan[provider_name]" value="<%= result[:provider_name] %>">
-                <input type="hidden" name="plan[provider_slug]" value="<%= result[:provider_slug] %>">
-                <input type="hidden" name="plan[plan_name]" value="<%= result[:plan_name] %>">
-                <input type="hidden" name="plan[price_cents]" value="<%= result[:price_cents] %>">
-                <input type="hidden" name="plan[currency]" value="<%= result[:currency] %>">
-                <input type="hidden" name="plan[price_per_person_cents]" value="<%= result[:price_per_person_cents] %>">
-                <input type="hidden" name="plan[coverage_json]" value="<%= (result[:coverage] || []).to_json %>">
-                <input type="hidden" name="plan[quote_result_id]" value="<%= result[:quote_result_id] %>">
-
-                <input type="hidden" name="search[origin]" value="<%= quote.origin %>">
-                <input type="hidden" name="search[destination]" value="<%= quote.destination %>">
-                <input type="hidden" name="search[departure_date]" value="<%= quote.departure_date %>">
-                <input type="hidden" name="search[return_date]" value="<%= quote.return_date %>">
-                <input type="hidden" name="search[travelers_count]" value="<%= quote.travelers_count %>">
-                <input type="hidden" name="search[trip_type]" value="<%= quote.trip_type %>">
-                <input type="hidden" name="search[email]" value="<%= quote.metadata['email'] %>">
-                <input type="hidden" name="search[phone]" value="<%= quote.metadata['phone'] %>">
-
-                <button type="submit" class="result-cta <%= idx == 0 ? 'result-cta-primary' : 'result-cta-secondary' %>">
-                  Comprar este plan
-                </button>
-              </form>
             </div>
           <% end %>
         </div>
-      <% end %>
+      </section>
+    <% end %>
+  <% end %>
+
+  <%# Mientras siguen llegando proveedores se muestra lo que ya hay, con el aviso
+      debajo, en lugar de esconder todo detrás del spinner hasta el final. %>
+  <% if quote.quoting? %>
+    <div class="no-results-card results-fade-in rd2" style="padding: 1.5rem;">
+      <div class="waiting-spinner" style="width: 2rem; height: 2rem; margin-bottom: 0.75rem;"></div>
+      <p class="text-sm" style="color: var(--wz-ink-muted);">
+        Seguimos consultando proveedores...
+      </p>
     </div>
   <% end %>
 
@@ -117,3 +154,4 @@
     </p>
   </div>
 <% end %>
+</div>

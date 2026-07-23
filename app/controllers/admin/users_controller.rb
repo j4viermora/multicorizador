@@ -1,6 +1,6 @@
 class Admin::UsersController < ApplicationController
   before_action :authenticate_super_admin!
-  before_action :set_user, only: [:show, :edit, :update, :approve]
+  before_action :set_user, only: [ :show, :edit, :update, :approve ]
 
   def index
     @users = User.producers.includes(:company).order(created_at: :desc)
@@ -33,6 +33,6 @@ class Admin::UsersController < ApplicationController
 
   def user_params
     params.require(:user).permit(:status, :first_name, :last_name, :phone,
-                                 company_attributes: [:id, :name, :slug, :currency])
+                                 company_attributes: [ :id, :name, :slug, :currency ])
   end
 end

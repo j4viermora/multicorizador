@@ -12,6 +12,13 @@ module InsuranceProviders
       raise NotImplementedError
     end
 
+    # Devuelve la cotización del proveedor para una búsqueda.
+    #
+    # Puede devolver un hash único o un array de hashes cuando el proveedor
+    # ofrece varios niveles de plan para la misma búsqueda: ProviderQuoteJob
+    # envuelve el retorno con Array.wrap y crea un QuoteResult por elemento.
+    # Cada opción debe traer su propio external_quote_id y plan_name para ser
+    # distinguible de las demás del mismo proveedor.
     def quote(quote)
       raise NotImplementedError
     end

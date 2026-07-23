@@ -87,6 +87,23 @@
   .link         { @apply font-medium text-blue-600 hover:underline; }
   .link-primary { @apply font-medium text-teal-600 hover:underline; }
 
+  /* ── Comparación de cotizaciones ── */
+  /* Una fila por proveedor con sus opciones de plan adentro. La fila scrollea
+     dentro de sí misma en lugar de ensanchar la página, y no fija un número de
+     columnas: un proveedor puede devolver 1, 4 o 7 opciones. */
+  .offer-row {
+    @apply flex gap-4 overflow-x-auto pb-3 snap-x snap-mandatory;
+  }
+  .offer-card {
+    @apply flex flex-col shrink-0 snap-start w-72 bg-white border border-gray-200 rounded-lg p-5 transition-shadow hover:shadow-md;
+  }
+  .offer-card-best { @apply border-teal-500 ring-1 ring-teal-500; }
+  .offer-price     { @apply text-2xl font-bold text-teal-700; }
+  .offer-coverage  { @apply flex items-baseline justify-between gap-3 py-1.5 text-sm border-b border-gray-100 last:border-0; }
+  .offer-coverage-name   { @apply text-gray-600; }
+  .offer-coverage-amount { @apply font-medium text-gray-900 text-right shrink-0; }
+  .offer-coverage-off    { @apply text-gray-400; }
+
   /* Generic rounded helper kept from the old design */
   .rounded-box { @apply rounded-lg; }
 }

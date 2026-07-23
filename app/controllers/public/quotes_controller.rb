@@ -31,7 +31,7 @@ class Public::QuotesController < ActionController::Base
     params.require(:quote).permit(
       :origin, :destination, :departure_date, :return_date,
       :travelers_count, :trip_type, metadata: {},
-      traveler_attributes: [:first_name, :last_name, :email, :phone, :document, :birth_date]
+      traveler_attributes: [ :first_name, :last_name, :email, :phone, :document, :birth_date ]
     )
   end
 end

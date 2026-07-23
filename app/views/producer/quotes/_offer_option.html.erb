@@ -1,0 +1,62 @@
+<%#
+  Una opción de plan dentro de la fila de un proveedor.
+
+  Las coberturas llegan en raw_response, un JSON sin contrato: puede faltar la
+  clave, venir vacía, o traer items sin monto. Se accede de forma defensiva.
+%>
+<% coverages = Array(option.raw_response["coverage"]).select { |c| c.is_a?(Hash) && c["name"].present? } %>
+<% highlighted, rest = coverages.first(3), coverages.drop(3) %>
+
+<article class="offer-card <%= "offer-card-best" if best %>">
+  <% if best %>
+    <span class="badge badge-primary self-start mb-2">
+      <i class="ti ti-award me-1"></i>Más económico
+    </span>
+  <% end %>
+
+  <h4 class="font-semibold text-gray-900 mb-1">
+    <%= option.raw_response["plan_name"].presence || "Plan sin nombre" %>
+  </h4>
+
+  <p class="offer-price"><%= option.price.format %></p>
+
+  <% if option.raw_response["price_per_person_cents"].present? && quote.travelers_count > 1 %>
+    <p class="text-xs text-gray-500 mb-3">
+      <%= Money.new(option.raw_response["price_per_person_cents"], option.price_currency).format %> por persona
+    </p>
+  <% else %>
+    <div class="mb-3"></div>
+  <% end %>
+
+  <%# `flex-1` empuja el bloque del CTA al pie de la tarjeta, para que todas las
+      opciones de una fila lo alineen aunque tengan distinta cantidad de coberturas. %>
+  <% if coverages.any? %>
+    <div class="mt-1 flex-1">
+      <% highlighted.each do |coverage| %>
+        <%= render "producer/quotes/offer_coverage", coverage: coverage %>
+      <% end %>
+
+      <% if rest.any? %>
+        <details class="mt-2 group">
+          <summary class="text-xs font-medium text-teal-700 cursor-pointer hover:underline list-none">
+            <i class="ti ti-chevron-down transition-transform group-open:rotate-180"></i>
+            Ver <%= rest.size %> coberturas más
+          </summary>
+          <div class="mt-1">
+            <% rest.each do |coverage| %>
+              <%= render "producer/quotes/offer_coverage", coverage: coverage %>
+            <% end %>
+          </div>
+        </details>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%# El flujo de compra todavía no existe: este botón no navega a ninguna parte,
+      así que se presenta como acción secundaria y no como llamada a la acción. %>
+  <div class="mt-4 pt-3 border-t border-gray-100 shrink-0">
+    <%= link_to "#", class: "btn btn-outline btn-sm w-full !me-0 !mb-0", aria: { disabled: true } do %>
+      <i class="ti ti-shopping-cart-plus"></i>Seleccionar
+    <% end %>
+  </div>
+</article>

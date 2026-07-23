@@ -105,4 +105,4 @@ end
 
 gem "faraday", "~> 2.14"
 
-gem "dotenv-rails", "~> 3.2", groups: [:development, :test]
+gem "dotenv-rails", "~> 3.2", groups: [ :development, :test ]

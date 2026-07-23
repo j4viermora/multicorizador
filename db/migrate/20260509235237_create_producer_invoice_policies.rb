@@ -7,6 +7,6 @@ class CreateProducerInvoicePolicies < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :producer_invoice_policies, [:producer_invoice_id, :policy_id], unique: true
+    add_index :producer_invoice_policies, [ :producer_invoice_id, :policy_id ], unique: true
   end
 end

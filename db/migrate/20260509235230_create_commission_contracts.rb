@@ -11,7 +11,7 @@ class CreateCommissionContracts < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :commission_contracts, [:provider_id, :producer_id], unique: true, where: "producer_id IS NOT NULL", name: "index_commission_contracts_on_provider_and_producer"
+    add_index :commission_contracts, [ :provider_id, :producer_id ], unique: true, where: "producer_id IS NOT NULL", name: "index_commission_contracts_on_provider_and_producer"
     add_index :commission_contracts, :provider_id, unique: true, where: "producer_id IS NULL", name: "index_commission_contracts_default"
   end
 end

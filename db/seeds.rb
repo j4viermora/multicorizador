@@ -64,18 +64,28 @@ end
 
 puts "Proveedor de ejemplo creado: #{example_provider.name}"
 
-# Proveedores fake para testing de búsqueda
+# Proveedores fake para testing de búsqueda.
+#
+# `latency_seconds` simula el tiempo de respuesta de una API real: sin demora no
+# se ve el fan-out progresivo ni tiene sentido medir nada. Se puede ajustar desde
+# /admin/providers sin tocar código. Las fixtures de test no lo declaran, así que
+# la suite no duerme.
 [
-  { name: "Assist Card", slug: "assist_card_fake", config: { base_url: "https://fake.assistcard.com" } },
-  { name: "Universal Assistance", slug: "universal_assistance_fake", config: { base_url: "https://fake.universal.com" } },
-  { name: "Travel Ace", slug: "travel_ace_fake", config: { base_url: "https://fake.travelace.com" } }
+  { name: "Assist Card", slug: "assist_card_fake", config: { base_url: "https://fake.assistcard.com", latency_seconds: 3 } },
+  { name: "Universal Assistance", slug: "universal_assistance_fake", config: { base_url: "https://fake.universal.com", latency_seconds: 4 } },
+  { name: "Travel Ace", slug: "travel_ace_fake", config: { base_url: "https://fake.travelace.com", latency_seconds: 6 } }
 ].each do |attrs|
   prov = Provider.find_or_create_by!(slug: attrs[:slug]) do |p|
     p.name = attrs[:name]
     p.config = attrs[:config]
   end
 
-  puts "Proveedor fake creado: #{prov.name}"
+  # Los seeds son idempotentes vía find_or_create_by!, que no actualiza los que
+  # ya existen. La latencia sí se refresca para que un `db:seed` sobre una base
+  # ya sembrada la aplique.
+  prov.update!(config: prov.config.merge("latency_seconds" => attrs[:config][:latency_seconds]))
+
+  puts "Proveedor fake creado: #{prov.name} (latencia: #{attrs[:config][:latency_seconds]}s)"
 end
 
 # Omint Assistance — proveedor real (CreateQuotationB2B). Credenciales en

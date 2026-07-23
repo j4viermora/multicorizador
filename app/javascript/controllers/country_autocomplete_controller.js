@@ -69,7 +69,7 @@ export default class extends Controller {
     this._justSelected = true
     this.inputTarget.value = li.dataset.name
     this.close()
-    // Dispatch change event so other controllers (quote-wizard) can react
+    // Dispatch change event so other controllers (quote-form) can react
     this.inputTarget.dispatchEvent(new Event("change", { bubbles: true }))
     // Move focus to next field
     const next = this.element.nextElementSibling?.querySelector("input")

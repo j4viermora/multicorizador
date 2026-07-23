@@ -8,69 +8,45 @@
 <style>
   .landing-root, .landing-root * { font-family: 'Outfit', sans-serif; }
 
-  /* ── Hero ── */
+  /* ── Hero: color plano, sin degradados ── */
   .landing-hero {
-    background: linear-gradient(160deg, oklch(0.22 0.06 210) 0%, oklch(0.30 0.08 200) 50%, oklch(0.25 0.07 195) 100%);
+    background: var(--wz-hero);
     position: relative;
-    overflow: hidden;
-  }
-  .landing-hero::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 600px 400px at 80% 20%, oklch(0.45 0.12 195 / 0.3), transparent),
-      radial-gradient(ellipse 400px 300px at 20% 80%, oklch(0.55 0.15 25 / 0.12), transparent);
-    pointer-events: none;
-  }
-  .landing-hero::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 80px;
-    background: linear-gradient(to top, oklch(0.96 0.008 80), transparent);
-    pointer-events: none;
   }
 
   /* ── Producer card ── */
   .producer-card {
-    background: oklch(1 0 0 / 0.08);
-    backdrop-filter: blur(12px);
-    border: 1px solid oklch(1 0 0 / 0.12);
-    border-radius: 1rem;
+    background: var(--wz-hero-soft);
+    border: 1px solid var(--wz-hero-line);
+    border-radius: 0.5rem;
   }
   .producer-avatar {
-    width: 3rem;
-    height: 3rem;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--wz-teal), oklch(0.55 0.13 200));
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.4rem;
+    background: var(--wz-teal);
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-weight: 800;
-    font-size: 1.1rem;
+    font-weight: 700;
+    font-size: 0.95rem;
     flex-shrink: 0;
-    border: 2px solid oklch(1 0 0 / 0.2);
   }
 
   /* ── Trust bar ── */
   .trust-bar {
     background: white;
     border: 1px solid var(--wz-border);
-    border-radius: 1rem;
-    box-shadow: 0 2px 12px oklch(0 0 0 / 0.04);
+    border-radius: 0.5rem;
   }
   .trust-provider {
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 0.25rem;
     background: var(--wz-sand);
-    font-weight: 700;
-    font-size: 0.75rem;
+    font-weight: 600;
+    font-size: 0.7rem;
     color: var(--wz-ink-soft);
-    letter-spacing: 0.02em;
     white-space: nowrap;
   }
 
@@ -78,22 +54,19 @@
   .benefit-card {
     background: white;
     border: 1px solid var(--wz-border);
-    border-radius: 1rem;
-    padding: 1.25rem;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    transition: border-color 0.15s ease;
   }
-  .benefit-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px oklch(0 0 0 / 0.06);
-  }
+  .benefit-card:hover { border-color: var(--wz-teal); }
   .benefit-icon {
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 0.75rem;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.35rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.6rem;
   }
 
   /* ── Footer ── */
@@ -116,105 +89,40 @@
   .land-in.d4 { animation-delay: 0.4s; }
   .land-in.d5 { animation-delay: 0.5s; }
 
-  /* ── Autocomplete ── */
-  .ac-wrapper { position: relative; }
-  .ac-list {
-    position: absolute;
-    z-index: 50;
-    top: 100%;
-    left: 0;
-    right: 0;
-    max-height: 15rem;
-    overflow-y: auto;
-    background: white;
-    border: 1px solid var(--wz-border);
-    border-radius: 0.65rem;
-    box-shadow: 0 8px 24px oklch(0 0 0 / 0.1), 0 2px 6px oklch(0 0 0 / 0.04);
-    list-style: none;
-    padding: 0.3rem;
-    margin-top: -0.25rem;
-  }
-  .ac-list.hidden { display: none; }
-  .ac-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 0.65rem;
-    border-radius: 0.4rem;
-    cursor: pointer;
-    font-size: 0.82rem;
-    color: var(--wz-ink);
-    transition: background 0.12s;
-  }
-  .ac-item:hover,
-  .ac-item.is-highlighted {
-    background: var(--wz-teal-light);
-  }
-  .ac-item.hidden { display: none; }
-  .ac-flag { font-size: 1.1rem; line-height: 1; flex-shrink: 0; }
-  .ac-header {
-    font-size: 0.65rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--wz-ink-muted);
-    padding: 0.5rem 0.65rem 0.25rem;
-  }
-  .ac-divider {
-    height: 1px;
-    background: var(--wz-border);
-    margin: 0.3rem 0.5rem;
-  }
-  .ac-list::-webkit-scrollbar { width: 5px; }
-  .ac-list::-webkit-scrollbar-track { background: transparent; }
-  .ac-list::-webkit-scrollbar-thumb {
-    background: oklch(0.8 0.01 80);
-    border-radius: 3px;
-  }
-
-  /* ── intl-tel-input: el wrapper actúa como input-bordered ── */
-  .iti {
+  /* ── intl-tel-input dentro de una celda de la barra ── */
+  .qbar-field .iti {
     width: 100%;
     display: flex;
-    height: 40px;
-    border: 1px solid oklch(0.88 0.015 80);
-    border-radius: 12px;
-    background: white;
-    overflow: hidden;
+    border: none;
+    background: transparent;
   }
-  .iti:focus-within { border-color: oklch(0.7 0.1 195); }
-  .iti__tel-input {
-    flex: 1;
-    height: 100%;
-    min-width: 0;
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
-    background: transparent !important;
-    font-size: 14px;
-    padding-right: 12px !important;
+  /* La bandera va absoluta a la izquierda: hay que dejarle su espacio */
+  .qbar-field .iti__tel-input {
+    padding-left: 2.85rem !important;
+    padding-right: 0 !important;
   }
+  .qbar-field .iti__country-container { padding: 0; }
   .iti__dropdown-content { font-family: 'Outfit', sans-serif; }
 </style>
 <div class="landing-root">
   <%# ══════════════════════════════════════════════ %>
-  <%# HERO                                          %>
+  <%# HERO + COTIZADOR                              %>
   <%# ══════════════════════════════════════════════ %>
-  <div class="landing-hero -mx-4 -mt-8 px-4 pt-10 pb-16 md:pt-14 md:pb-20 relative">
-    <div class="max-w-2xl lg:max-w-5xl mx-auto relative z-10">
-      <%# Company name %>
-      <div class="text-center mb-6 land-in">
-        <h1 class="text-3xl md:text-4xl font-black text-white tracking-tight leading-tight">
-          <%= @company.name %>
+  <div class="landing-hero -mx-4 -mt-8 px-4 pt-8 pb-10 md:pt-10 md:pb-12 relative">
+    <div class="max-w-2xl lg:max-w-6xl mx-auto relative z-10">
+      <%# Título %>
+      <div class="text-center mb-5 land-in">
+        <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight leading-tight">
+          Seguro de viaje: cotizá y compará tu cobertura en segundos
         </h1>
-        <p class="text-base md:text-lg mt-2 font-light" style="color: oklch(0.85 0.03 195);">
-          Cotizá tu asistencia al viajero al mejor precio.<br class="hidden md:block">
-          Encuentra la protección que buscas, elige la tranquilidad que necesitas
+        <p class="text-sm md:text-base mt-1.5" style="color: oklch(0.82 0.03 215);">
+          <%= @company.name %> &middot; compará todas las opciones y elegí la que te sirve
         </p>
       </div>
-      <%# Producer card (if ref param) %>
+
+      <%# Productor (si viene el parámetro ref) %>
       <% if @producer %>
-        <div class="producer-card px-5 py-4 max-w-md mx-auto land-in d1">
+        <div class="producer-card px-4 py-3 max-w-md mx-auto mb-5 land-in d1">
           <div class="flex items-center gap-3 mb-2">
             <div class="producer-avatar">
               <%= @producer.first_name&.first&.upcase %><%= @producer.last_name&.first&.upcase %>
@@ -240,165 +148,128 @@
           </div>
         </div>
       <% end %>
-    </div>
-  </div>
-  <%# ══════════════════════════════════════════════ %>
-  <%# FORM WIZARD                                   %>
-  <%# ══════════════════════════════════════════════ %>
-  <div class="max-w-2xl lg:max-w-4xl mx-auto -mt-8 relative z-20" data-controller="quote-wizard">
-    <%# Stepper %>
-    <div class="mb-8 land-in d2">
-      <div class="wizard-stepper">
-        <div class="flex flex-col items-center">
-          <div class="wizard-stepper-dot is-active" data-quote-wizard-target="stepDot"><span>1</span></div>
-          <span class="wizard-stepper-label is-active" data-quote-wizard-target="stepLabel">Viaje</span>
-        </div>
-        <div class="wizard-stepper-line" data-quote-wizard-target="stepLine"></div>
-        <div class="flex flex-col items-center">
-          <div class="wizard-stepper-dot" data-quote-wizard-target="stepDot"><span>2</span></div>
-          <span class="wizard-stepper-label" data-quote-wizard-target="stepLabel">Contacto</span>
-        </div>
-      </div>
-    </div>
-    <%# Card %>
-    <div class="wizard-card p-6 md:p-10 lg:p-12 land-in d3">
-      <%= simple_form_for @quote, url: public_landing_path(@company.slug, ref: params[:ref]),
-          method: :post, html: { class: "relative", novalidate: true, data: { turbo: false } } do |f| %>
-        <div data-quote-wizard-target="stepContainer" class="relative">
-          <%# ── PASO 1: Viaje ── %>
-          <div class="wizard-step is-active" data-quote-wizard-target="step">
-            <div class="flex items-start gap-3.5 mb-7">
-              <div class="wizard-icon-badge travel">
-                <i class="ti ti-plane-departure text-xl"></i>
-              </div>
-              <div>
-                <h2 class="wizard-section-title">¿A dónde viajás?</h2>
-                <p class="wizard-section-subtitle mt-0.5">Contanos los detalles para encontrar la mejor cobertura.</p>
-              </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-x-5 lg:gap-x-6 gap-y-0">
-              <div data-controller="country-autocomplete"
-                   data-country-autocomplete-items-value="<%= countries_autocomplete_data %>"
-                   class="ac-wrapper">
-                <%= f.input :origin, label: "Origen",
-                    placeholder: "Ej: Argentina",
-                    input_html: {
-                      required: true, autocomplete: "off",
-                      data: {
-                        country_autocomplete_target: "input",
-                        action: "input->country-autocomplete#filter focus->country-autocomplete#open keydown->country-autocomplete#keydown focus->quote-wizard#clearError"
-                      }
-                    } %>
-                <ul data-country-autocomplete-target="list" class="ac-list hidden"></ul>
-              </div>
-              <div data-controller="country-autocomplete"
-                   data-country-autocomplete-items-value="<%= countries_autocomplete_data %>"
-                   class="ac-wrapper">
-                <%= f.input :destination, label: "Destino",
-                    placeholder: "Ej: Europa",
-                    input_html: {
-                      required: true, autocomplete: "off",
-                      data: {
-                        country_autocomplete_target: "input",
-                        action: "input->country-autocomplete#filter focus->country-autocomplete#open keydown->country-autocomplete#keydown focus->quote-wizard#clearError"
-                      }
-                    } %>
-                <ul data-country-autocomplete-target="list" class="ac-list hidden"></ul>
-              </div>
-              <%= f.input :departure_date, label: "Fecha de salida", as: :datepicker,
-                  input_html: { required: true,
-                                data: { datepicker_min_value: Date.today.iso8601,
-                                        action: "focus->quote-wizard#clearError" } } %>
-              <%= f.input :return_date, label: "Fecha de regreso", as: :datepicker,
-                  input_html: { data: { datepicker_min_value: Date.today.iso8601 } } %>
-              <%= f.input :travelers_count, label: "Cantidad de pasajeros",
+
+      <%# ── Barra de cotización: todo en una sola pantalla ── %>
+      <div class="land-in d2" data-controller="quote-form">
+        <%= simple_form_for @quote, url: public_landing_path(@company.slug, ref: params[:ref]),
+            method: :post,
+            html: { novalidate: true, data: { turbo: false, action: "submit->quote-form#validate" } } do |f| %>
+
+          <%= f.hidden_field :trip_type, value: "single" %>
+          <%= f.hidden_field :travelers_count, data: { quote_form_target: "count" } %>
+
+          <div class="qbar grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12">
+            <%# Origen %>
+            <div data-controller="country-autocomplete"
+                 data-country-autocomplete-items-value="<%= countries_autocomplete_data %>"
+                 class="ac-wrapper lg:col-span-3">
+              <%= f.input :origin, label: "Origen", wrapper: :qbar,
+                  placeholder: "¿Desde dónde salís?",
                   input_html: {
-                    min: 1, max: 10, value: 1, required: true,
-                    class: "input w-full",
-                    "data-travelers-count": "",
-                    "data-action": "change->quote-wizard#updateAges focus->quote-wizard#clearError"
+                    required: true, autocomplete: "off",
+                    data: {
+                      country_autocomplete_target: "input",
+                      action: "input->country-autocomplete#filter focus->country-autocomplete#open keydown->country-autocomplete#keydown focus->quote-form#clearError"
+                    }
                   } %>
+              <ul data-country-autocomplete-target="list" class="ac-list hidden"></ul>
+            </div>
+
+            <%# Destino %>
+            <div data-controller="country-autocomplete"
+                 data-country-autocomplete-items-value="<%= countries_autocomplete_data %>"
+                 class="ac-wrapper lg:col-span-3">
+              <%= f.input :destination, label: "Destino", wrapper: :qbar,
+                  placeholder: "¿Dónde viajás?",
+                  input_html: {
+                    required: true, autocomplete: "off",
+                    data: {
+                      country_autocomplete_target: "input",
+                      action: "input->country-autocomplete#filter focus->country-autocomplete#open keydown->country-autocomplete#keydown focus->quote-form#clearError"
+                    }
+                  } %>
+              <ul data-country-autocomplete-target="list" class="ac-list hidden"></ul>
+            </div>
+
+            <%# Fechas %>
+            <div class="qbar-field lg:col-span-4">
+              <span class="qbar-label"><i class="ti ti-calendar-event"></i> Fecha de viaje</span>
+              <div class="qbar-dates">
+                <%= f.input :departure_date, label: false, as: :datepicker, wrapper: :qbar_plain,
+                    placeholder: "Salida",
+                    input_html: { required: true,
+                                  data: { datepicker_min_value: Date.today.iso8601,
+                                          action: "focus->quote-form#clearError" } } %>
+                <i class="ti ti-arrow-narrow-right qbar-dates-sep"></i>
+                <%= f.input :return_date, label: false, as: :datepicker, wrapper: :qbar_plain,
+                    placeholder: "Regreso",
+                    input_html: { data: { datepicker_min_value: Date.today.iso8601 } } %>
+              </div>
+            </div>
+
+            <%# Edades %>
+            <div class="qbar-field lg:col-span-2">
+              <span class="qbar-label">
+                <i class="ti ti-users"></i> Edades
+                <button type="button" class="qbar-add ml-1"
+                        aria-label="Agregar pasajero"
+                        data-quote-form-target="addBtn"
+                        data-action="quote-form#add">
+                  <i class="ti ti-plus"></i>
+                </button>
+              </span>
+              <div class="qbar-ages" data-quote-form-target="ages">
+                <% 6.times do |i| %>
+                  <div class="qbar-age" data-age-field>
+                    <input type="number" name="quote[metadata][ages][]" min="0" max="120"
+                           placeholder="—" required inputmode="numeric"
+                           aria-label="Edad del pasajero <%= i + 1 %>"
+                           data-action="focus->quote-form#clearError">
+                    <button type="button" class="qbar-age-remove hidden" tabindex="-1"
+                            aria-label="Quitar pasajero" data-action="quote-form#remove">
+                      <i class="ti ti-x"></i>
+                    </button>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+
+            <%# WhatsApp %>
+            <div class="qbar-field lg:col-span-4">
+              <label class="qbar-label" for="phone-input">
+                <i class="ti ti-brand-whatsapp"></i> WhatsApp
+              </label>
+              <input type="tel" id="phone-input" placeholder="11 1234-5678" autocomplete="tel">
+              <input type="hidden" name="quote[metadata][phone]" id="phone-full-value">
+            </div>
+
+            <%# Email %>
+            <div class="qbar-field lg:col-span-5">
+              <label class="qbar-label" for="quote-email">
+                <i class="ti ti-mail"></i> Email
+              </label>
+              <input type="email" id="quote-email" name="quote[metadata][email]"
+                     placeholder="juan@ejemplo.com" required autocomplete="email"
+                     data-action="focus->quote-form#clearError">
+            </div>
+
+            <%# Cotizar %>
+            <div class="lg:col-span-3">
+              <button type="submit" class="qbar-submit">
+                <i class="ti ti-search text-lg"></i>
+                Cotizar
+              </button>
             </div>
           </div>
-          <%# ── PASO 2: Edades + Contacto ── %>
-          <div class="wizard-step" data-quote-wizard-target="step">
-            <div class="flex items-start gap-3.5 mb-6">
-              <div class="wizard-icon-badge passengers">
-                <i class="ti ti-users text-xl"></i>
-              </div>
-              <div>
-                <h2 class="wizard-section-title">Edades de los pasajeros</h2>
-                <p class="wizard-section-subtitle mt-0.5">Ingresá la edad de cada viajero.</p>
-              </div>
-            </div>
-            <div class="wizard-age-grid mb-6" data-quote-wizard-target="agesContainer">
-              <div data-age-field class="wizard-age-card">
-                <label>Pasajero 1</label>
-                <input type="number" name="quote[metadata][ages][]" min="0" max="120"
-                       placeholder="—" required
-                       data-action="focus->quote-wizard#clearError" />
-              </div>
-            </div>
-            <div class="wizard-divider"></div>
-            <div class="flex items-start gap-3.5 mb-5">
-              <div class="wizard-icon-badge contact">
-                <i class="ti ti-send text-xl"></i>
-              </div>
-              <div>
-                <h2 class="wizard-section-title">¿Dónde te enviamos los resultados?</h2>
-                <p class="wizard-section-subtitle mt-0.5">Para contactarte con las mejores opciones.</p>
-              </div>
-            </div>
-            <div class="wizard-optional-section p-4 md:p-5">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-0">
-                <div class="form-control w-full mb-4">
-                  <label class="label label-text text-sm font-medium">
-                    <span class="text-red-500">*</span> Email
-                  </label>
-                  <input type="email" name="quote[metadata][email]"
-                         class="input w-full"
-                         placeholder="juan@ejemplo.com" required
-                         data-action="focus->quote-wizard#clearError" />
-                </div>
-                <div class="form-control w-full mb-4">
-                  <label class="label label-text text-sm font-medium">WhatsApp / Teléfono</label>
-                  <input type="tel" id="phone-input"
-                         placeholder="11 1234-5678"
-                         autocomplete="tel" />
-                  <input type="hidden" name="quote[metadata][phone]" id="phone-full-value" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <%# Nav %>
-        <div class="flex items-center justify-between mt-8 pt-5" style="border-top: 1px solid var(--wz-border);">
-          <button type="button"
-                  class="wizard-nav-btn btn btn-ghost btn-sm gap-1.5 invisible"
-                  data-action="quote-wizard#prev"
-                  data-quote-wizard-target="prevBtn">
-            <i class="ti ti-chevron-left text-base"></i>
-            Anterior
-          </button>
-          <div class="flex items-center gap-2.5">
-            <button type="button"
-                    class="wizard-nav-btn btn btn-primary btn-sm gap-1.5"
-                    data-action="quote-wizard#next"
-                    data-quote-wizard-target="nextBtn">
-              Siguiente
-              <i class="ti ti-chevron-right text-base"></i>
-            </button>
-            <button type="submit"
-                    class="wizard-nav-btn btn btn-primary btn-sm gap-1.5 hidden"
-                    data-quote-wizard-target="submitBtn">
-              <i class="ti ti-search text-base"></i>
-              Cotizar ahora
-            </button>
-          </div>
-        </div>
-      <% end %>
+        <% end %>
+      </div>
+
+      <p class="text-center text-xs mt-3 land-in d3" style="color: oklch(0.75 0.03 215);">
+        Cotización sin costo y sin compromiso &middot; Resultados en segundos
+      </p>
     </div>
   </div>
+
   <%# ══════════════════════════════════════════════ %>
   <%# TRUST BAR — Proveedores                       %>
   <%# ══════════════════════════════════════════════ %>

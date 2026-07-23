@@ -1,6 +1,6 @@
 class Producer::TravelersController < ApplicationController
   before_action :authenticate_active_producer!
-  before_action :set_traveler, only: [:show, :edit, :update, :destroy]
+  before_action :set_traveler, only: [ :show, :edit, :update, :destroy ]
 
   def index
     @travelers = current_user.travelers.order(:last_name)

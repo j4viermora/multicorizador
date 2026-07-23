@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roles y Permisos — Ruka</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-800">
+  <main class="max-w-6xl mx-auto px-4 py-12">
+    <header class="mb-10">
+      <h1 class="text-3xl font-bold text-slate-900">Roles y permisos de la app</h1>
+      <p class="mt-2 text-slate-600">Resumen de los tipos de usuario actuales y qué pueden hacer en la plataforma.</p>
+    </header>
+
+    <section class="mb-12">
+      <h2 class="text-xl font-semibold text-slate-900 mb-4">Tipos de usuario</h2>
+      <div class="grid gap-6 md:grid-cols-2">
+        <div class="bg-white rounded-lg shadow p-6 border border-slate-200">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 font-bold">SA</span>
+            <h3 class="text-lg font-semibold"><code>super_admin</code></h3>
+          </div>
+          <p class="text-slate-600">Equipo interno. Acceso global a todo: proveedores, productores y finanzas. Opera sin tenant.</p>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-6 border border-slate-200">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 font-bold">P</span>
+            <h3 class="text-lg font-semibold"><code>producer</code></h3>
+          </div>
+          <p class="text-slate-600">Productor de seguros independiente. Cotiza, gestiona clientes, ve sus pólizas y comisiones. Opera dentro de su <code>company</code> (tenant).</p>
+        </div>
+      </div>
+
+      <div class="mt-6 bg-white rounded-lg shadow p-6 border border-slate-200">
+        <h3 class="text-lg font-semibold mb-3">Estados del productor</h3>
+        <ul class="space-y-3">
+          <li class="flex items-start gap-3">
+            <span class="px-2 py-1 rounded text-xs font-medium bg-amber-100 text-amber-800">pending</span>
+            <span class="text-slate-600">Se registró pero espera aprobación del super admin. <strong>No puede cotizar.</strong></span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">active</span>
+            <span class="text-slate-600">Aprobado. Tiene acceso completo al panel de productor.</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-800">suspended</span>
+            <span class="text-slate-600">Desactivado por el super admin. <strong>No puede iniciar sesión.</strong></span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="text-xl font-semibold text-slate-900 mb-4">Matriz de permisos</h2>
+      <div class="overflow-x-auto rounded-lg shadow border border-slate-200">
+        <table class="w-full text-sm text-left bg-white">
+          <thead class="bg-slate-100 text-slate-700 uppercase text-xs">
+            <tr>
+              <th class="px-4 py-3 min-w-[260px]">Funcionalidad</th>
+              <th class="px-4 py-3 text-center">Super Admin</th>
+              <th class="px-4 py-3 text-center">Producer (active)</th>
+              <th class="px-4 py-3 text-center">Producer (pending)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200">
+            <tr class="bg-slate-50 font-semibold text-slate-900">
+              <td class="px-4 py-3" colspan="4">Dashboard global / Finanzas</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3">Ver KPIs de toda la plataforma</td>
+              <td class="px-4 py-3 text-center text-green-600">✅</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3">Ver comisiones por cobrar/pagar global</td>
+              <td class="px-4 py-3 text-center text-green-600">✅</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+            </tr>
+
+            <tr class="bg-slate-50 font-semibold text-slate-900">
+              <td class="px-4 py-3" colspan="4">Gestión de Proveedores</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3">Crear/editar/eliminar aseguradoras</td>
+              <td class="px-4 py-3 text-center text-green-600">✅</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3">Crear/editar planes de seguro</td>
+              <td class="px-4 py-3 text-center text-green-600">✅</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3">Configurar contratos de comisión</td>
+              <td class="px-4 py-3 text-center text-green-600">✅</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+            </tr>
+
+            <tr class="bg-slate-50 font-semibold text-slate-900">
+              <td class="px-4 py-3" colspan="4">Gestión de Productores</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3">Ver lista de productores</td>
+              <td class="px-4 py-3 text-center text-green-600">✅</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3">Aprobar/rechazar productores pendientes</td>
+              <td class="px-4 py-3 text-center text-green-600">✅</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3">Suspender/activar productores</td>
+              <td class="px-4 py-3 text-center text-green-600">✅</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+            </tr>
+
+            <tr class="bg-slate-50 font-semibold text-slate-900">
+              <td class="px-4 py-3" colspan="4">Cotizador</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3">Crear/editar/eliminar cotizaciones</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+              <td class="px-4 py-3 text-center text-green-600">✅</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3">Ver comparador de precios</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+              <td class="px-4 py-3 text-center text-green-600">✅</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3">Generar link público para cliente</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+              <td class="px-4 py-3 text-center text-green-600">✅</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+            </tr>
+
+            <tr class="bg-slate-50 font-semibold text-slate-900">
+              <td class="px-4 py-3" colspan="4">Clientes (Travelers)</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3">Crear/editar/ver viajeros</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+              <td class="px-4 py-3 text-center text-green-600">✅</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+            </tr>
+
+            <tr class="bg-slate-50 font-semibold text-slate-900">
+              <td class="px-4 py-3" colspan="4">Pólizas</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3">Ver sus pólizas emitidas</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+              <td class="px-4 py-3 text-center text-green-600">✅</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3">Descargar documento de póliza</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+              <td class="px-4 py-3 text-center text-green-600">✅</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+            </tr>
+
+            <tr class="bg-slate-50 font-semibold text-slate-900">
+              <td class="px-4 py-3" colspan="4">Finanzas del Productor</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3">Ver estimado de comisiones acumuladas</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+              <td class="px-4 py-3 text-center text-green-600">✅</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3">Ver comisiones por póliza</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+              <td class="px-4 py-3 text-center text-green-600">✅</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3">Generar factura mensual de comisiones</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+              <td class="px-4 py-3 text-center text-green-600">✅</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+            </tr>
+
+            <tr class="bg-slate-50 font-semibold text-slate-900">
+              <td class="px-4 py-3" colspan="4">Configuración</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3">Editar su perfil</td>
+              <td class="px-4 py-3 text-center text-green-600">✅</td>
+              <td class="px-4 py-3 text-center text-green-600">✅</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3">Cambiar contraseña</td>
+              <td class="px-4 py-3 text-center text-green-600">✅</td>
+              <td class="px-4 py-3 text-center text-green-600">✅</td>
+              <td class="px-4 py-3 text-center text-red-500">❌</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="mt-12 text-sm text-slate-500">
+      <p>Basado en <code>docs/07-roles-and-permissions.md</code> · Implementado con Action Policy.</p>
+    </footer>
+  </main>
+</body>
+</html>

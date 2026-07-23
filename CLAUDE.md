@@ -143,8 +143,14 @@ Solid Queue (DB-backed), started as a separate process in `Procfile.dev`. In pro
 
 **Jobs:**
 - `QuoteJob` — Orchestrates quoting: updates status to `quoting`, enqueues `ProviderQuoteJob` for each active provider.
-- `ProviderQuoteJob` — Calls provider API, creates `QuoteResult`. Retries 3x on `ProviderError` with 5s backoff.
+- `ProviderQuoteJob` — Calls provider API, creates `QuoteResult` per option returned, broadcasts the results block over Turbo Streams. Retries 3x on `ProviderError` with 5s backoff.
 - `WebhookProcessorJob` — Processes provider webhooks, creates `Policy` records.
+
+#### Raising job concurrency also means raising the DB pool
+
+`config/queue.yml` runs `threads: 3, processes: 1`, so **three provider calls happen in parallel**. With six providers that is two rounds — roughly twice the slowest API, not the sum of all six. The real bottleneck is a *slow* provider, not a numerous one: a 30s Faraday timeout plus 3 retries at 5s backoff can hold one of the three slots for ~100s.
+
+If you raise `threads` to fan out wider, you **must** raise the `+5` in `config/database.yml`'s `pool` by the same amount. Solid Queue runs inside Puma (`SOLID_QUEUE_IN_PUMA`) and shares that pool; the current `+5` covers exactly 3 workers + 1 dispatcher + 1 supervisor. Raise one without the other and Solid Queue refuses to boot **and takes Puma down with it**. Six threads need `+8`.
 
 ### Frontend Stack
 
@@ -172,4 +178,11 @@ Resend in production, `letter_opener` in development (emails open in browser). N
 
 ### Deployment
 
-Kamal (`bin/kamal`). Config in [config/deploy.yml](config/deploy.yml). Requires `RAILS_MASTER_KEY` and `APP_DATABASE_URL` (deliberately *not* named `DATABASE_URL` — Rails auto-merges that one into the primary config and lets the URL scheme override the adapter, which breaks on `mariadb://` URLs; see the comment in `config/database.yml`). SSL via Let's Encrypt proxy.
+**Deploys go through Dokploy, not Kamal.** `config/deploy.yml` and `bin/kamal` are still in the repo because they ship with Rails 8, but nothing uses them — do not edit them expecting a deploy to change, and do not suggest `bin/kamal` commands. Deployment config (env vars, domains, build) lives in the Dokploy panel, outside this repository.
+
+What the app needs at runtime, wherever it runs:
+
+- `RAILS_MASTER_KEY`
+- `APP_DATABASE_URL` — deliberately *not* named `DATABASE_URL`: Rails auto-merges that one into the primary config and lets the URL scheme override the adapter, which breaks on `mariadb://` URLs. See the comment in `config/database.yml`.
+- `SOLID_QUEUE_IN_PUMA=true` — runs the Solid Queue supervisor inside Puma (`config/puma.rb` loads the plugin when this is set), so there is no separate worker process in production. Note this differs from development, where `Procfile.dev` *does* run a separate worker — which is why `config/cable.yml` must not use the `async` adapter there.
+- Storage uses `AWS_*` variable names against Cloudflare R2, including `AWS_ENDPOINT`. The names stay `AWS_*` on purpose; do not rename them to `R2_*`.

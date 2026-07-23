@@ -5,7 +5,7 @@ class Public::LandingController < ActionController::Base
     @company = Company.find_by!(slug: params[:slug])
     @producer = resolve_producer
     @providers = Provider.active
-    @quote = Quote.new(travelers_count: 1, trip_type: "single")
+    @quote = Quote.new(travelers_count: 6, trip_type: "single")
   end
 
   def create

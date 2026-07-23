@@ -1,9 +1,14 @@
-# Async adapter only works within the same process, so for manually triggering cable updates from a console,
-# and seeing results in the browser, you must do so from the web console (running inside the dev process),
-# not a terminal started via bin/rails console! Add "console" to any action or any ERB template view
-# to make the web console appear.
+# El adapter `async` solo entrega mensajes dentro del mismo proceso, y en
+# desarrollo Solid Queue corre como proceso separado (ver Procfile.dev). Con
+# `async`, un broadcast emitido desde un job se queda en el proceso worker y
+# nunca llega al WebSocket que atiende Puma: la pantalla de cotización se queda
+# "consultando proveedores" para siempre y los resultados recién aparecen al
+# recargar. Solid Cable pasa los mensajes por la base, así que cruza procesos.
 development:
-  adapter: async
+  adapter: solid_cable
+  # No `connects_to` — la tabla vive en la base principal.
+  polling_interval: 0.1.seconds
+  message_retention: 1.day
 
 test:
   adapter: test

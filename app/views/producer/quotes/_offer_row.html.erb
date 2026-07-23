@@ -1,0 +1,24 @@
+<%# Una fila de la comparación: un proveedor con todas sus opciones de plan. %>
+<section class="card p-5 mb-4">
+  <header class="flex flex-wrap items-center justify-between gap-2 mb-4">
+    <div class="flex items-center gap-2">
+      <i class="ti ti-building-store text-gray-400"></i>
+      <h3 class="text-lg font-semibold text-gray-900"><%= offer.provider.name %></h3>
+      <span class="badge badge-ghost">
+        <%= pluralize(offer.options.size, "opción", plural: "opciones") %>
+      </span>
+    </div>
+    <p class="text-sm text-gray-500">
+      Desde <span class="font-semibold text-gray-900"><%= offer.options.first.price.format %></span>
+    </p>
+  </header>
+
+  <div class="offer-row">
+    <% offer.options.each_with_index do |option, index| %>
+      <%= render "producer/quotes/offer_option",
+                 option: option,
+                 quote: quote,
+                 best: cheapest_overall && index.zero? %>
+    <% end %>
+  </div>
+</section>

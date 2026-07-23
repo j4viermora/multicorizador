@@ -1,6 +1,6 @@
 class Admin::ProvidersController < ApplicationController
   before_action :authenticate_super_admin!
-  before_action :set_provider, only: [:show, :edit, :update, :destroy]
+  before_action :set_provider, only: [ :show, :edit, :update, :destroy, :toggle_active ]
 
   def index
     @providers = Provider.order(:name)
@@ -36,6 +36,20 @@ class Admin::ProvidersController < ApplicationController
   def destroy
     @provider.destroy
     redirect_to admin_providers_path, notice: "Proveedor eliminado."
+  end
+
+  # Alterna la participación del proveedor en las cotizaciones.
+  #
+  # Escribe únicamente `status`, sin pasar por `provider_params`: compartir los
+  # strong params con el formulario completo dejaría abierta la posibilidad de
+  # que esta acción termine tocando `config`, donde viven las credenciales.
+  # Alterna sobre el estado actual en lugar de recibir el destino como parámetro,
+  # para que dos pestañas abiertas no puedan pisarse con el mismo valor.
+  def toggle_active
+    @provider.update!(status: @provider.active? ? "inactive" : "active")
+
+    redirect_to admin_providers_path,
+      notice: "#{@provider.name} quedó #{@provider.active? ? 'activo' : 'inactivo'}."
   end
 
   private
