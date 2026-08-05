@@ -37,15 +37,20 @@ class Quote < ApplicationRecord
     end
   end
 
+  # Proveedor destacado: va primero en la comparación sin importar el precio.
+  # Es un acuerdo comercial (Protegetuviaje), no algo que dependa del monto
+  # cotizado — por eso no entra en el sort_by de precio de abajo.
+  FEATURED_PROVIDER_SLUG = "protegetuviaje"
+
   # Resultados exitosos agrupados en una fila por proveedor. Las opciones de cada
-  # fila van de menor a mayor precio, y las filas se ordenan por su opción más
-  # económica, de modo que el proveedor con la entrada más barata quede primero.
+  # fila van de menor a mayor precio. Las filas se ordenan con el proveedor
+  # destacado primero y, dentro de cada grupo, por su opción más económica.
   def offers_by_provider
     quote_results.successful
                  .includes(:provider)
                  .group_by(&:provider)
                  .map { |provider, options| ProviderOffer.new(provider, options.sort_by(&:price_cents)) }
-                 .sort_by(&:cheapest_price_cents)
+                 .sort_by { |offer| [ offer.provider.slug == FEATURED_PROVIDER_SLUG ? 0 : 1, offer.cheapest_price_cents ] }
   end
 
   # Proveedores que no pudieron cotizar. Se exponen aparte porque un resultado

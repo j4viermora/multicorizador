@@ -43,11 +43,15 @@
       </span>
     </h2>
 
-    <% offers.each_with_index do |offer, index| %>
+    <%# El proveedor destacado va primero en `offers` sin importar el precio
+        (ver Quote::FEATURED_PROVIDER_SLUG), así que la opción más barata real
+        no es necesariamente la primera fila/columna: se calcula aparte. %>
+    <% cheapest_quote_result_id = offers.flat_map(&:options).min_by(&:price_cents)&.id %>
+    <% offers.each do |offer| %>
       <%= render "producer/quotes/offer_row",
                  offer: offer,
                  quote: quote,
-                 cheapest_overall: index.zero? %>
+                 cheapest_quote_result_id: cheapest_quote_result_id %>
     <% end %>
   <% end %>
 

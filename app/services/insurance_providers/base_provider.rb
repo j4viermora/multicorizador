@@ -27,6 +27,20 @@ module InsuranceProviders
       raise NotImplementedError
     end
 
+    # Algunos proveedores (Protegetuviaje) no arman el link de compra con un
+    # simple GET: exigen crear la orden del lado de ellos con los datos
+    # completos de pasajeros/facturación/emergencia y devuelven recién ahí el
+    # link de pago. #purchase_url no alcanza para eso (solo recibe el
+    # quote_result), así que estos proveedores implementan #create_order en
+    # su lugar y declaran supports_order_creation? = true.
+    def supports_order_creation?
+      false
+    end
+
+    def create_order(quote_result, passengers:, billing:, emergency:, contact:)
+      raise NotImplementedError
+    end
+
     def parse_webhook(payload)
       raise NotImplementedError
     end

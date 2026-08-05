@@ -129,3 +129,22 @@ omint_provider = Provider.find_or_create_by!(slug: "omint") do |p|
 end
 
 puts "Proveedor Omint creado: #{omint_provider.name} (status: #{omint_provider.status})"
+
+# Protegetuviaje — API "Centro de Aliados" (b2b2c.protegetuviaje.com).
+# Credenciales por ENV, igual que Omint — nunca hardcodeadas acá, ni las de
+# sandbox: seteá PROTEGETUVIAJE_API_KEY/PROTEGETUVIAJE_API_SECRET en tu .env
+# local (valores de sandbox) y en el panel de Dokploy para producción (las
+# que emita el panel de aliados real). Arranca "active": ya está validado
+# end-to-end (cotización + orden real) contra el ambiente de la API.
+protegetuviaje_provider = Provider.find_or_create_by!(slug: "protegetuviaje") do |p|
+  p.name = "Protegetuviaje"
+  p.status = "active"
+  p.config = {
+    base_url: "https://b2b2c.protegetuviaje.com/backend/",
+    api_key: ENV.fetch("PROTEGETUVIAJE_API_KEY", "CHANGEME"),
+    api_secret: ENV.fetch("PROTEGETUVIAJE_API_SECRET", "CHANGEME"),
+    timeout: 30
+  }
+end
+
+puts "Proveedor Protegetuviaje creado: #{protegetuviaje_provider.name} (status: #{protegetuviaje_provider.status})"

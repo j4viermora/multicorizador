@@ -279,6 +279,12 @@
     </div>
   </div>
 
+  <% if @order_error.present? %>
+    <div class="purchase-fade-in pd1 mb-5" style="background: oklch(0.95 0.05 25); border: 1px solid oklch(0.75 0.15 25); border-radius: 0.65rem; padding: 1rem 1.25rem; color: oklch(0.4 0.15 25); font-size: 0.85rem; font-weight: 500;">
+      No pudimos generar la orden con el proveedor: <%= @order_error %>. Revisá los datos e intentá de nuevo.
+    </div>
+  <% end %>
+
   <%# ── Main layout: form + sidebar ── %>
   <form action="<%= public_landing_checkout_path(@company.slug) %>" method="post" data-turbo="false">
     <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
@@ -353,9 +359,63 @@
                   <input type="text" name="passengers[][document]" class="purchase-input"
                          placeholder="Ej: 12.345.678" required>
                 </div>
+                <div class="purchase-field">
+                  <label class="purchase-label">Tipo de documento</label>
+                  <select name="passengers[][document_type]" class="purchase-input" required>
+                    <option value="Pasaporte">Pasaporte</option>
+                    <option value="DNI">DNI</option>
+                    <option value="Cédula de identidad">Cédula de identidad</option>
+                    <option value="Cédula de ciudadanía">Cédula de ciudadanía</option>
+                    <option value="Otro">Otro</option>
+                  </select>
+                </div>
               </div>
             </div>
           <% end %>
+        </div>
+
+        <%# Section: Billing data (requerido por proveedores que emiten orden real, ej. Protegetuviaje) %>
+        <div class="purchase-section purchase-fade-in pd3">
+          <div class="flex items-start gap-3 mb-5">
+            <div class="section-icon" style="background: var(--wz-blue-light); color: var(--wz-blue);">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v14a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-lg font-bold" style="color: var(--wz-ink);">Datos de facturación</h2>
+              <p class="text-sm" style="color: var(--wz-ink-muted);">A nombre de quién se emite el comprobante.</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+            <div class="purchase-field">
+              <label class="purchase-label">Nombres</label>
+              <input type="text" name="billing[name]" class="purchase-input" placeholder="Nombre completo" required>
+            </div>
+            <div class="purchase-field">
+              <label class="purchase-label">Apellido</label>
+              <input type="text" name="billing[lastname]" class="purchase-input" placeholder="Apellido completo" required>
+            </div>
+            <div class="purchase-field">
+              <label class="purchase-label">Tipo de documento</label>
+              <select name="billing[document_type]" class="purchase-input" required>
+                <option value="Pasaporte">Pasaporte</option>
+                <option value="DNI">DNI</option>
+                <option value="Cédula de identidad">Cédula de identidad</option>
+                <option value="Cédula de ciudadanía">Cédula de ciudadanía</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+            <div class="purchase-field">
+              <label class="purchase-label">N. de documento</label>
+              <input type="text" name="billing[document_number]" class="purchase-input" placeholder="Ej: 12.345.678" required>
+            </div>
+            <div class="purchase-field md:col-span-2">
+              <label class="purchase-label">Dirección de facturación</label>
+              <input type="text" name="billing[address]" class="purchase-input" placeholder="Calle, número, ciudad" required>
+            </div>
+          </div>
         </div>
 
         <%# Section 2: Contact / voucher recipient %>
@@ -401,15 +461,25 @@
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
-            <div class="purchase-field md:col-span-2">
-              <label class="purchase-label">Nombre y apellido</label>
+            <div class="purchase-field">
+              <label class="purchase-label">Nombres</label>
               <input type="text" name="emergency[name]" class="purchase-input"
-                     placeholder="Nombre completo">
+                     placeholder="Nombre" required>
+            </div>
+            <div class="purchase-field">
+              <label class="purchase-label">Apellido</label>
+              <input type="text" name="emergency[lastname]" class="purchase-input"
+                     placeholder="Apellido" required>
             </div>
             <div class="purchase-field">
               <label class="purchase-label">Telefono</label>
               <input type="tel" name="emergency[phone]" class="purchase-input"
-                     placeholder="+54 9 11 1234-5678">
+                     placeholder="+54 9 11 1234-5678" required>
+            </div>
+            <div class="purchase-field">
+              <label class="purchase-label">Email</label>
+              <input type="email" name="emergency[email]" class="purchase-input"
+                     placeholder="nombre@email.com" required>
             </div>
           </div>
         </div>

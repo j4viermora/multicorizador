@@ -4,4 +4,5 @@ Rails.application.config.to_prepare do
   InsuranceProviders.register(InsuranceProviders::UniversalAssistanceFake)
   InsuranceProviders.register(InsuranceProviders::TravelAceFake)
   InsuranceProviders.register(InsuranceProviders::OmintProvider)
+  InsuranceProviders.register(InsuranceProviders::ProtegetuviajeProvider)
 end

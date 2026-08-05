@@ -14,11 +14,11 @@
   </header>
 
   <div class="offer-row">
-    <% offer.options.each_with_index do |option, index| %>
+    <% offer.options.each do |option| %>
       <%= render "producer/quotes/offer_option",
                  option: option,
                  quote: quote,
-                 best: cheapest_overall && index.zero? %>
+                 best: option.id == cheapest_quote_result_id %>
     <% end %>
   </div>
 </section>

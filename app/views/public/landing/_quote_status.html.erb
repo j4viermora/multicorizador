@@ -13,6 +13,10 @@
       proveedor intercalaba a los mismos proveedores y hacía imposible comparar. %>
 
   <% if offers.any? %>
+    <%# El proveedor destacado va primero en `offers` sin importar el precio
+        (ver Quote::FEATURED_PROVIDER_SLUG), así que el "mejor precio" real
+        no es necesariamente la primera fila/columna: se calcula aparte. %>
+    <% cheapest_quote_result_id = offers.flat_map(&:options).min_by(&:price_cents)&.id %>
     <% offers.each_with_index do |offer, row_idx| %>
       <section class="provider-row results-fade-in rd<%= [row_idx + 2, 4].min %>">
         <header class="provider-row-header">
@@ -30,9 +34,9 @@
         </header>
 
         <div class="provider-row-cards">
-          <% offer.options.each_with_index do |quote_result, idx| %>
+          <% offer.options.each do |quote_result| %>
             <% result = quote_result.raw_response.deep_symbolize_keys.merge(quote_result_id: quote_result.id) %>
-            <% best = row_idx.zero? && idx.zero? %>
+            <% best = quote_result.id == cheapest_quote_result_id %>
 
             <div class="result-card <%= "is-best" if best %>">
 

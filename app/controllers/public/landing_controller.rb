@@ -59,15 +59,30 @@ class Public::LandingController < ActionController::Base
     @quote_token = params[:quote_token]
     @quote = find_quote
 
-    complete_purchase!(@quote, @plan, @passengers) if @quote
+    if @quote
+      outcome = complete_purchase!(@quote, @plan, @passengers)
+
+      case outcome
+      in { payment_link: String => url }
+        redirect_to url, allow_other_host: true
+      in { error: String => message }
+        @order_error = message
+        render :purchase, status: :unprocessable_entity
+      else
+        # stub: sigue y renderiza checkout.html.erb como siempre
+      end
+    end
   end
 
   private
 
+  # Devuelve una URL externa a la que redirigir (el payment_link real del
+  # proveedor) cuando este soporta creación de orden, o nil para renderizar
+  # la vista checkout.html.erb "mock" de siempre.
   def complete_purchase!(quote, plan, passengers)
     ActsAsTenant.with_tenant(@company) do
-      primary = passengers.first || {}
       contact = contact_params
+      primary = passengers.first || {}
 
       traveler = Traveler.create!(
         producer: quote.producer,
@@ -85,23 +100,60 @@ class Public::LandingController < ActionController::Base
           "passengers" => passengers,
           "contact_email" => contact[:email],
           "contact_phone" => contact[:phone],
+          "billing" => billing_params.to_h,
           "emergency_contact" => emergency_params.to_h
         )
       )
 
       quote_result = quote.quote_results.find(plan[:quote_result_id])
+      client = InsuranceProviders.for(quote_result.provider)
 
-      PolicyIssuer.call(
-        quote_result: quote_result,
-        policy_number: "RK-#{SecureRandom.hex(6).upcase}",
-        issued_at: Time.current,
-        starts_at: quote.departure_date,
-        ends_at: quote.return_date,
-        premium: quote_result.price,
-        total: quote_result.price,
-        sold_via: "direct"
-      )
+      if client&.supports_order_creation?
+        create_real_order!(client, quote, quote_result, passengers, contact)
+      else
+        issue_stub_policy!(quote_result, quote)
+        :stub
+      end
     end
+  end
+
+  # Camino real: le pedimos al proveedor que emita la orden con los datos
+  # completos y mandamos al cliente a pagar a su payment_link. La póliza
+  # recién se emite cuando Protegetuviaje::OrderStatusSweepJob confirme el
+  # pago — esta API no tiene webhook, así que no hay forma de enterarse antes.
+  def create_real_order!(client, quote, quote_result, passengers, contact)
+    order = client.create_order(
+      quote_result,
+      passengers: passengers.map { |p| { name: p[:first_name], lastname: p[:last_name], birth_date: p[:birth_date], document_type: p[:document_type], document_number: p[:document] } },
+      billing: billing_params.to_h.symbolize_keys,
+      emergency: emergency_params.to_h.symbolize_keys.then { |e| { name: e[:name], lastname: e[:lastname], phone_number: e[:phone], email: e[:email] } },
+      contact: { phone_number: contact[:phone], email: contact[:email] }
+    )
+
+    quote_result.update!(raw_response: quote_result.raw_response.merge(
+      "order_code" => order[:order_code],
+      "order_serial" => order[:order_serial],
+      "payment_link" => order[:payment_link],
+      "pdf_url" => order[:pdf_url]
+    ))
+    quote.update!(status: "pending_payment")
+
+    { payment_link: order[:payment_link] }
+  rescue InsuranceProviders::BaseProvider::ProviderError => e
+    { error: e.message }
+  end
+
+  def issue_stub_policy!(quote_result, quote)
+    PolicyIssuer.call(
+      quote_result: quote_result,
+      policy_number: "RK-#{SecureRandom.hex(6).upcase}",
+      issued_at: Time.current,
+      starts_at: quote.departure_date,
+      ends_at: quote.return_date,
+      premium: quote_result.price,
+      total: quote_result.price,
+      sold_via: "direct"
+    )
   end
 
   def find_quote
@@ -115,7 +167,11 @@ class Public::LandingController < ActionController::Base
   end
 
   def emergency_params
-    params.fetch(:emergency, {}).permit(:name, :phone)
+    params.fetch(:emergency, {}).permit(:name, :lastname, :phone, :email)
+  end
+
+  def billing_params
+    params.fetch(:billing, {}).permit(:name, :lastname, :document_type, :document_number, :address)
   end
 
   def resolve_producer
@@ -159,7 +215,7 @@ class Public::LandingController < ActionController::Base
 
   def passenger_params
     params.require(:passengers).map do |p|
-      p.permit(:first_name, :last_name, :document, :birth_date).to_h
+      p.permit(:first_name, :last_name, :document, :document_type, :birth_date).to_h
     end
   end
 end
