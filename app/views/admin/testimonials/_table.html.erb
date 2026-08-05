@@ -1,17 +1,4 @@
-<div class="flex flex-wrap items-center justify-between gap-3 mb-6">
-  <div>
-    <h1 class="text-3xl font-bold">Reseñas</h1>
-    <p class="text-gray-500 mt-1 text-sm">
-      Se muestran en la landing pública, ordenadas por posición. Sólo las publicadas.
-    </p>
-  </div>
-
-  <%= link_to new_admin_testimonial_path, class: "btn btn-primary !mb-0" do %>
-    <i class="ti ti-plus"></i>Nueva reseña
-  <% end %>
-</div>
-
-<% if @testimonials.empty? %>
+<% if testimonials.empty? %>
   <div class="card p-8 text-center text-gray-500">
     <i class="ti ti-message-star text-3xl"></i>
     <p class="mt-2 text-sm">Todavía no cargaste ninguna reseña.</p>
@@ -31,7 +18,7 @@
         </tr>
       </thead>
       <tbody>
-        <% @testimonials.each do |testimonial| %>
+        <% testimonials.each do |testimonial| %>
           <tr class="<%= "opacity-60" unless testimonial.published? %>">
             <td class="text-gray-500"><%= testimonial.position %></td>
             <td class="font-medium text-gray-900">

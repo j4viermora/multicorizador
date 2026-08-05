@@ -1,17 +1,4 @@
-<div class="flex flex-wrap items-center justify-between gap-3 mb-6">
-  <div>
-    <h1 class="text-3xl font-bold">Enlaces del pie</h1>
-    <p class="text-gray-500 mt-1 text-sm">
-      Aparecen en la columna &laquo;Cotizá&raquo; del pie de la landing pública.
-    </p>
-  </div>
-
-  <%= link_to new_admin_footer_link_path, class: "btn btn-primary !mb-0" do %>
-    <i class="ti ti-plus"></i>Nuevo enlace
-  <% end %>
-</div>
-
-<% if @footer_links.empty? %>
+<% if footer_links.empty? %>
   <div class="card p-8 text-center text-gray-500">
     <i class="ti ti-link text-3xl"></i>
     <p class="mt-2 text-sm">Sin enlaces cargados: el pie muestra sólo los datos de la empresa.</p>
@@ -29,7 +16,7 @@
         </tr>
       </thead>
       <tbody>
-        <% @footer_links.each do |link| %>
+        <% footer_links.each do |link| %>
           <tr class="<%= "opacity-60" unless link.published? %>">
             <td class="text-gray-500"><%= link.position %></td>
             <td class="font-medium text-gray-900"><%= link.label %></td>

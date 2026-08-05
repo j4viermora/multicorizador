@@ -11,11 +11,15 @@ Rails.application.routes.draw do
       member { patch :toggle_active }
     end
     resources :insurance_plans
-    # Contenido de la landing pública
-    resources :testimonials, except: [ :show ] do
+    # Contenido de la landing pública: se gestiona todo desde un único hub
+    # (/admin/landing, con tabs) en vez de una página por recurso — los
+    # resources siguen existiendo para new/create/edit/update/destroy, pero
+    # sin :index porque esa vista la reemplaza el hub.
+    get "landing", to: "landing#index"
+    resources :testimonials, except: [ :show, :index ] do
       member { patch :toggle_published }
     end
-    resources :footer_links, except: [ :show ] do
+    resources :footer_links, except: [ :show, :index ] do
       member { patch :toggle_published }
     end
     resources :policies, only: [ :index, :show ]

@@ -2,10 +2,6 @@ class Admin::TestimonialsController < ApplicationController
   before_action :authenticate_super_admin!
   before_action :set_testimonial, only: [ :edit, :update, :destroy, :toggle_published ]
 
-  def index
-    @testimonials = Testimonial.ordered
-  end
-
   def new
     @testimonial = Testimonial.new(rating: 5, published: true)
   end
@@ -13,7 +9,7 @@ class Admin::TestimonialsController < ApplicationController
   def create
     @testimonial = Testimonial.new(testimonial_params)
     if @testimonial.save
-      redirect_to admin_testimonials_path, notice: "Reseña creada."
+      redirect_to admin_landing_path, notice: "Reseña creada."
     else
       render :new, status: :unprocessable_entity
     end
@@ -24,7 +20,7 @@ class Admin::TestimonialsController < ApplicationController
 
   def update
     if @testimonial.update(testimonial_params)
-      redirect_to admin_testimonials_path, notice: "Reseña actualizada."
+      redirect_to admin_landing_path, notice: "Reseña actualizada."
     else
       render :edit, status: :unprocessable_entity
     end
@@ -32,7 +28,7 @@ class Admin::TestimonialsController < ApplicationController
 
   def destroy
     @testimonial.destroy
-    redirect_to admin_testimonials_path, notice: "Reseña eliminada."
+    redirect_to admin_landing_path, notice: "Reseña eliminada."
   end
 
   # Publica o despublica sin abrir el formulario. Alterna sobre el estado
@@ -41,7 +37,7 @@ class Admin::TestimonialsController < ApplicationController
   def toggle_published
     @testimonial.update!(published: !@testimonial.published?)
 
-    redirect_to admin_testimonials_path,
+    redirect_to admin_landing_path,
       notice: "La reseña quedó #{@testimonial.published? ? 'publicada' : 'oculta'}."
   end
 

@@ -1,0 +1,51 @@
+<div class="mb-6">
+  <h1 class="text-3xl font-bold">Landing</h1>
+  <p class="text-gray-500 mt-1 text-sm">
+    Todo el contenido editable de la landing pública, en un solo lugar.
+  </p>
+</div>
+
+<div class="mb-4 border-b border-gray-200">
+  <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="landing-tabs" data-tabs-toggle="#landing-tabs-content" role="tablist">
+    <li class="mr-2" role="presentation">
+      <button class="inline-block p-4 border-b-2 rounded-t-lg" id="testimonials-tab" data-tabs-target="#testimonials-panel"
+              type="button" role="tab" aria-controls="testimonials-panel" aria-selected="true">
+        <i class="ti ti-message-star"></i> Reseñas
+      </button>
+    </li>
+    <li class="mr-2" role="presentation">
+      <button class="inline-block p-4 border-b-2 rounded-t-lg" id="footer-links-tab" data-tabs-target="#footer-links-panel"
+              type="button" role="tab" aria-controls="footer-links-panel" aria-selected="false">
+        <i class="ti ti-link"></i> Pie de la landing
+      </button>
+    </li>
+  </ul>
+</div>
+
+<div id="landing-tabs-content">
+  <div class="hidden" id="testimonials-panel" role="tabpanel" aria-labelledby="testimonials-tab">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+      <p class="text-gray-500 text-sm">
+        Se muestran en la landing pública, ordenadas por posición. Sólo las publicadas.
+      </p>
+      <%= link_to new_admin_testimonial_path, class: "btn btn-primary !mb-0" do %>
+        <i class="ti ti-plus"></i>Nueva reseña
+      <% end %>
+    </div>
+
+    <%= render "admin/testimonials/table", testimonials: @testimonials %>
+  </div>
+
+  <div class="hidden" id="footer-links-panel" role="tabpanel" aria-labelledby="footer-links-tab">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+      <p class="text-gray-500 text-sm">
+        Aparecen en la columna &laquo;Cotizá&raquo; del pie de la landing pública.
+      </p>
+      <%= link_to new_admin_footer_link_path, class: "btn btn-primary !mb-0" do %>
+        <i class="ti ti-plus"></i>Nuevo enlace
+      <% end %>
+    </div>
+
+    <%= render "admin/footer_links/table", footer_links: @footer_links %>
+  </div>
+</div>

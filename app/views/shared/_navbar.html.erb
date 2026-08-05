@@ -12,8 +12,7 @@
             <li><%= link_to "Dashboard", admin_dashboard_path, class: "px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100" %></li>
             <li><%= link_to "Proveedores", admin_providers_path, class: "px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100" %></li>
             <li><%= link_to "Productores", admin_users_path, class: "px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100" %></li>
-            <li><%= link_to "Reseñas", admin_testimonials_path, class: "px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100" %></li>
-            <li><%= link_to "Pie de la landing", admin_footer_links_path, class: "px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100" %></li>
+            <li><%= link_to "Landing", admin_landing_path, class: "px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100" %></li>
           <% elsif current_user.producer? && current_user.active? %>
             <li><%= link_to "Dashboard", producer_dashboard_path, class: "px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100" %></li>
             <li><%= link_to "Cotizaciones", producer_quotes_path, class: "px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100" %></li>
