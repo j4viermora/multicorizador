@@ -1,6 +1,14 @@
 class Public::LandingController < ActionController::Base
   layout "public"
 
+  # purchase/checkout llegan desde el form embebido en _quote_status.html.erb,
+  # que se renderiza y transmite por Turbo Streams desde un job en background
+  # (ProviderQuoteJob#broadcast_results / Quote#broadcast_status_update). Un
+  # job no tiene la sesión HTTP del visitante, así que el authenticity_token
+  # que ahí se genera nunca coincide con el de su sesión real al enviar el
+  # form. Estas acciones ya se identifican por quote_token, no por sesión.
+  skip_before_action :verify_authenticity_token, only: %i[purchase checkout]
+
   def show
     @company = Company.find_by!(slug: params[:slug])
     @producer = resolve_producer
