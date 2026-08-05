@@ -3,13 +3,13 @@
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
   <div class="stat">
     <div class="stat-title">Cotizaciones</div>
-    <div class="stat-value text-teal-600"><%= @quotes_count %></div>
+    <div class="stat-value text-brand-600"><%= @quotes_count %></div>
     <div class="stat-desc"><%= link_to "Nueva cotización", new_producer_quote_path, class: "link" %></div>
   </div>
 
   <div class="stat">
     <div class="stat-title">Clientes</div>
-    <div class="stat-value text-blue-600"><%= @travelers_count %></div>
+    <div class="stat-value text-brand-600"><%= @travelers_count %></div>
     <div class="stat-desc"><%= link_to "Ver clientes", producer_travelers_path, class: "link" %></div>
   </div>
 

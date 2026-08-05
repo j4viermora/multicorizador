@@ -1,17 +1,17 @@
 <% content_for(:head) do %>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@23.8.1/build/css/intlTelInput.min.css">
   <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@23.8.1/build/js/intlTelInput.min.js"></script>
 <% end %>
 <style>
-  .landing-root, .landing-root * { font-family: 'Outfit', sans-serif; }
+  .landing-root, .landing-root * { font-family: 'Poppins', sans-serif; }
 
   /* ── Hero: profundidad sutil sin perder identidad ── */
   .landing-hero {
     background:
-      radial-gradient(ellipse 120% 80% at 50% -20%, oklch(0.38 0.09 195 / 0.45), transparent 55%),
+      radial-gradient(ellipse 120% 80% at 50% -20%, oklch(0.38 0.09 260 / 0.45), transparent 55%),
       var(--wz-hero);
     position: relative;
     overflow: hidden;
@@ -50,7 +50,7 @@
     width: 2.5rem;
     height: 2.5rem;
     border-radius: 0.5rem;
-    background: var(--wz-teal);
+    background: var(--wz-blue);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -70,7 +70,7 @@
     transition: color 0.15s ease;
   }
 
-  .producer-contact-link:hover { color: var(--wz-teal); }
+  .producer-contact-link:hover { color: var(--wz-blue); }
 
   /* ── Trust bar ── */
   .trust-bar {
@@ -96,7 +96,7 @@
     padding: 1rem;
     transition: border-color 0.15s ease;
   }
-  .benefit-card:hover { border-color: var(--wz-teal); }
+  .benefit-card:hover { border-color: var(--wz-blue); }
   .benefit-icon {
     width: 2rem;
     height: 2rem;
@@ -127,55 +127,245 @@
   .land-in.d4 { animation-delay: 0.4s; }
   .land-in.d5 { animation-delay: 0.5s; }
 
-  .qbar-field .iti {
+  .qsearch-field .iti__tel-input { padding-right: 0 !important; }
+  .iti__dropdown-content { font-family: 'Poppins', sans-serif; }
+
+  /* ── Secciones de la landing ── */
+  .sec { max-width: 72rem; margin-inline: auto; padding: 2.75rem 0; }
+  /* Las franjas de fondo tocan los bordes del container, igual que el hero */
+  .sec--tint {
+    background: white;
+    max-width: none;
+    margin-inline: -1rem;
+    padding-inline: 1rem;
+  }
+  .sec--tint > .sec-inner { max-width: 72rem; margin-inline: auto; }
+
+  .sec-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    text-align: center;
+    color: var(--wz-ink);
+    letter-spacing: -0.01em;
+  }
+  .sec-sub {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--wz-ink-muted);
+    margin-top: 0.35rem;
+  }
+
+  /* Proveedores */
+  .prov-card {
+    background: white;
+    border: 1px solid var(--wz-border);
+    border-radius: 0.6rem;
+    padding: 1rem 0.75rem;
+    text-align: center;
+    transition: border-color 0.15s ease;
+  }
+  .prov-card:hover { border-color: var(--wz-blue); }
+  .prov-logo {
+    width: 2.75rem;
+    height: 2.75rem;
+    margin: 0 auto 0.55rem;
+    border-radius: 0.5rem;
+    background: var(--wz-blue-light);
+    color: var(--wz-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.95rem;
+  }
+
+  .prov-logo-img {
+    height: 2.75rem;
+    max-width: 8rem;
+    margin: 0 auto 0.55rem;
+    object-fit: contain;
+  }
+
+  /* Reseñas */
+  .review-card {
+    background: white;
+    border: 1px solid var(--wz-border);
+    border-radius: 0.6rem;
+    padding: 1.15rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .review-stars { color: var(--wz-orange); font-size: 0.9rem; line-height: 1; }
+  .review-body {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--wz-ink-soft);
+    flex: 1;
+  }
+  .review-foot { font-size: 0.8rem; color: var(--wz-ink); }
+  .review-source {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--wz-blue);
+  }
+
+  /* Pasos */
+  .step-card { text-align: center; padding: 0 0.5rem; }
+  .step-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+    margin: 0 auto 0.75rem;
+    border-radius: 0.75rem;
+    background: var(--wz-blue-light);
+    color: var(--wz-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    position: relative;
+  }
+  .step-num {
+    position: absolute;
+    top: -0.35rem;
+    right: -0.35rem;
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 50%;
+    background: var(--wz-orange);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Categorías */
+  .need-card {
+    background: white;
+    border: 1px solid var(--wz-border);
+    border-radius: 0.6rem;
+    padding: 1.15rem 0.75rem;
+    text-align: center;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+  .need-card:hover { border-color: var(--wz-blue); }
+  .need-card i { font-size: 1.85rem; color: var(--wz-blue); }
+  .need-card p {
+    margin-top: 0.5rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--wz-ink);
+  }
+
+  /* Acordeones (coberturas y FAQ) */
+  .acc-item + .acc-item { border-top: 1px solid var(--wz-border); }
+  .acc-btn {
     width: 100%;
     display: flex;
-    border: none;
-    background: transparent;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    text-align: left;
+    padding: 1rem 0.25rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--wz-ink);
   }
-  .qbar-field .iti__tel-input { padding-right: 0 !important; }
-  .qbar-field .iti__country-container { padding: 0; }
-  .iti__dropdown-content { font-family: 'Outfit', sans-serif; }
+  .acc-btn:hover { color: var(--wz-blue); }
+  .acc-btn i { flex-shrink: 0; color: var(--wz-blue); }
+  .acc-chevron { transition: transform 0.2s ease; }
+  .acc-btn[aria-expanded="true"] .acc-chevron { transform: rotate(180deg); }
+  .acc-body {
+    padding: 0 0.25rem 1rem;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--wz-ink-soft);
+  }
+
+  /* Footer */
+  .site-footer {
+    background: var(--wz-hero);
+    color: white;
+    margin: 2.5rem -1rem -2rem;
+    padding: 2.5rem 1rem 1.75rem;
+  }
+  .site-footer a { color: oklch(0.85 0.03 215); }
+  .site-footer a:hover { color: white; }
+  .site-footer-inner { max-width: 72rem; margin-inline: auto; }
+  .site-footer-head {
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: oklch(0.7 0.04 215);
+    margin-bottom: 0.75rem;
+  }
 </style>
 <div class="landing-root">
   <%# ══════════════════════════════════════════════ %>
   <%# HERO + COTIZADOR                              %>
   <%# ══════════════════════════════════════════════ %>
-  <div class="landing-hero -mx-4 -mt-8 px-4 pt-8 pb-10 md:pt-10 md:pb-12 relative">
+  <div class="landing-hero -mx-4 -mt-8 px-4 pt-6 pb-12 md:pt-8 md:pb-16 relative">
     <div class="max-w-3xl lg:max-w-6xl mx-auto relative z-10">
+      <%# Logo %>
+      <div class="mb-6 land-in">
+        <%= image_tag "ruka-logo-white.svg", alt: "Ruka Assistance", class: "h-16 md:h-20 w-auto" %>
+      </div>
+
       <%# Título %>
-      <div class="text-center mb-5 land-in">
-        <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight leading-tight">
-          Seguro de viaje: cotizá y compará tu cobertura en segundos
+      <div class="mb-4 land-in">
+        <h1 class="text-3xl md:text-4xl font-extrabold text-white tracking-tight leading-[1.15]">
+          Buscador de seguros de viaje
         </h1>
-        <p class="text-sm md:text-base mt-1.5" style="color: oklch(0.82 0.03 215);">
-          <%= @company.name %> &middot; compará todas las opciones y elegí la que te sirve
+        <p class="text-base md:text-lg font-bold mt-1" style="color: oklch(0.88 0.03 215);">
+          Compará todas las coberturas y elegí la que te sirve
         </p>
       </div>
 
-      <%# ── Cotizador hero ── %>
-      <div class="quote-search land-in d2" data-controller="quote-form">
-        <div class="quote-search__glow" aria-hidden="true"></div>
-        <div class="quote-search__card">
-          <%= simple_form_for @quote, url: public_landing_path(@company.slug, ref: params[:ref]),
-              method: :post,
-              html: { novalidate: true, data: { turbo: false, action: "submit->quote-form#validate" } } do |f| %>
+      <%# ── Buscador: una sola fila dentro del marco ── %>
+      <div class="qsearch land-in d2" data-controller="quote-form">
+        <%= simple_form_for @quote, url: public_landing_path(@company.slug, ref: params[:ref]),
+            method: :post,
+            html: { novalidate: true, data: { turbo: false, action: "submit->quote-form#validate" } } do |f| %>
 
-            <%= f.hidden_field :trip_type, value: "single" %>
-            <%= f.hidden_field :travelers_count, value: 0, data: { quote_form_target: "count" } %>
+          <%= f.hidden_field :trip_type, value: "single" %>
+          <%= f.hidden_field :travelers_count, value: 0, data: { quote_form_target: "count" } %>
 
-            <%# Sección: viaje %>
-            <div class="quote-search__section">
-              <div class="quote-search__head">
-                <span class="quote-search__step">1</span>
-                <span class="quote-search__title">Datos del viaje</span>
+          <div class="qsearch__frame">
+            <div class="qsearch__bar">
+              <%# País de origen %>
+              <div class="qsearch-field ac-wrapper"
+                   data-controller="country-autocomplete"
+                   data-country-autocomplete-items-value="<%= countries_autocomplete_data %>">
+                <label class="qsearch-label" for="quote_origin">País de origen</label>
+                <div class="qsearch-control">
+                  <i class="ti ti-map-pin"></i>
+                  <%= f.input :origin, label: false, wrapper: :qbar_plain,
+                      placeholder: "Elegí el país",
+                      input_html: {
+                        required: true, autocomplete: "off",
+                        data: {
+                          country_autocomplete_target: "input",
+                          action: "input->country-autocomplete#filter focus->country-autocomplete#open keydown->country-autocomplete#keydown focus->quote-form#clearError"
+                        }
+                      } %>
+                </div>
+                <ul data-country-autocomplete-target="list" class="ac-list hidden"></ul>
               </div>
-              <div class="qbar qbar--hero grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12">
-                <div data-controller="country-autocomplete"
-                     data-country-autocomplete-items-value="<%= countries_autocomplete_data %>"
-                     class="ac-wrapper lg:col-span-4">
-                  <%= f.input :origin, label: "Origen", wrapper: :qbar,
-                      placeholder: "¿Desde dónde salís?",
+
+              <%# Destino %>
+              <div class="qsearch-field ac-wrapper"
+                   data-controller="country-autocomplete"
+                   data-country-autocomplete-items-value="<%= countries_autocomplete_data %>">
+                <label class="qsearch-label" for="quote_destination">Destino</label>
+                <div class="qsearch-control">
+                  <i class="ti ti-plane-tilt"></i>
+                  <%= f.input :destination, label: false, wrapper: :qbar_plain,
+                      placeholder: "¿A dónde vas?",
                       input_html: {
                         required: true, autocomplete: "off",
                         data: {
@@ -183,213 +373,92 @@
                           action: "input->country-autocomplete#filter focus->country-autocomplete#open keydown->country-autocomplete#keydown focus->quote-form#clearError"
                         }
                       } %>
-                  <ul data-country-autocomplete-target="list" class="ac-list hidden"></ul>
                 </div>
+                <ul data-country-autocomplete-target="list" class="ac-list hidden"></ul>
+              </div>
 
-                <div data-controller="country-autocomplete"
-                     data-country-autocomplete-items-value="<%= countries_autocomplete_data %>"
-                     class="ac-wrapper lg:col-span-4">
-                  <%= f.input :destination, label: "Destino", wrapper: :qbar,
-                      placeholder: "¿Dónde viajás?",
-                      input_html: {
-                        required: true, autocomplete: "off",
-                        data: {
-                          country_autocomplete_target: "input",
-                          action: "input->country-autocomplete#filter focus->country-autocomplete#open keydown->country-autocomplete#keydown focus->quote-form#clearError"
-                        }
-                      } %>
-                  <ul data-country-autocomplete-target="list" class="ac-list hidden"></ul>
+              <%# Edades: una casilla por pasajero, (+) agrega la siguiente %>
+              <div class="qsearch-field qsearch-field--ages">
+                <span class="qsearch-label">
+                  Edades
+                  <button type="button" class="qsearch-add" aria-label="Agregar pasajero"
+                          data-quote-form-target="addAge"
+                          data-action="quote-form#addAge">
+                    <i class="ti ti-plus"></i>
+                  </button>
+                </span>
+                <div class="qsearch-ages" data-quote-form-target="ages">
+                  <% 6.times do |i| %>
+                    <div class="qsearch-age" data-age-field>
+                      <input type="number" name="quote[metadata][ages][]" min="0" max="120"
+                             inputmode="numeric"
+                             aria-label="Edad del pasajero <%= i + 1 %>"
+                             data-action="input->quote-form#sync focus->quote-form#clearError">
+                    </div>
+                  <% end %>
                 </div>
+              </div>
 
-                <div class="qbar-field lg:col-span-4">
-                  <span class="qbar-label"><i class="ti ti-calendar-event"></i> Fechas</span>
-                  <div class="qbar-dates">
+              <%# Fecha de viaje %>
+              <div class="qsearch-field">
+                <span class="qsearch-label">Fecha de viaje</span>
+                <div class="qsearch-control">
+                  <i class="ti ti-calendar-event"></i>
+                  <div class="qsearch-dates">
                     <%= f.input :departure_date, label: false, as: :datepicker, wrapper: :qbar_plain,
                         placeholder: "Salida",
                         input_html: { required: true,
                                       data: { datepicker_min_value: Date.today.iso8601,
                                               action: "focus->quote-form#clearError" } } %>
-                    <i class="ti ti-arrow-narrow-right qbar-dates-sep"></i>
+                    <i class="ti ti-arrow-narrow-right qsearch-dates-sep"></i>
                     <%= f.input :return_date, label: false, as: :datepicker, wrapper: :qbar_plain,
                         placeholder: "Regreso",
                         input_html: { data: { datepicker_min_value: Date.today.iso8601 } } %>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <%# Sección: pasajeros %>
-            <div class="quote-search__section">
-              <div class="quote-search__head">
-                <span class="quote-search__step">2</span>
-                <span class="quote-search__title">Pasajeros</span>
-              </div>
-              <div class="qbar qbar--hero">
-                <div class="qbar-field">
-                  <span class="qbar-label"><i class="ti ti-users"></i> Edades</span>
-                  <p class="qbar-hint">Al menos una edad. Dejá vacíos los cupos que no uses.</p>
-                  <div class="qbar-ages" data-quote-form-target="ages">
-                    <% 6.times do |i| %>
-                      <div class="qbar-age" data-age-field>
-                        <input type="number" name="quote[metadata][ages][]" min="0" max="120"
-                               placeholder="<%= i + 1 %>"
-                               inputmode="numeric"
-                               aria-label="Edad del pasajero <%= i + 1 %>"
-                               data-action="input->quote-form#sync focus->quote-form#clearError">
-                      </div>
-                    <% end %>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <%# Sección: contacto + CTA %>
-            <div class="quote-search__section">
-              <div class="quote-search__head">
-                <span class="quote-search__step">3</span>
-                <span class="quote-search__title">Contacto</span>
-              </div>
-              <div class="qbar qbar--hero grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12">
-                <div class="qbar-field lg:col-span-4">
-                  <label class="qbar-label" for="phone-input">
-                    <i class="ti ti-brand-whatsapp"></i> WhatsApp
-                  </label>
+              <%# WhatsApp %>
+              <div class="qsearch-field">
+                <label class="qsearch-label" for="phone-input">WhatsApp</label>
+                <div class="qsearch-control">
                   <input type="tel" id="phone-input" placeholder="11 1234-5678" autocomplete="tel">
                   <input type="hidden" name="quote[metadata][phone]" id="phone-full-value">
                 </div>
+              </div>
 
-                <div class="qbar-field lg:col-span-5">
-                  <label class="qbar-label" for="quote-email">
-                    <i class="ti ti-mail"></i> Email
-                  </label>
+              <%# Email %>
+              <div class="qsearch-field">
+                <label class="qsearch-label" for="quote-email">Email</label>
+                <div class="qsearch-control">
+                  <i class="ti ti-mail"></i>
                   <input type="email" id="quote-email" name="quote[metadata][email]"
-                         placeholder="juan@ejemplo.com" required autocomplete="email"
+                         placeholder="tu@email.com" required autocomplete="email"
                          data-action="focus->quote-form#clearError">
                 </div>
-
-                <div class="lg:col-span-3 qbar-submit-wrap">
-                  <button type="submit" class="qbar-submit">
-                    <i class="ti ti-sparkles"></i>
-                    Cotizar ahora
-                  </button>
-                </div>
               </div>
+
+              <button type="submit" class="qsearch-submit">Cotizar</button>
             </div>
-          <% end %>
-        </div>
-      </div>
-
-      <p class="text-center text-xs mt-3 land-in d3" style="color: oklch(0.75 0.03 215);">
-        Cotización sin costo y sin compromiso &middot; Resultados en segundos
-      </p>
-    </div>
-  </div>
-
-  <%# ══════════════════════════════════════════════ %>
-  <%# TRUST BAR — Proveedores                       %>
-  <%# ══════════════════════════════════════════════ %>
-  <% if @providers.any? %>
-    <div class="max-w-2xl lg:max-w-4xl mx-auto mt-8 land-in d4">
-      <div class="trust-bar px-6 py-4">
-        <p class="text-center text-xs font-bold uppercase tracking-widest mb-3" style="color: var(--wz-ink-muted);">
-          Cotizamos con los mejores proveedores
-        </p>
-        <div class="flex flex-wrap justify-center gap-2">
-          <% @providers.each do |provider| %>
-            <span class="trust-provider"><%= provider.name %></span>
-          <% end %>
-        </div>
-      </div>
-    </div>
-  <% end %>
-  <%# ══════════════════════════════════════════════ %>
-  <%# BENEFITS                                      %>
-  <%# ══════════════════════════════════════════════ %>
-  <div class="max-w-2xl lg:max-w-4xl mx-auto mt-8 <%= @producer && @providers.any? ? 'land-in d5' : (@producer || @providers.any? ? 'land-in d4' : 'land-in d5') %>">
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-5">
-      <div class="benefit-card">
-        <div class="benefit-icon" style="background: var(--wz-teal-light); color: var(--wz-teal);">
-          <i class="ti ti-bolt text-xl"></i>
-        </div>
-        <p class="font-bold text-sm" style="color: var(--wz-ink);">Cotización inmediata</p>
-        <p class="text-xs mt-0.5" style="color: var(--wz-ink-muted);">Resultados en segundos, sin esperas.</p>
-      </div>
-      <div class="benefit-card">
-        <div class="benefit-icon" style="background: var(--wz-coral-light); color: var(--wz-coral);">
-          <i class="ti ti-shield-check text-xl"></i>
-        </div>
-        <p class="font-bold text-sm" style="color: var(--wz-ink);">Máxima cobertura</p>
-        <p class="text-xs mt-0.5" style="color: var(--wz-ink-muted);">Planes que cubren lo que necesitás.</p>
-      </div>
-      <div class="benefit-card">
-        <div class="benefit-icon" style="background: var(--wz-amber-light); color: oklch(0.55 0.14 75);">
-          <i class="ti ti-coin text-xl"></i>
-        </div>
-        <p class="font-bold text-sm" style="color: var(--wz-ink);">Mejores precios</p>
-        <p class="text-xs mt-0.5" style="color: var(--wz-ink-muted);">Compará y elegí la opción ideal.</p>
-      </div>
-      <div class="benefit-card">
-        <div class="benefit-icon" style="background: oklch(0.92 0.04 280); color: oklch(0.5 0.15 280);">
-          <i class="ti ti-headset text-xl"></i>
-        </div>
-        <p class="font-bold text-sm" style="color: var(--wz-ink);">Asistencia 24/7</p>
-        <p class="text-xs mt-0.5" style="color: var(--wz-ink-muted);">Soporte en cualquier parte del mundo.</p>
-      </div>
-    </div>
-  </div>
-  <%# ══════════════════════════════════════════════ %>
-  <%# ASESOR — fuera del buscador, al pie de la página %>
-  <%# ══════════════════════════════════════════════ %>
-  <% if @producer %>
-    <div class="max-w-2xl lg:max-w-4xl mx-auto mt-8 land-in d5">
-      <div class="producer-contact">
-        <div class="flex items-center gap-3 min-w-0">
-          <div class="producer-avatar">
-            <%= @producer.first_name&.first&.upcase %><%= @producer.last_name&.first&.upcase %>
-          </div>
-          <div class="min-w-0">
-            <p class="text-[0.65rem] font-bold uppercase tracking-widest" style="color: var(--wz-ink-muted);">
-              <%= params[:ref].present? ? "Tu asesor" : "Atención al cliente" %>
-            </p>
-            <p class="font-bold text-sm truncate" style="color: var(--wz-ink);"><%= @producer.full_name %></p>
-            <p class="text-xs" style="color: var(--wz-ink-muted);">Asesor de seguros</p>
-          </div>
-        </div>
-        <% if @producer.email.present? || @producer.phone.present? %>
-          <div class="flex flex-wrap gap-x-4 gap-y-1 sm:justify-end">
-            <% if @producer.email.present? %>
-              <a href="mailto:<%= @producer.email %>" class="producer-contact-link">
-                <i class="ti ti-mail text-sm"></i>
-                <%= @producer.email %>
-              </a>
-            <% end %>
-            <% if @producer.phone.present? %>
-              <a href="https://wa.me/<%= @producer.phone.gsub(/\D/, '') %>" target="_blank" rel="noopener" class="producer-contact-link">
-                <i class="ti ti-brand-whatsapp text-sm"></i>
-                <%= @producer.phone %>
-              </a>
-            <% end %>
           </div>
         <% end %>
+
+        <p class="qsearch__note land-in d3">
+          Cotización sin costo y sin compromiso &middot; Resultados en segundos
+        </p>
       </div>
-    </div>
-  <% end %>
-  <%# ══════════════════════════════════════════════ %>
-  <%# FOOTER                                        %>
-  <%# ══════════════════════════════════════════════ %>
-  <div class="max-w-2xl lg:max-w-4xl mx-auto mt-10 mb-4">
-    <div class="landing-footer pt-6 pb-4 flex flex-col md:flex-row items-center justify-between gap-3">
-      <div class="flex items-center gap-2">
-        <div style="width: 1.5rem; height: 1.5rem; border-radius: 0.375rem; background: var(--wz-teal); display: flex; align-items: center; justify-content: center;">
-          <i class="ti ti-shield-check text-xs text-white"></i>
-        </div>
-        <span class="text-xs font-bold" style="color: var(--wz-ink-soft);">Powered by Ruka</span>
-      </div>
-      <p class="text-xs" style="color: var(--wz-ink-muted);">
-        Cotizador de seguros de viaje &middot; Datos protegidos
-      </p>
     </div>
   </div>
+
+  <%= render "public/landing/providers", providers: @providers %>
+  <%= render "public/landing/benefits" %>
+  <%= render "public/landing/steps" %>
+  <%= render "public/landing/coverages" %>
+  <%= render "public/landing/needs" %>
+  <%= render "public/landing/reviews", testimonials: @testimonials %>
+  <%= render "public/landing/faq" %>
+  <%= render "public/landing/advisor", producer: @producer, ref: params[:ref] %>
+  <%= render "public/landing/footer", company: @company, links: @footer_links %>
 </div>
 <script>
   document.addEventListener("DOMContentLoaded", function () {

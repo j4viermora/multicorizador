@@ -3,13 +3,17 @@
     <div class="flex items-center justify-between h-16">
       <%# Brand + primary nav %>
       <div class="flex items-center gap-6">
-        <%= link_to "Ruka", root_path, class: "text-xl font-bold text-gray-900" %>
+        <%= link_to root_path, class: "flex items-center" do %>
+          <%= image_tag "ruka-logo.svg", alt: "Ruka Assistance", class: "h-8 w-auto" %>
+        <% end %>
 
         <ul class="hidden lg:flex items-center gap-1">
           <% if current_user.super_admin? %>
             <li><%= link_to "Dashboard", admin_dashboard_path, class: "px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100" %></li>
             <li><%= link_to "Proveedores", admin_providers_path, class: "px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100" %></li>
             <li><%= link_to "Productores", admin_users_path, class: "px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100" %></li>
+            <li><%= link_to "Reseñas", admin_testimonials_path, class: "px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100" %></li>
+            <li><%= link_to "Pie de la landing", admin_footer_links_path, class: "px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100" %></li>
           <% elsif current_user.producer? && current_user.active? %>
             <li><%= link_to "Dashboard", producer_dashboard_path, class: "px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100" %></li>
             <li><%= link_to "Cotizaciones", producer_quotes_path, class: "px-3 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100" %></li>
@@ -24,7 +28,7 @@
         <button id="user-menu-button" type="button"
                 data-dropdown-toggle="user-dropdown"
                 class="flex text-sm rounded-full focus:ring-4 focus:ring-gray-300">
-          <span class="w-9 h-9 rounded-full bg-teal-600 text-white flex items-center justify-center font-bold">
+          <span class="w-9 h-9 rounded-full bg-brand-600 text-white flex items-center justify-center font-bold">
             <%= current_user.first_name&.first || current_user.email.first %>
           </span>
         </button>

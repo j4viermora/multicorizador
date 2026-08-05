@@ -1,15 +1,15 @@
 <% content_for(:head) do %>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <% end %>
 
 <style>
-  .results-root, .results-root * { font-family: 'Outfit', sans-serif; }
+  .results-root, .results-root * { font-family: 'Poppins', sans-serif; }
 
   /* ── Hero summary bar ── */
   .results-hero {
-    background: linear-gradient(160deg, oklch(0.22 0.06 210) 0%, oklch(0.30 0.08 200) 50%, oklch(0.25 0.07 195) 100%);
+    background: linear-gradient(160deg, #216ad9 0%, #2e75de 50%, #4c86e3 100%);
     position: relative;
     overflow: hidden;
     border-radius: 1.25rem;
@@ -19,7 +19,7 @@
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(ellipse 500px 300px at 85% 30%, oklch(0.45 0.12 195 / 0.25), transparent),
+      radial-gradient(ellipse 500px 300px at 85% 30%, oklch(0.45 0.12 260 / 0.25), transparent),
       radial-gradient(ellipse 300px 200px at 15% 70%, oklch(0.55 0.15 25 / 0.1), transparent);
     pointer-events: none;
   }
@@ -47,7 +47,7 @@
     position: absolute;
     top: 0.75rem;
     right: 0.75rem;
-    background: linear-gradient(135deg, var(--wz-teal), oklch(0.52 0.14 195));
+    background: linear-gradient(135deg, var(--wz-blue), oklch(0.52 0.14 260));
     color: white;
     font-size: 0.68rem;
     font-weight: 700;
@@ -73,13 +73,13 @@
     height: 3px;
   }
   .result-card:nth-child(1) .result-card-header::after {
-    background: linear-gradient(90deg, var(--wz-teal), oklch(0.55 0.14 195));
+    background: linear-gradient(90deg, var(--wz-blue), oklch(0.55 0.14 260));
   }
   .result-card:nth-child(2) .result-card-header::after {
-    background: linear-gradient(90deg, var(--wz-coral), oklch(0.70 0.16 30));
+    background: linear-gradient(90deg, var(--wz-orange), oklch(0.70 0.16 30));
   }
   .result-card:nth-child(3) .result-card-header::after {
-    background: linear-gradient(90deg, var(--wz-amber), oklch(0.80 0.14 80));
+    background: linear-gradient(90deg, var(--wz-orange), #f2a166);
   }
 
   /* Provider name badge */
@@ -93,8 +93,8 @@
     letter-spacing: 0.08em;
     padding: 0.25rem 0.6rem;
     border-radius: 0.35rem;
-    background: var(--wz-teal-light);
-    color: var(--wz-teal);
+    background: var(--wz-blue-light);
+    color: var(--wz-blue);
   }
 
   /* Price area */
@@ -144,7 +144,7 @@
   .coverage-name svg {
     width: 0.9rem;
     height: 0.9rem;
-    color: var(--wz-teal);
+    color: var(--wz-blue);
     flex-shrink: 0;
   }
   .coverage-amount {
@@ -160,7 +160,7 @@
     padding: 0.85rem;
     border: none;
     border-radius: 0.65rem;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-size: 0.9rem;
     font-weight: 700;
     cursor: pointer;
@@ -169,20 +169,20 @@
     text-decoration: none;
   }
   .result-cta-primary {
-    background: linear-gradient(135deg, var(--wz-teal), oklch(0.52 0.14 195));
+    background: linear-gradient(135deg, var(--wz-blue), oklch(0.52 0.14 260));
     color: white;
-    box-shadow: 0 2px 8px oklch(0.47 0.12 195 / 0.3);
+    box-shadow: 0 2px 8px oklch(0.47 0.12 260 / 0.3);
   }
   .result-cta-primary:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 16px oklch(0.47 0.12 195 / 0.4);
+    box-shadow: 0 4px 16px oklch(0.47 0.12 260 / 0.4);
   }
   .result-cta-secondary {
-    background: var(--wz-teal-light);
-    color: var(--wz-teal);
+    background: var(--wz-blue-light);
+    color: var(--wz-blue);
   }
   .result-cta-secondary:hover {
-    background: oklch(0.88 0.06 195);
+    background: oklch(0.88 0.06 260);
   }
 
   /* Summary pills */
@@ -232,8 +232,8 @@
     width: 3rem;
     height: 3rem;
     border-radius: 50%;
-    border: 3px solid var(--wz-teal-light);
-    border-top-color: var(--wz-teal);
+    border: 3px solid var(--wz-blue-light);
+    border-top-color: var(--wz-blue);
     margin: 0 auto 1.25rem;
     animation: waitingSpin 0.8s linear infinite;
   }
@@ -300,7 +300,7 @@
     transition: color 0.2s;
   }
   .back-link:hover {
-    color: var(--wz-teal);
+    color: var(--wz-blue);
   }
   .back-link svg {
     width: 1rem;

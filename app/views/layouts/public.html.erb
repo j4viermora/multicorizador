@@ -8,7 +8,13 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= yield :head %>
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <%# Poppins — brand typeface (logos-ruka/Manual de marca Ruka Assistance (1).pdf) %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <%# Tabler Icons (webfont) — the icon set for the whole app %>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont/dist/tabler-icons.min.css">
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
@@ -21,19 +27,22 @@
 
     <%= javascript_importmap_tags %>
   </head>
-  <body class="min-h-screen" style="background: oklch(0.96 0.008 80);">
+  <body class="min-h-screen w-full" style="background: #f4f5f7;">
     <% if notice %>
-      <div class="container mx-auto px-4 pt-4 max-w-2xl">
+      <div class="w-full px-4 pt-4 max-w-2xl mx-auto">
         <div class="alert alert-success text-sm"><%= notice %></div>
       </div>
     <% end %>
-    <% if alert %>
-      <div class="container mx-auto px-4 pt-4 max-w-2xl">
+    <% if alert && alert != "Debes iniciar sesión" %>
+      <div class="w-full px-4 pt-4 max-w-2xl mx-auto">
         <div class="alert alert-error text-sm"><%= alert %></div>
       </div>
     <% end %>
 
-    <div class="container mx-auto px-4 py-8">
+    <%# Full width, sin container fijo — mismo criterio que aseguratuviaje.com:
+        el hero y las franjas de color van de borde a borde; el contenido de
+        cada sección se centra internamente con `.sec` (ver show.html.erb). %>
+    <div class="w-full px-4 py-8">
       <%= yield %>
     </div>
   </body>

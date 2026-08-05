@@ -5,25 +5,29 @@
 /* ── Quote Wizard: "Warm Coastal Fintech" ── */
 
 :root {
-  --wz-teal: oklch(0.47 0.12 195);
-  --wz-teal-light: oklch(0.92 0.04 195);
-  --wz-teal-glow: oklch(0.47 0.12 195 / 0.12);
-  --wz-sand: oklch(0.97 0.01 80);
-  --wz-sand-deep: oklch(0.94 0.015 75);
-  --wz-coral: oklch(0.65 0.18 25);
-  --wz-coral-light: oklch(0.93 0.04 25);
-  --wz-amber: oklch(0.75 0.15 75);
-  --wz-amber-light: oklch(0.94 0.04 75);
-  --wz-ink: oklch(0.25 0.02 250);
+  /* Azul Ruka (marca) y Naranja Ruka (acento) — logos-ruka/Manual de marca Ruka Assistance (1).pdf */
+  --wz-blue: #216ad9;
+  --wz-blue-light: #caddff;
+  --wz-blue-glow: oklch(0.53 0.19 260 / 0.12);
+  --wz-sand: #f4f5f7;
+  --wz-sand-deep: #e9ebef;
+  --wz-orange: #eb752d;
+  --wz-orange-light: #fbdfc9;
+  --wz-ink: #2b3a55;
   --wz-ink-soft: oklch(0.45 0.02 250);
   --wz-ink-muted: oklch(0.6 0.01 250);
   --wz-border: oklch(0.88 0.015 80);
   --wz-radius: 0.75rem;
-  /* Hero de la landing: colores planos, sin degradados */
-  --wz-hero: oklch(0.29 0.07 215);
-  --wz-hero-soft: oklch(0.34 0.065 215);
-  --wz-hero-line: oklch(0.42 0.06 215);
+  /* Hero de la landing: el Azul Ruka de marca tal cual — el manual avala
+     "Azul primario + texto blanco" para portadas/CTAs, así que el hero no
+     usa un navy inventado. -soft/-line son variantes más claras del mismo
+     azul para dar profundidad sin salir de la familia de color. */
+  --wz-hero: #216ad9;
+  --wz-hero-soft: #2e75de;
+  --wz-hero-line: #4c86e3;
 }
+
+body { font-family: "Poppins", ui-sans-serif, system-ui, sans-serif; }
 
 /* ── Card ── */
 .wizard-card {
@@ -45,18 +49,18 @@
 }
 
 .wizard-icon-badge.travel {
-  background: var(--wz-teal-light);
-  color: var(--wz-teal);
+  background: var(--wz-blue-light);
+  color: var(--wz-blue);
 }
 
 .wizard-icon-badge.passengers {
-  background: var(--wz-coral-light);
-  color: var(--wz-coral);
+  background: var(--wz-orange-light);
+  color: var(--wz-orange);
 }
 
 .wizard-icon-badge.contact {
-  background: var(--wz-amber-light);
-  color: oklch(0.55 0.14 75);
+  background: var(--wz-blue-light);
+  color: var(--wz-blue);
 }
 
 /* ── Inputs inside wizard ── */
@@ -84,14 +88,14 @@
 .wizard-card .input:focus,
 .wizard-card .select:focus,
 .wizard-card select:focus {
-  border-color: var(--wz-teal);
+  border-color: var(--wz-blue);
   box-shadow: none;
   outline: none;
 }
 
 .wizard-card .input.input-error,
 .wizard-card .select.select-error {
-  border-color: var(--wz-coral);
+  border-color: var(--wz-orange);
   box-shadow: none;
 }
 
@@ -127,14 +131,14 @@
 }
 
 .wizard-nav-btn.btn-primary {
-  background: var(--wz-teal);
-  border-color: var(--wz-teal);
+  background: var(--wz-blue);
+  border-color: var(--wz-blue);
   color: white;
 }
 
 .wizard-nav-btn.btn-primary:hover {
-  background: oklch(0.40 0.11 195);
-  border-color: oklch(0.40 0.11 195);
+  background: #154689;
+  border-color: #154689;
 }
 
 /* ── Divider ── */
@@ -201,9 +205,9 @@
   transition: border-color 0.15s ease;
 }
 
-.qbar-field:focus-within { border-color: var(--wz-teal); }
+.qbar-field:focus-within { border-color: var(--wz-blue); }
 
-.qbar-field.qbar-invalid { border-color: var(--wz-coral); }
+.qbar-field.qbar-invalid { border-color: var(--wz-orange); }
 
 .qbar-label {
   display: flex;
@@ -266,7 +270,7 @@
   cursor: pointer;
 }
 
-.qbar-field .input.qbar-invalid { color: var(--wz-coral); }
+.qbar-field .input.qbar-invalid { color: var(--wz-orange); }
 
 /* Wrapper sin decoración, para agrupar dos inputs bajo una misma etiqueta */
 .qbar-plain {
@@ -315,7 +319,7 @@
   margin: 0;
 }
 
-.qbar-age.qbar-invalid input { border-color: var(--wz-coral) !important; }
+.qbar-age.qbar-invalid input { border-color: var(--wz-orange) !important; }
 
 .qbar-age-remove {
   position: absolute;
@@ -324,7 +328,7 @@
   width: 0.9rem;
   height: 0.9rem;
   border-radius: 50%;
-  background: var(--wz-coral);
+  background: var(--wz-orange);
   color: white;
   display: none;
   align-items: center;
@@ -342,8 +346,8 @@
   width: 1.15rem;
   height: 1.15rem;
   border-radius: 0.25rem;
-  border: 1px solid var(--wz-teal);
-  color: var(--wz-teal);
+  border: 1px solid var(--wz-blue);
+  color: var(--wz-blue);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -351,7 +355,7 @@
   transition: background 0.15s ease;
 }
 
-.qbar-add:hover:not(:disabled) { background: var(--wz-teal-light); }
+.qbar-add:hover:not(:disabled) { background: var(--wz-blue-light); }
 .qbar-add:disabled { opacity: 0.35; cursor: not-allowed; }
 
 /* ── Botón COTIZAR ── */
@@ -363,7 +367,7 @@
   width: 100%;
   min-height: 3rem;
   border-radius: 0.4rem;
-  background: var(--wz-teal);
+  background: var(--wz-blue);
   color: white;
   font-size: 0.8rem;
   font-weight: 700;
@@ -372,7 +376,7 @@
   transition: background 0.15s ease;
 }
 
-.qbar-submit:hover { background: oklch(0.40 0.11 195); }
+.qbar-submit:hover { background: #154689; }
 
 /* Fix Flowbite datepicker hide: it keeps `.active` while adding `.hidden`, so we need
    higher specificity to actually hide the calendar after a date is selected. */
@@ -418,7 +422,7 @@
 }
 
 .ac-item:hover,
-.ac-item.is-highlighted { background: var(--wz-teal-light); }
+.ac-item.is-highlighted { background: var(--wz-blue-light); }
 
 .ac-item.hidden { display: none; }
 
@@ -447,252 +451,252 @@
 }
 
 /* ══════════════════════════════════════════════════════════════
-   Quote search — cotizador hero de la landing (moderno)
+   Quote search — buscador de la landing
+
+   Estructura de comparador de seguros (referencia: aseguratuviaje):
+   una sola fila dentro de un marco de color, con cada campo en su
+   tarjeta blanca (origen · destino · edades · fecha · whatsapp ·
+   email) y el botón COTIZAR cerrando la fila.
    ══════════════════════════════════════════════════════════════ */
 
-.quote-search {
+.qsearch {
   position: relative;
-  max-width: 56rem;
+  /* Los bloques .land-in animan transform y crean contexto de apilamiento:
+     sin este z-index el autocompletado queda debajo de los hermanos que
+     vienen después en el DOM. */
+  z-index: 20;
+  max-width: 72rem;
   margin-inline: auto;
 }
 
-.quote-search__glow {
-  position: absolute;
-  inset: -30% -15% -20%;
-  background:
-    radial-gradient(ellipse 80% 60% at 50% 0%, oklch(0.55 0.14 195 / 0.28), transparent 65%),
-    radial-gradient(ellipse 50% 40% at 85% 60%, oklch(0.65 0.12 175 / 0.12), transparent 55%);
-  pointer-events: none;
-  z-index: 0;
+/* El marco de color que envuelve toda la barra: el naranja es acento puntual
+   en el manual de marca (nunca fondo dominante), así que el marco usa el azul
+   de marca para despegar del hero oscuro. */
+.qsearch__frame {
+  background: var(--wz-hero-line);
+  border-radius: 0.7rem;
+  padding: 0.45rem;
 }
 
-.quote-search__card {
-  position: relative;
-  z-index: 1;
-  background: oklch(0.995 0.003 80 / 0.94);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid oklch(1 0 0 / 0.55);
-  border-radius: 1.25rem;
-  padding: 1.15rem;
-  box-shadow:
-    0 0 0 1px oklch(0 0 0 / 0.04),
-    0 8px 16px oklch(0.2 0.04 215 / 0.08),
-    0 24px 48px oklch(0.22 0.06 215 / 0.22);
+.qsearch__bar {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.35rem;
 }
 
 @media (min-width: 768px) {
-  .quote-search__card {
-    padding: 1.5rem 1.65rem 1.35rem;
-    border-radius: 1.35rem;
+  .qsearch__bar { grid-template-columns: 1fr 1fr; }
+}
+
+@media (min-width: 1200px) {
+  .qsearch__bar {
+    grid-template-columns:
+      minmax(0, 0.95fr) minmax(0, 0.95fr) auto minmax(0, 1.9fr) minmax(0, 0.85fr) minmax(0, 1fr) auto;
+    align-items: stretch;
   }
 }
 
-.quote-search__section + .quote-search__section {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid oklch(0.92 0.012 80);
+/* ── Campo: tarjeta blanca con etiqueta arriba ── */
+.qsearch-field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.15rem;
+  flex: 1;
+  width: 100%;
+  text-align: left;
+  min-height: 3.75rem;
+  background: white;
+  border: 1px solid transparent;
+  border-radius: 0.4rem;
+  padding: 0.45rem 0.7rem;
 }
 
-.quote-search__head {
+.qsearch-field.qbar-invalid { border-color: var(--wz-orange); }
+
+/* El campo activo se pinta por encima de sus hermanos: si no, el desplegable
+   de países queda tapado por la tarjeta blanca del campo siguiente. */
+.qsearch-field:focus-within { z-index: 40; }
+
+.qsearch-label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--wz-ink);
+  white-space: nowrap;
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* Los asteriscos de obligatorio sólo agregan ruido: casi todo lo es */
+.qsearch-label abbr { display: none; }
+
+/* Fila icono + input, como en los comparadores */
+.qsearch-control {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
-  margin-bottom: 0.75rem;
+  gap: 0.4rem;
+  min-width: 0;
 }
 
-.quote-search__step {
-  width: 1.35rem;
-  height: 1.35rem;
-  border-radius: 0.45rem;
-  background: var(--wz-teal-light);
-  color: var(--wz-teal);
-  font-size: 0.65rem;
-  font-weight: 800;
+.qsearch-control > i,
+.qsearch-icon {
+  flex-shrink: 0;
+  font-size: 1rem;
+  color: var(--wz-ink-muted);
+}
+
+.qsearch-field input,
+.qsearch-field select,
+.qsearch-field .input,
+.qsearch-field .select {
+  width: 100%;
+  min-width: 0;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  height: auto !important;
+  min-height: 1.35rem;
+  border-radius: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--wz-ink);
+}
+
+.qsearch-field input::placeholder {
+  color: oklch(0.68 0.01 250);
+  font-weight: 500;
+}
+
+/* ── Fechas: salida → regreso en la misma tarjeta ── */
+.qsearch-dates {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+/* Dos fechas comparten una celda angosta: achicamos para que entren enteras */
+.qsearch-dates input { font-size: 0.82rem !important; }
+
+.qsearch-dates-sep {
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  color: var(--wz-ink-muted);
+}
+
+/* ── Edades: casillas chicas en línea + botón (+) en la etiqueta ── */
+.qsearch-field--ages { padding-right: 0.6rem; }
+
+.qsearch-ages {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.qsearch-age { display: block; }
+.qsearch-age.hidden { display: none; }
+
+.qsearch-age input {
+  width: 2.05rem !important;
+  height: 1.85rem;
+  text-align: center;
+  background: oklch(0.96 0.005 250) !important;
+  border: 1px solid oklch(0.89 0.01 250) !important;
+  border-radius: 0.25rem;
+  font-size: 0.85rem !important;
+  font-weight: 600;
+  color: var(--wz-ink);
+  -moz-appearance: textfield;
+}
+
+.qsearch-age input:focus {
+  border-color: var(--wz-blue) !important;
+  background: white !important;
+}
+
+.qsearch-age input::-webkit-outer-spin-button,
+.qsearch-age input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.qsearch-age.qbar-invalid input { border-color: var(--wz-orange) !important; }
+
+.qsearch-add {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  vertical-align: -0.1em;
+  margin-left: 0.2rem;
+  width: 1.05rem;
+  height: 1.05rem;
+  border-radius: 50%;
+  border: 1px solid var(--wz-blue);
+  color: var(--wz-blue);
+  font-size: 0.6rem;
 }
 
-.quote-search__title {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--wz-ink-soft);
-}
+.qsearch-add:hover:not(:disabled) { background: var(--wz-blue-light); }
+.qsearch-add:disabled { opacity: 0.35; cursor: not-allowed; }
 
-/* Variante hero: inputs más amplios y pulidos */
-.qbar--hero {
-  gap: 0.65rem;
-}
-
-@media (min-width: 1024px) {
-  .qbar--hero { gap: 0.75rem; }
-}
-
-.qbar--hero .qbar-field {
-  min-height: 3.35rem;
-  border-radius: 0.8rem;
-  border-color: oklch(0.91 0.012 80);
-  background: oklch(0.985 0.006 80);
-  padding: 0.45rem 0.85rem;
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    background 0.2s ease,
-    transform 0.2s ease;
-}
-
-@media (min-width: 768px) {
-  .qbar--hero .qbar-field { min-height: 3.55rem; }
-}
-
-.qbar--hero .qbar-field:hover {
-  border-color: oklch(0.86 0.02 195);
-  background: white;
-}
-
-.qbar--hero .qbar-field:focus-within {
-  border-color: var(--wz-teal);
-  background: white;
-  box-shadow: 0 0 0 3px var(--wz-teal-glow);
-  transform: translateY(-1px);
-}
-
-.qbar--hero .qbar-field.qbar-invalid {
-  border-color: var(--wz-coral);
-  box-shadow: 0 0 0 3px oklch(0.65 0.18 25 / 0.12);
-}
-
-.qbar--hero .qbar-label {
-  font-size: 0.62rem;
-  letter-spacing: 0.09em;
-  color: oklch(0.52 0.02 250);
-  margin-bottom: 0.15rem;
-}
-
-.qbar--hero .qbar-label i {
-  font-size: 0.85rem;
-  opacity: 0.85;
-}
-
-.qbar--hero .qbar-field input,
-.qbar--hero .qbar-field select,
-.qbar--hero .qbar-field .input,
-.qbar--hero .qbar-field .select {
-  font-size: 0.875rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
-
-.qbar--hero .qbar-field input::placeholder {
-  color: oklch(0.72 0.01 250);
-  font-weight: 500;
-}
-
-.qbar--hero .qbar-dates-sep {
-  color: var(--wz-teal);
-  font-size: 0.9rem;
-  opacity: 0.7;
-}
-
-.qbar--hero .qbar-ages {
-  gap: 0.4rem;
-}
-
-.qbar--hero .qbar-age input {
-  width: 2.55rem !important;
-  height: 2.55rem;
-  border-radius: 0.65rem !important;
-  background: white !important;
-  border: 1.5px solid oklch(0.9 0.015 80) !important;
-  font-size: 0.85rem;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.qbar--hero .qbar-age input:focus {
-  border-color: var(--wz-teal) !important;
-  box-shadow: 0 0 0 2px var(--wz-teal-glow);
-}
-
-.qbar--hero .qbar-add {
-  width: 1.45rem;
-  height: 1.45rem;
-  border-radius: 0.45rem;
-  border-width: 1.5px;
-  font-size: 0.7rem;
-}
-
-.qbar--hero .qbar-age-remove {
-  width: 1rem;
-  height: 1rem;
-  font-size: 0.55rem;
-  box-shadow: 0 2px 6px oklch(0.65 0.18 25 / 0.35);
-}
-
-.qbar--hero .qbar-submit-wrap {
+/* ── Botón COTIZAR ── */
+.qsearch-submit {
   display: flex;
-  align-items: stretch;
-  min-height: 3.35rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  min-height: 3.75rem;
+  padding: 0 2rem;
+  border-radius: 0.4rem;
+  background: var(--wz-blue);
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: background 0.15s ease;
 }
 
-@media (min-width: 768px) {
-  .qbar--hero .qbar-submit-wrap { min-height: 3.55rem; }
+.qsearch-submit:hover { background: #154689; }
+
+/* Leyenda bajo la barra */
+.qsearch__note {
+  text-align: center;
+  font-size: 0.8rem;
+  margin-top: 0.6rem;
+  color: oklch(0.85 0.03 215);
 }
 
-.qbar--hero .qbar-submit {
-  min-height: 100%;
-  border-radius: 0.8rem;
-  background: linear-gradient(145deg, oklch(0.52 0.13 195), oklch(0.41 0.11 195));
-  font-size: 0.9rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  text-transform: none;
-  box-shadow:
-    0 1px 0 oklch(1 0 0 / 0.12) inset,
-    0 4px 16px oklch(0.47 0.12 195 / 0.42);
-  transition:
-    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.2s ease,
-    filter 0.2s ease;
-}
+/* Autocompletado dentro del buscador */
+.qsearch .ac-wrapper { display: flex; flex-direction: column; }
 
-.qbar--hero .qbar-submit:hover {
-  background: linear-gradient(145deg, oklch(0.55 0.14 195), oklch(0.43 0.12 195));
-  transform: translateY(-2px);
-  box-shadow:
-    0 1px 0 oklch(1 0 0 / 0.15) inset,
-    0 8px 24px oklch(0.47 0.12 195 / 0.48);
-}
-
-.qbar--hero .qbar-submit:active {
-  transform: translateY(0);
-}
-
-.qbar--hero .qbar-submit i {
-  font-size: 1.15rem;
-}
-
-/* Autocomplete elevado sobre la tarjeta */
-.quote-search .ac-list {
-  border-radius: 0.75rem;
+.qsearch .ac-list {
+  z-index: 70;
+  border-radius: 0.5rem;
   border-color: oklch(0.9 0.01 80);
-  box-shadow:
-    0 0 0 1px oklch(0 0 0 / 0.04),
-    0 12px 32px oklch(0.2 0.04 215 / 0.14);
-  margin-top: 0.35rem;
-  padding: 0.35rem;
+  box-shadow: 0 12px 32px oklch(0.2 0.04 215 / 0.18);
+  margin-top: 0.3rem;
+  padding: 0.3rem;
 }
 
-.quote-search .ac-item {
-  border-radius: 0.55rem;
+.qsearch .ac-item {
+  border-radius: 0.4rem;
   font-size: 0.85rem;
   font-weight: 500;
 }
 
-/* intl-tel-input dentro del cotizador hero */
-.quote-search .qbar-field .iti__tel-input {
-  padding-left: 2.95rem !important;
+/* intl-tel-input dentro del buscador */
+.qsearch .qsearch-field .iti {
+  width: 100%;
+  display: flex;
+  border: none;
+  background: transparent;
 }
+
+.qsearch .qsearch-field .iti__tel-input { padding-left: 2.6rem !important; }
+.qsearch .qsearch-field .iti__country-container { padding: 0; }

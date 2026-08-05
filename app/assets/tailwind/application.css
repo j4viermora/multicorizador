@@ -7,14 +7,46 @@
  * The `@layer components` below defines reusable Flowbite-style component classes
  * built with @apply. Reuse them; extend this layer instead of inlining long utility
  * strings across views.
+ *
+ * Brand tokens (logos-ruka/Manual de marca Ruka Assistance (1).pdf):
+ * `brand` = Azul Ruka #216AD9 (primary), `accent` = Naranja Ruka #EB752D
+ * (sparse CTA/highlight accent — never a full background block).
  */
+
+@theme {
+  --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
+
+  --color-brand-50: #eaf1fc;
+  --color-brand-100: #caddff;
+  --color-brand-200: #a8c4f5;
+  --color-brand-300: #7ca5ec;
+  --color-brand-400: #4c86e3;
+  --color-brand-500: #2e75de;
+  --color-brand-600: #216ad9;
+  --color-brand-700: #1a56b0;
+  --color-brand-800: #154689;
+  --color-brand-900: #123a70;
+
+  --color-accent-50: #fdf1e9;
+  --color-accent-100: #fbdfc9;
+  --color-accent-200: #f6c093;
+  --color-accent-300: #f2a166;
+  --color-accent-400: #ee8b47;
+  --color-accent-500: #eb752d;
+  --color-accent-600: #d4611e;
+  --color-accent-700: #b04e17;
+  --color-accent-800: #8c3d12;
+
+  --color-ink: #2b3a55;
+  --color-surface: #f4f5f7;
+}
 
 @layer components {
   /* ── Buttons ── */
   .btn {
     @apply inline-flex items-center justify-center gap-2 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors focus:outline-none focus:ring-4 me-2 mb-2 disabled:opacity-60 disabled:pointer-events-none;
   }
-  .btn-primary { @apply text-white bg-teal-600 hover:bg-teal-700 focus:ring-teal-300; }
+  .btn-primary { @apply text-white bg-brand-600 hover:bg-brand-700 focus:ring-brand-300; }
   .btn-success { @apply text-white bg-green-600 hover:bg-green-700 focus:ring-green-300; }
   .btn-error   { @apply text-white bg-red-600 hover:bg-red-700 focus:ring-red-300; }
   .btn-neutral { @apply text-white bg-gray-800 hover:bg-gray-900 focus:ring-gray-300; }
@@ -30,9 +62,9 @@
   .badge-lg     { @apply text-sm px-3 py-1; }
   .badge-success { @apply bg-green-100 text-green-800; }
   .badge-error   { @apply bg-red-100 text-red-800; }
-  .badge-warning { @apply bg-amber-100 text-amber-800; }
-  .badge-info    { @apply bg-blue-100 text-blue-800; }
-  .badge-primary { @apply bg-teal-100 text-teal-800; }
+  .badge-warning { @apply bg-orange-100 text-orange-800; }
+  .badge-info    { @apply bg-brand-100 text-brand-800; }
+  .badge-primary { @apply bg-brand-100 text-brand-800; }
   .badge-secondary { @apply bg-gray-100 text-gray-800; }
   .badge-ghost   { @apply bg-gray-100 text-gray-600; }
 
@@ -59,14 +91,14 @@
   .alert           { @apply flex items-center gap-3 p-4 mb-4 text-sm rounded-lg; }
   .alert-success   { @apply text-green-800 bg-green-50; }
   .alert-error     { @apply text-red-800 bg-red-50; }
-  .alert-info      { @apply text-blue-800 bg-blue-50; }
-  .alert-warning   { @apply text-amber-800 bg-amber-50; }
+  .alert-info      { @apply text-brand-800 bg-brand-50; }
+  .alert-warning   { @apply text-orange-800 bg-orange-50; }
 
   /* ── Forms ── */
   .input,
   .select,
   .textarea {
-    @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 block w-full p-2.5 transition-colors;
+    @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-brand-500 focus:border-brand-500 block w-full p-2.5 transition-colors;
   }
   .select { @apply pr-8; }
   .input-error,
@@ -75,7 +107,7 @@
   .label-text   { @apply block mb-2 text-sm font-medium text-gray-900; }
   .label-text-alt { @apply text-xs text-gray-500; }
   .form-control { @apply w-full mb-4; }
-  .checkbox     { @apply w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 rounded focus:ring-teal-500; }
+  .checkbox     { @apply w-4 h-4 text-brand-600 bg-gray-100 border-gray-300 rounded focus:ring-brand-500; }
   .checkbox-sm  { @apply w-3.5 h-3.5; }
 
   /* ── Loading spinner ── */
@@ -84,8 +116,8 @@
   .loading-sm      { @apply w-3.5 h-3.5; }
 
   /* ── Links ── */
-  .link         { @apply font-medium text-blue-600 hover:underline; }
-  .link-primary { @apply font-medium text-teal-600 hover:underline; }
+  .link         { @apply font-medium text-brand-600 hover:underline; }
+  .link-primary { @apply font-medium text-brand-600 hover:underline; }
 
   /* ── Comparación de cotizaciones ── */
   /* Una fila por proveedor con sus opciones de plan adentro. La fila scrollea
@@ -97,8 +129,8 @@
   .offer-card {
     @apply flex flex-col shrink-0 snap-start w-72 bg-white border border-gray-200 rounded-lg p-5 transition-shadow hover:shadow-md;
   }
-  .offer-card-best { @apply border-teal-500 ring-1 ring-teal-500; }
-  .offer-price     { @apply text-2xl font-bold text-teal-700; }
+  .offer-card-best { @apply border-brand-500 ring-1 ring-brand-500; }
+  .offer-price     { @apply text-2xl font-bold text-brand-700; }
   .offer-coverage  { @apply flex items-baseline justify-between gap-3 py-1.5 text-sm border-b border-gray-100 last:border-0; }
   .offer-coverage-name   { @apply text-gray-600; }
   .offer-coverage-amount { @apply font-medium text-gray-900 text-right shrink-0; }

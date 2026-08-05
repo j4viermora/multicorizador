@@ -124,6 +124,24 @@ Devise with `User` belonging to `Company` (optional for super_admins).
 - `pending`/`suspended` producers are signed out and redirected to login.
 - `is_superuser` boolean on `User` gates Mission Control Jobs access (legacy, prefer `super_admin?`).
 
+#### Seeded users (`bin/rails db:seed`)
+
+`db/seeds.rb` already creates one user per role — **don't add ad-hoc users in console or write throwaway scripts to log in**, use these:
+
+| Email | Role | Status | Company |
+|---|---|---|---|
+| `admin@ruka.com` | `super_admin` | `active` | Ruka Admin |
+| `producer@ruka.com` | `producer` | `active` | Demo Corp |
+| `ventas@ruka.com` | `producer` | `active` | Ruka (direct sales, `Company::RUKA_DIRECT_SLUG`) |
+| `pending@ruka.com` | `producer` | `pending` | Demo Corp |
+| `suspended@ruka.com` | `producer` | `suspended` | Demo Corp |
+
+Password for all of them: `password123`. The seeds are idempotent (`find_or_create_by!`), so re-running `db:seed` won't duplicate or reset them — an existing user keeps whatever password it has.
+
+The last two exist so the rejection path (signed out + redirected to login) can be exercised without flipping the status on the active producer.
+
+`bin/rails admin:create` is the *production* path for a super admin (interactive, or `EMAIL=... PASSWORD=...`). In development prefer the seeded `admin@ruka.com`. The task attaches the user to a company named `"Ruka Admin"` — keep that string in sync with `db/seeds.rb`, or running both leaves two separate admin companies.
+
 ### Route Namespaces
 
 - **`/admin/*`** — Super admin: providers, insurance plans, users, dashboard.
@@ -157,7 +175,9 @@ If you raise `threads` to fan out wider, you **must** raise the `+5` in `config/
 Propshaft (assets) + Importmap (JS) + TailwindCSS 4 + **Flowbite** + Hotwire (Turbo + Stimulus). No Node/webpack build step — CSS is compiled by `bin/rails tailwindcss:watch`.
 
 **Styling: ALWAYS use Flowbite.** Flowbite is the ONLY styling library — do not reintroduce DaisyUI (removed), Bootstrap, or any other CSS framework. Component styling is written with Tailwind utilities in Flowbite's design language. A small set of reusable Flowbite-style component classes lives in `@layer components` at the top of `app/assets/tailwind/application.css` (`.btn`, `.card`, `.badge`, `.table`, `.stat`, `.alert`, `.input`, etc.) — these are OUR classes built with `@apply`, not a third-party plugin. Reuse them; extend that layer rather than scattering long utility strings across views.
-- **Colors:** use real Tailwind palette tokens (`teal` is the brand/primary, matching the wizard's `--wz-teal`). Never use DaisyUI semantic classes (`bg-base-100`, `text-primary`, `text-error`, `data-theme`, etc.) — they no longer exist.
+- **Colors (brand manual, `logos-ruka/Manual de marca Ruka Assistance (1).pdf`):** primary is **Azul Ruka** (`#216AD9`, Tailwind `blue-600`-ish — logo, titles, primary buttons), accent is **Naranja Ruka** (`#EB752D`, Tailwind `orange-600`-ish — used sparingly for a single CTA/highlight per screen, never as a full background block). Supporting neutrals: Celeste claro `#CADDFF` (soft backgrounds/cards), Gris azulado `#2B3A55` (long-form body text), Gris claro `#F4F5F7` (illustration/neutral surfaces). The wizard's CSS custom properties in `app/assets/stylesheets/application.css` are named `--wz-blue`/`--wz-orange` (not `--wz-teal`/`--wz-coral` — renamed to match the brand). Never use DaisyUI semantic classes (`bg-base-100`, `text-primary`, `text-error`, `data-theme`, etc.) — they no longer exist.
+- **Typography:** **Poppins** (Google Fonts, loaded via CDN `<link>` in the layouts) — Bold/SemiBold for headings, Medium for subtitles/buttons/labels, Regular for body text. Applied globally as the default `font-sans` in `app/assets/tailwind/application.css`'s `@theme`.
+- **Logo:** SVGs live in `logos-ruka/` (color/white/black variants of "Logo principal", "Logo corto", and the "R" isotipo) and are copied into `app/assets/images/`. Logo principal (full wordmark) is the default everywhere except tight spaces (favicon, avatars), where the isotipo is used instead — per the brand manual, never stretch/recolor/shadow the logo or place it on low-contrast backgrounds.
 - **Icons:** **ALWAYS use Tabler Icons** (https://tabler.io/icons). Never inline hand-written SVGs, Heroicons, or other icon sets. Use the icon font classes (e.g. `<i class="ti ti-icon-name"></i>`) — pick whichever wiring is in place and stay consistent. Search Tabler for the most semantically accurate name before falling back to a generic one.
 - **Flowbite JS (interactive components):** loaded via CDN (`flowbite.turbo.min.js`) in the layouts — use Flowbite's data-attributes (e.g. `data-dropdown-toggle`, `data-modal-target`) for dropdowns, modals, tabs, etc. The `.turbo` build re-initializes components on Turbo navigation, so prefer it over the plain `flowbite.min.js`.
 - **Datepicker:** ALWAYS use the Flowbite datepicker (the `flowbite-datepicker` package). Date inputs are rendered as text fields via the `DatepickerInput` simple_form input (`as: :datepicker`) + the `datepicker` Stimulus controller, configured for `es` locale and ISO `yyyy-mm-dd` values (so Rails parses them natively). Never use `as: :date` (3 select boxes) or native `<input type="date">`.
@@ -186,3 +206,4 @@ What the app needs at runtime, wherever it runs:
 - `APP_DATABASE_URL` — deliberately *not* named `DATABASE_URL`: Rails auto-merges that one into the primary config and lets the URL scheme override the adapter, which breaks on `mariadb://` URLs. See the comment in `config/database.yml`.
 - `SOLID_QUEUE_IN_PUMA=true` — runs the Solid Queue supervisor inside Puma (`config/puma.rb` loads the plugin when this is set), so there is no separate worker process in production. Note this differs from development, where `Procfile.dev` *does* run a separate worker — which is why `config/cable.yml` must not use the `async` adapter there.
 - Storage uses `AWS_*` variable names against Cloudflare R2, including `AWS_ENDPOINT`. The names stay `AWS_*` on purpose; do not rename them to `R2_*`.
+- No agregar test a menos que te lo pida explitamente
