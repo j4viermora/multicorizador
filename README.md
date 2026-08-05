@@ -80,9 +80,21 @@ Solo los proveedores `active` reciben cotizaciones. Si los apagás todos, las co
 
 ### Crear un super admin
 
+Modo interactivo (te pide email y contraseña):
+
+```bash
+bin/rails admin:create
+```
+
+**En producción:** el deploy corre en Dokploy, no hay UI para crear el primer super admin. Entrá a la terminal del contenedor de la app (Terminal / Exec en el panel de Dokploy) y ejecutá el comando ahí. Te pedirá email, contraseña y confirmación; la contraseña no se muestra mientras tipeás.
+
+Sin prompts (útil en Dokploy o scripts automatizados):
+
 ```bash
 bin/rails admin:create EMAIL=admin@example.com PASSWORD=secret
 ```
+
+No uses `db:seed` en producción para esto: los seeds son credenciales de desarrollo y también cargan proveedores fake.
 
 ## Comandos útiles
 
