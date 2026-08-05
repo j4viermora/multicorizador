@@ -15,7 +15,8 @@ class Admin::ProvidersController < ApplicationController
 
   def create
     @provider = Provider.new(provider_params)
-    if @provider.save
+    assign_config!(@provider)
+    if @provider.errors.empty? && @provider.save
       redirect_to admin_providers_path, notice: "Proveedor creado exitosamente."
     else
       render :new, status: :unprocessable_entity
@@ -26,7 +27,9 @@ class Admin::ProvidersController < ApplicationController
   end
 
   def update
-    if @provider.update(provider_params)
+    @provider.assign_attributes(provider_params)
+    assign_config!(@provider)
+    if @provider.errors.empty? && @provider.save
       redirect_to admin_providers_path, notice: "Proveedor actualizado."
     else
       render :edit, status: :unprocessable_entity
@@ -59,6 +62,25 @@ class Admin::ProvidersController < ApplicationController
   end
 
   def provider_params
-    params.require(:provider).permit(:name, :slug, :status, :logo, config: {})
+    params.require(:provider).permit(:name, :slug, :status, :logo)
+  end
+
+  # `config` llega del form como un textarea de JSON libre (ver
+  # app/views/admin/providers/_form), es decir como un string escalar — no
+  # como params anidados. `permit(config: {})` exige justo lo contrario (un
+  # hash anidado) y descarta el valor en silencio si no lo recibe, así que el
+  # proveedor se guardaba con `config` vacío sin ningún aviso. Se parsea acá
+  # aparte y, si el JSON es inválido, se agrega el error para que el form se
+  # vuelva a renderizar con el texto tal cual lo escribió el admin.
+  def assign_config!(provider)
+    raw = params.dig(:provider, :config)
+    return if raw.blank?
+
+    provider.config = JSON.parse(raw)
+  rescue JSON::ParserError
+    provider.errors.add(:config, "no es un JSON válido")
+    # El form vuelve a mostrar esto en vez de @provider.config.to_json, para
+    # que el admin corrija su typo en vez de perder todo lo que escribió.
+    @config_input = raw
   end
 end

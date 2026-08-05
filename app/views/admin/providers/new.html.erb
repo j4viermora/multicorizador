@@ -21,7 +21,10 @@
 
   <div class="mb-4">
     <label class="label-text">Configuración (JSON)</label>
-    <%= f.text_area :config, value: @provider.config.to_json, class: "textarea font-mono", rows: 5 %>
+    <%= f.text_area :config, value: @config_input || @provider.config.to_json, class: "textarea font-mono", rows: 5 %>
+    <% if @provider.errors[:config].any? %>
+      <p class="text-xs text-red-600 mt-1"><%= @provider.errors[:config].to_sentence %></p>
+    <% end %>
   </div>
 
   <div class="flex gap-2">
