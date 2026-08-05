@@ -8,10 +8,23 @@
 <style>
   .landing-root, .landing-root * { font-family: 'Outfit', sans-serif; }
 
-  /* ── Hero: color plano, sin degradados ── */
+  /* ── Hero: profundidad sutil sin perder identidad ── */
   .landing-hero {
-    background: var(--wz-hero);
+    background:
+      radial-gradient(ellipse 120% 80% at 50% -20%, oklch(0.38 0.09 195 / 0.45), transparent 55%),
+      var(--wz-hero);
     position: relative;
+    overflow: hidden;
+  }
+
+  .landing-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(oklch(1 0 0 / 0.04) 1px, transparent 1px);
+    background-size: 24px 24px;
+    pointer-events: none;
+    opacity: 0.35;
   }
 
   /* ── Producer card ── */
@@ -89,18 +102,13 @@
   .land-in.d4 { animation-delay: 0.4s; }
   .land-in.d5 { animation-delay: 0.5s; }
 
-  /* ── intl-tel-input dentro de una celda de la barra ── */
   .qbar-field .iti {
     width: 100%;
     display: flex;
     border: none;
     background: transparent;
   }
-  /* La bandera va absoluta a la izquierda: hay que dejarle su espacio */
-  .qbar-field .iti__tel-input {
-    padding-left: 2.85rem !important;
-    padding-right: 0 !important;
-  }
+  .qbar-field .iti__tel-input { padding-right: 0 !important; }
   .qbar-field .iti__country-container { padding: 0; }
   .iti__dropdown-content { font-family: 'Outfit', sans-serif; }
 </style>
@@ -109,7 +117,7 @@
   <%# HERO + COTIZADOR                              %>
   <%# ══════════════════════════════════════════════ %>
   <div class="landing-hero -mx-4 -mt-8 px-4 pt-8 pb-10 md:pt-10 md:pb-12 relative">
-    <div class="max-w-2xl lg:max-w-6xl mx-auto relative z-10">
+    <div class="max-w-3xl lg:max-w-6xl mx-auto relative z-10">
       <%# Título %>
       <div class="text-center mb-5 land-in">
         <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight leading-tight">
@@ -149,119 +157,130 @@
         </div>
       <% end %>
 
-      <%# ── Barra de cotización: todo en una sola pantalla ── %>
-      <div class="land-in d2" data-controller="quote-form">
-        <%= simple_form_for @quote, url: public_landing_path(@company.slug, ref: params[:ref]),
-            method: :post,
-            html: { novalidate: true, data: { turbo: false, action: "submit->quote-form#validate" } } do |f| %>
+      <%# ── Cotizador hero ── %>
+      <div class="quote-search land-in d2" data-controller="quote-form">
+        <div class="quote-search__glow" aria-hidden="true"></div>
+        <div class="quote-search__card">
+          <%= simple_form_for @quote, url: public_landing_path(@company.slug, ref: params[:ref]),
+              method: :post,
+              html: { novalidate: true, data: { turbo: false, action: "submit->quote-form#validate" } } do |f| %>
 
-          <%= f.hidden_field :trip_type, value: "single" %>
-          <%= f.hidden_field :travelers_count, data: { quote_form_target: "count" } %>
+            <%= f.hidden_field :trip_type, value: "single" %>
+            <%= f.hidden_field :travelers_count, value: 0, data: { quote_form_target: "count" } %>
 
-          <div class="qbar grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12">
-            <%# Origen %>
-            <div data-controller="country-autocomplete"
-                 data-country-autocomplete-items-value="<%= countries_autocomplete_data %>"
-                 class="ac-wrapper lg:col-span-3">
-              <%= f.input :origin, label: "Origen", wrapper: :qbar,
-                  placeholder: "¿Desde dónde salís?",
-                  input_html: {
-                    required: true, autocomplete: "off",
-                    data: {
-                      country_autocomplete_target: "input",
-                      action: "input->country-autocomplete#filter focus->country-autocomplete#open keydown->country-autocomplete#keydown focus->quote-form#clearError"
-                    }
-                  } %>
-              <ul data-country-autocomplete-target="list" class="ac-list hidden"></ul>
-            </div>
-
-            <%# Destino %>
-            <div data-controller="country-autocomplete"
-                 data-country-autocomplete-items-value="<%= countries_autocomplete_data %>"
-                 class="ac-wrapper lg:col-span-3">
-              <%= f.input :destination, label: "Destino", wrapper: :qbar,
-                  placeholder: "¿Dónde viajás?",
-                  input_html: {
-                    required: true, autocomplete: "off",
-                    data: {
-                      country_autocomplete_target: "input",
-                      action: "input->country-autocomplete#filter focus->country-autocomplete#open keydown->country-autocomplete#keydown focus->quote-form#clearError"
-                    }
-                  } %>
-              <ul data-country-autocomplete-target="list" class="ac-list hidden"></ul>
-            </div>
-
-            <%# Fechas %>
-            <div class="qbar-field lg:col-span-4">
-              <span class="qbar-label"><i class="ti ti-calendar-event"></i> Fecha de viaje</span>
-              <div class="qbar-dates">
-                <%= f.input :departure_date, label: false, as: :datepicker, wrapper: :qbar_plain,
-                    placeholder: "Salida",
-                    input_html: { required: true,
-                                  data: { datepicker_min_value: Date.today.iso8601,
-                                          action: "focus->quote-form#clearError" } } %>
-                <i class="ti ti-arrow-narrow-right qbar-dates-sep"></i>
-                <%= f.input :return_date, label: false, as: :datepicker, wrapper: :qbar_plain,
-                    placeholder: "Regreso",
-                    input_html: { data: { datepicker_min_value: Date.today.iso8601 } } %>
+            <%# Sección: viaje %>
+            <div class="quote-search__section">
+              <div class="quote-search__head">
+                <span class="quote-search__step">1</span>
+                <span class="quote-search__title">Datos del viaje</span>
               </div>
-            </div>
+              <div class="qbar qbar--hero grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12">
+                <div data-controller="country-autocomplete"
+                     data-country-autocomplete-items-value="<%= countries_autocomplete_data %>"
+                     class="ac-wrapper lg:col-span-4">
+                  <%= f.input :origin, label: "Origen", wrapper: :qbar,
+                      placeholder: "¿Desde dónde salís?",
+                      input_html: {
+                        required: true, autocomplete: "off",
+                        data: {
+                          country_autocomplete_target: "input",
+                          action: "input->country-autocomplete#filter focus->country-autocomplete#open keydown->country-autocomplete#keydown focus->quote-form#clearError"
+                        }
+                      } %>
+                  <ul data-country-autocomplete-target="list" class="ac-list hidden"></ul>
+                </div>
 
-            <%# Edades %>
-            <div class="qbar-field lg:col-span-2">
-              <span class="qbar-label">
-                <i class="ti ti-users"></i> Edades
-                <button type="button" class="qbar-add ml-1"
-                        aria-label="Agregar pasajero"
-                        data-quote-form-target="addBtn"
-                        data-action="quote-form#add">
-                  <i class="ti ti-plus"></i>
-                </button>
-              </span>
-              <div class="qbar-ages" data-quote-form-target="ages">
-                <% 6.times do |i| %>
-                  <div class="qbar-age" data-age-field>
-                    <input type="number" name="quote[metadata][ages][]" min="0" max="120"
-                           placeholder="—" required inputmode="numeric"
-                           aria-label="Edad del pasajero <%= i + 1 %>"
-                           data-action="focus->quote-form#clearError">
-                    <button type="button" class="qbar-age-remove hidden" tabindex="-1"
-                            aria-label="Quitar pasajero" data-action="quote-form#remove">
-                      <i class="ti ti-x"></i>
-                    </button>
+                <div data-controller="country-autocomplete"
+                     data-country-autocomplete-items-value="<%= countries_autocomplete_data %>"
+                     class="ac-wrapper lg:col-span-4">
+                  <%= f.input :destination, label: "Destino", wrapper: :qbar,
+                      placeholder: "¿Dónde viajás?",
+                      input_html: {
+                        required: true, autocomplete: "off",
+                        data: {
+                          country_autocomplete_target: "input",
+                          action: "input->country-autocomplete#filter focus->country-autocomplete#open keydown->country-autocomplete#keydown focus->quote-form#clearError"
+                        }
+                      } %>
+                  <ul data-country-autocomplete-target="list" class="ac-list hidden"></ul>
+                </div>
+
+                <div class="qbar-field lg:col-span-4">
+                  <span class="qbar-label"><i class="ti ti-calendar-event"></i> Fechas</span>
+                  <div class="qbar-dates">
+                    <%= f.input :departure_date, label: false, as: :datepicker, wrapper: :qbar_plain,
+                        placeholder: "Salida",
+                        input_html: { required: true,
+                                      data: { datepicker_min_value: Date.today.iso8601,
+                                              action: "focus->quote-form#clearError" } } %>
+                    <i class="ti ti-arrow-narrow-right qbar-dates-sep"></i>
+                    <%= f.input :return_date, label: false, as: :datepicker, wrapper: :qbar_plain,
+                        placeholder: "Regreso",
+                        input_html: { data: { datepicker_min_value: Date.today.iso8601 } } %>
                   </div>
-                <% end %>
+                </div>
               </div>
             </div>
 
-            <%# WhatsApp %>
-            <div class="qbar-field lg:col-span-4">
-              <label class="qbar-label" for="phone-input">
-                <i class="ti ti-brand-whatsapp"></i> WhatsApp
-              </label>
-              <input type="tel" id="phone-input" placeholder="11 1234-5678" autocomplete="tel">
-              <input type="hidden" name="quote[metadata][phone]" id="phone-full-value">
+            <%# Sección: pasajeros %>
+            <div class="quote-search__section">
+              <div class="quote-search__head">
+                <span class="quote-search__step">2</span>
+                <span class="quote-search__title">Pasajeros</span>
+              </div>
+              <div class="qbar qbar--hero">
+                <div class="qbar-field">
+                  <span class="qbar-label"><i class="ti ti-users"></i> Edades</span>
+                  <p class="qbar-hint">Al menos una edad. Dejá vacíos los cupos que no uses.</p>
+                  <div class="qbar-ages" data-quote-form-target="ages">
+                    <% 6.times do |i| %>
+                      <div class="qbar-age" data-age-field>
+                        <input type="number" name="quote[metadata][ages][]" min="0" max="120"
+                               placeholder="<%= i + 1 %>"
+                               inputmode="numeric"
+                               aria-label="Edad del pasajero <%= i + 1 %>"
+                               data-action="input->quote-form#sync focus->quote-form#clearError">
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <%# Email %>
-            <div class="qbar-field lg:col-span-5">
-              <label class="qbar-label" for="quote-email">
-                <i class="ti ti-mail"></i> Email
-              </label>
-              <input type="email" id="quote-email" name="quote[metadata][email]"
-                     placeholder="juan@ejemplo.com" required autocomplete="email"
-                     data-action="focus->quote-form#clearError">
-            </div>
+            <%# Sección: contacto + CTA %>
+            <div class="quote-search__section">
+              <div class="quote-search__head">
+                <span class="quote-search__step">3</span>
+                <span class="quote-search__title">Contacto</span>
+              </div>
+              <div class="qbar qbar--hero grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12">
+                <div class="qbar-field lg:col-span-4">
+                  <label class="qbar-label" for="phone-input">
+                    <i class="ti ti-brand-whatsapp"></i> WhatsApp
+                  </label>
+                  <input type="tel" id="phone-input" placeholder="11 1234-5678" autocomplete="tel">
+                  <input type="hidden" name="quote[metadata][phone]" id="phone-full-value">
+                </div>
 
-            <%# Cotizar %>
-            <div class="lg:col-span-3">
-              <button type="submit" class="qbar-submit">
-                <i class="ti ti-search text-lg"></i>
-                Cotizar
-              </button>
+                <div class="qbar-field lg:col-span-5">
+                  <label class="qbar-label" for="quote-email">
+                    <i class="ti ti-mail"></i> Email
+                  </label>
+                  <input type="email" id="quote-email" name="quote[metadata][email]"
+                         placeholder="juan@ejemplo.com" required autocomplete="email"
+                         data-action="focus->quote-form#clearError">
+                </div>
+
+                <div class="lg:col-span-3 qbar-submit-wrap">
+                  <button type="submit" class="qbar-submit">
+                    <i class="ti ti-sparkles"></i>
+                    Cotizar ahora
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        <% end %>
+          <% end %>
+        </div>
       </div>
 
       <p class="text-center text-xs mt-3 land-in d3" style="color: oklch(0.75 0.03 215);">

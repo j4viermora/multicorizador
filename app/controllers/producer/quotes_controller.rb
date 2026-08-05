@@ -10,7 +10,7 @@ class Producer::QuotesController < ApplicationController
   end
 
   def new
-    @quote = current_user.quotes.build(travelers_count: 6)
+    @quote = current_user.quotes.build
     @quote.build_traveler
   end
 

@@ -6,7 +6,7 @@ class HomeController < ApplicationController
       @company = Company.find_by!(slug: Company::RUKA_DIRECT_SLUG)
       @producer = resolve_producer
       @providers = Provider.active
-      @quote = Quote.new(travelers_count: 6, trip_type: "single")
+      @quote = Quote.new(trip_type: "single")
       render "public/landing/show"
     elsif current_user.super_admin?
       redirect_to admin_dashboard_path

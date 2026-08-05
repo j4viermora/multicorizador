@@ -10,7 +10,7 @@ class Producer::QuotesControllerTest < ActionDispatch::IntegrationTest
     assert_select "form[data-action=?]", "submit->quote-form#validate"
     assert_select ".qbar-field", minimum: 4
     assert_select "[data-quote-form-target=ages] [data-age-field]", 6
-    assert_select "[data-quote-form-target=count][value=?]", "6"
+    assert_select "[data-quote-form-target=count][value=?]", "0"
     assert_select ".wizard-stepper", 0, "el stepper de dos pasos ya no existe"
   end
 

@@ -36,6 +36,27 @@ class Public::LandingControllerTest < ActionDispatch::IntegrationTest
     assert_equal "cliente@example.com", quote.metadata["email"]
   end
 
+  test "create descarta edades vacías y ajusta travelers_count" do
+    assert_difference "Quote.count", 1 do
+      post public_landing_path(@company.slug), params: {
+        quote: {
+          origin: "Argentina",
+          destination: "Europa",
+          departure_date: Date.today.iso8601,
+          return_date: 10.days.from_now.to_date.iso8601,
+          trip_type: "single",
+          travelers_count: 1,
+          metadata: { ages: [ "34", "", "8", "", "", "" ], email: "cliente@example.com" }
+        }
+      }
+    end
+
+    quote = ActsAsTenant.with_tenant(@company) { Quote.order(:created_at).last }
+
+    assert_equal 2, quote.travelers_count
+    assert_equal %w[34 8], quote.metadata["ages"]
+  end
+
   test "results agrupa los planes en una fila por proveedor" do
     quote = create_quoted_quote
     create_result(quote, providers(:assist_card), price_cents: 9_000, plan_name: "AC 500")

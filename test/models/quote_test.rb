@@ -88,6 +88,38 @@ class QuoteTest < ActiveSupport::TestCase
     assert_equal [ @travel_ace ], @quote.failed_providers
   end
 
+  test "compacta edades vacías y sincroniza travelers_count" do
+    quote = Quote.new(
+      company: @company,
+      producer: users(:producer_uno),
+      origin: "EZE",
+      destination: "MIA",
+      departure_date: 30.days.from_now.to_date,
+      return_date: 40.days.from_now.to_date,
+      travelers_count: 6,
+      metadata: { "ages" => [ "34", "", "8", "  ", nil ] }
+    )
+
+    assert quote.valid?
+    assert_equal %w[34 8], quote.metadata["ages"]
+    assert_equal 2, quote.travelers_count
+  end
+
+  test "requiere al menos una edad informada" do
+    quote = Quote.new(
+      company: @company,
+      producer: users(:producer_uno),
+      origin: "EZE",
+      destination: "MIA",
+      departure_date: 30.days.from_now.to_date,
+      return_date: 40.days.from_now.to_date,
+      metadata: { "ages" => [ "", "", "" ] }
+    )
+
+    assert_not quote.valid?
+    assert_includes quote.errors[:base], "Indicá al menos una edad de pasajero"
+  end
+
   test "sin resultados exitosos las filas quedan vacías" do
     create_result(@assist_card, status: "error")
 

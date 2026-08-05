@@ -1,44 +1,34 @@
 import { Controller } from "@hotwired/stimulus"
 
 // Formulario de cotización en una sola pantalla.
-// Maneja las cajitas de edad (una por pasajero), mantiene `travelers_count`
-// sincronizado con ellas y valida los campos obligatorios al enviar
-// (los formularios son `novalidate`, así que la validación es nuestra).
+// Las edades son inputs fijos: al menos uno debe completarse; el resto es opcional.
+// `travelers_count` se sincroniza con la cantidad de edades informadas.
 export default class extends Controller {
-  static targets = ["ages", "count", "addBtn"]
-  static values = { max: { type: Number, default: 10 } }
+  static targets = ["ages", "count"]
 
   connect() {
     this.sync()
   }
 
-  add() {
-    if (this.ageFields.length >= this.maxValue) return
+  sync() {
+    const fields = this.ageFields
+    let filledCount = 0
 
-    const field = document.createElement("div")
-    field.className = "qbar-age age-field-enter"
-    field.setAttribute("data-age-field", "")
-    field.innerHTML = `
-      <input type="number" name="quote[metadata][ages][]" min="0" max="120"
-             placeholder="—" required inputmode="numeric"
-             data-action="focus->quote-form#clearError">
-      <button type="button" class="qbar-age-remove" tabindex="-1"
-              aria-label="Quitar pasajero" data-action="quote-form#remove">
-        <i class="ti ti-x"></i>
-      </button>`
+    fields.forEach((field, index) => {
+      const input = field.querySelector("input")
+      if (!input) return
 
-    this.agesTarget.appendChild(field)
-    this.sync()
-    field.querySelector("input").focus()
-  }
+      input.setAttribute("aria-label", `Edad del pasajero ${index + 1}`)
+      if (input.value.trim()) filledCount += 1
+    })
 
-  remove(event) {
-    if (this.ageFields.length <= 1) return
-    event.target.closest("[data-age-field]").remove()
-    this.sync()
+    if (this.hasCountTarget) this.countTarget.value = filledCount
   }
 
   clearError(event) {
+    const agesBox = this.hasAgesTarget ? this.agesTarget.closest(".qbar-field") : null
+    if (agesBox) agesBox.classList.remove("qbar-invalid")
+
     const box = event.target.closest(".qbar-field, .qbar-age")
     if (box) box.classList.remove("qbar-invalid")
     event.target.classList.remove("qbar-invalid")
@@ -47,35 +37,39 @@ export default class extends Controller {
   validate(event) {
     let firstInvalid = null
 
+    if (this.hasAgesTarget) {
+      const ageInputs = this.ageFields.map((field) => field.querySelector("input")).filter(Boolean)
+      const filledCount = ageInputs.filter((input) => input.value.trim()).length
+      const agesBox = this.agesTarget.closest(".qbar-field")
+
+      if (filledCount === 0) {
+        agesBox?.classList.add("qbar-invalid")
+        firstInvalid = ageInputs[0]
+      } else {
+        agesBox?.classList.remove("qbar-invalid")
+      }
+    }
+
     this.element.querySelectorAll("[required]").forEach((input) => {
+      if (input.closest("[data-age-field]")) return
+
       const box = input.closest(".qbar-field, .qbar-age") || input
       if (input.value.trim()) {
         box.classList.remove("qbar-invalid")
         return
       }
+
       box.classList.add("qbar-invalid")
       if (!firstInvalid) firstInvalid = input
     })
 
-    if (!firstInvalid) return
+    if (!firstInvalid) {
+      this.sync()
+      return
+    }
 
     event.preventDefault()
     firstInvalid.focus()
-  }
-
-  sync() {
-    const fields = this.ageFields
-
-    fields.forEach((field, index) => {
-      const input = field.querySelector("input")
-      if (input) input.setAttribute("aria-label", `Edad del pasajero ${index + 1}`)
-
-      const removeBtn = field.querySelector(".qbar-age-remove")
-      if (removeBtn) removeBtn.classList.toggle("hidden", fields.length === 1)
-    })
-
-    if (this.hasCountTarget) this.countTarget.value = fields.length
-    if (this.hasAddBtnTarget) this.addBtnTarget.disabled = fields.length >= this.maxValue
   }
 
   get ageFields() {

@@ -22,7 +22,7 @@
         </div>
       </div>
 
-      <%= f.hidden_field :travelers_count, data: { quote_form_target: "count" } %>
+      <%= f.hidden_field :travelers_count, value: 0, data: { quote_form_target: "count" } %>
 
       <%# ── Barra de cotización ── %>
       <div class="qbar grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12">
@@ -83,26 +83,16 @@
 
         <%# Edades %>
         <div class="qbar-field lg:col-span-12">
-          <span class="qbar-label">
-            <i class="ti ti-users"></i> Edades de los pasajeros
-            <button type="button" class="qbar-add ml-1"
-                    aria-label="Agregar pasajero"
-                    data-quote-form-target="addBtn"
-                    data-action="quote-form#add">
-              <i class="ti ti-plus"></i>
-            </button>
-          </span>
+          <span class="qbar-label"><i class="ti ti-users"></i> Edades de los pasajeros</span>
+          <p class="qbar-hint">Al menos una edad. Dejá vacíos los cupos que no uses.</p>
           <div class="qbar-ages" data-quote-form-target="ages">
             <% 6.times do |i| %>
               <div class="qbar-age" data-age-field>
                 <input type="number" name="quote[metadata][ages][]" min="0" max="120"
-                       placeholder="—" required inputmode="numeric"
+                       placeholder="<%= i + 1 %>"
+                       inputmode="numeric"
                        aria-label="Edad del pasajero <%= i + 1 %>"
-                       data-action="focus->quote-form#clearError">
-                <button type="button" class="qbar-age-remove hidden" tabindex="-1"
-                        aria-label="Quitar pasajero" data-action="quote-form#remove">
-                  <i class="ti ti-x"></i>
-                </button>
+                       data-action="input->quote-form#sync focus->quote-form#clearError">
               </div>
             <% end %>
           </div>

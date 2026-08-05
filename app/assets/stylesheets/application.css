@@ -221,6 +221,19 @@
 /* En la barra casi todo es obligatorio: el asterisco sólo agrega ruido */
 .qbar-label abbr { display: none; }
 
+.qbar-hint {
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--wz-ink-muted);
+  margin: -0.05rem 0 0.35rem;
+  line-height: 1.35;
+}
+
+.qbar--hero .qbar-hint {
+  font-size: 0.7rem;
+  margin-bottom: 0.45rem;
+}
+
 /* Los inputs pierden su chrome: la caja .qbar-field es el borde visible */
 .qbar-field input,
 .qbar-field select,
@@ -431,4 +444,255 @@
 .ac-list::-webkit-scrollbar-thumb {
   background: oklch(0.8 0.01 80);
   border-radius: 3px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Quote search — cotizador hero de la landing (moderno)
+   ══════════════════════════════════════════════════════════════ */
+
+.quote-search {
+  position: relative;
+  max-width: 56rem;
+  margin-inline: auto;
+}
+
+.quote-search__glow {
+  position: absolute;
+  inset: -30% -15% -20%;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, oklch(0.55 0.14 195 / 0.28), transparent 65%),
+    radial-gradient(ellipse 50% 40% at 85% 60%, oklch(0.65 0.12 175 / 0.12), transparent 55%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.quote-search__card {
+  position: relative;
+  z-index: 1;
+  background: oklch(0.995 0.003 80 / 0.94);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid oklch(1 0 0 / 0.55);
+  border-radius: 1.25rem;
+  padding: 1.15rem;
+  box-shadow:
+    0 0 0 1px oklch(0 0 0 / 0.04),
+    0 8px 16px oklch(0.2 0.04 215 / 0.08),
+    0 24px 48px oklch(0.22 0.06 215 / 0.22);
+}
+
+@media (min-width: 768px) {
+  .quote-search__card {
+    padding: 1.5rem 1.65rem 1.35rem;
+    border-radius: 1.35rem;
+  }
+}
+
+.quote-search__section + .quote-search__section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid oklch(0.92 0.012 80);
+}
+
+.quote-search__head {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 0.75rem;
+}
+
+.quote-search__step {
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 0.45rem;
+  background: var(--wz-teal-light);
+  color: var(--wz-teal);
+  font-size: 0.65rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.quote-search__title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--wz-ink-soft);
+}
+
+/* Variante hero: inputs más amplios y pulidos */
+.qbar--hero {
+  gap: 0.65rem;
+}
+
+@media (min-width: 1024px) {
+  .qbar--hero { gap: 0.75rem; }
+}
+
+.qbar--hero .qbar-field {
+  min-height: 3.35rem;
+  border-radius: 0.8rem;
+  border-color: oklch(0.91 0.012 80);
+  background: oklch(0.985 0.006 80);
+  padding: 0.45rem 0.85rem;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+@media (min-width: 768px) {
+  .qbar--hero .qbar-field { min-height: 3.55rem; }
+}
+
+.qbar--hero .qbar-field:hover {
+  border-color: oklch(0.86 0.02 195);
+  background: white;
+}
+
+.qbar--hero .qbar-field:focus-within {
+  border-color: var(--wz-teal);
+  background: white;
+  box-shadow: 0 0 0 3px var(--wz-teal-glow);
+  transform: translateY(-1px);
+}
+
+.qbar--hero .qbar-field.qbar-invalid {
+  border-color: var(--wz-coral);
+  box-shadow: 0 0 0 3px oklch(0.65 0.18 25 / 0.12);
+}
+
+.qbar--hero .qbar-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.09em;
+  color: oklch(0.52 0.02 250);
+  margin-bottom: 0.15rem;
+}
+
+.qbar--hero .qbar-label i {
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+.qbar--hero .qbar-field input,
+.qbar--hero .qbar-field select,
+.qbar--hero .qbar-field .input,
+.qbar--hero .qbar-field .select {
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.qbar--hero .qbar-field input::placeholder {
+  color: oklch(0.72 0.01 250);
+  font-weight: 500;
+}
+
+.qbar--hero .qbar-dates-sep {
+  color: var(--wz-teal);
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+.qbar--hero .qbar-ages {
+  gap: 0.4rem;
+}
+
+.qbar--hero .qbar-age input {
+  width: 2.55rem !important;
+  height: 2.55rem;
+  border-radius: 0.65rem !important;
+  background: white !important;
+  border: 1.5px solid oklch(0.9 0.015 80) !important;
+  font-size: 0.85rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.qbar--hero .qbar-age input:focus {
+  border-color: var(--wz-teal) !important;
+  box-shadow: 0 0 0 2px var(--wz-teal-glow);
+}
+
+.qbar--hero .qbar-add {
+  width: 1.45rem;
+  height: 1.45rem;
+  border-radius: 0.45rem;
+  border-width: 1.5px;
+  font-size: 0.7rem;
+}
+
+.qbar--hero .qbar-age-remove {
+  width: 1rem;
+  height: 1rem;
+  font-size: 0.55rem;
+  box-shadow: 0 2px 6px oklch(0.65 0.18 25 / 0.35);
+}
+
+.qbar--hero .qbar-submit-wrap {
+  display: flex;
+  align-items: stretch;
+  min-height: 3.35rem;
+}
+
+@media (min-width: 768px) {
+  .qbar--hero .qbar-submit-wrap { min-height: 3.55rem; }
+}
+
+.qbar--hero .qbar-submit {
+  min-height: 100%;
+  border-radius: 0.8rem;
+  background: linear-gradient(145deg, oklch(0.52 0.13 195), oklch(0.41 0.11 195));
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  box-shadow:
+    0 1px 0 oklch(1 0 0 / 0.12) inset,
+    0 4px 16px oklch(0.47 0.12 195 / 0.42);
+  transition:
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+
+.qbar--hero .qbar-submit:hover {
+  background: linear-gradient(145deg, oklch(0.55 0.14 195), oklch(0.43 0.12 195));
+  transform: translateY(-2px);
+  box-shadow:
+    0 1px 0 oklch(1 0 0 / 0.15) inset,
+    0 8px 24px oklch(0.47 0.12 195 / 0.48);
+}
+
+.qbar--hero .qbar-submit:active {
+  transform: translateY(0);
+}
+
+.qbar--hero .qbar-submit i {
+  font-size: 1.15rem;
+}
+
+/* Autocomplete elevado sobre la tarjeta */
+.quote-search .ac-list {
+  border-radius: 0.75rem;
+  border-color: oklch(0.9 0.01 80);
+  box-shadow:
+    0 0 0 1px oklch(0 0 0 / 0.04),
+    0 12px 32px oklch(0.2 0.04 215 / 0.14);
+  margin-top: 0.35rem;
+  padding: 0.35rem;
+}
+
+.quote-search .ac-item {
+  border-radius: 0.55rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* intl-tel-input dentro del cotizador hero */
+.quote-search .qbar-field .iti__tel-input {
+  padding-left: 2.95rem !important;
 }
