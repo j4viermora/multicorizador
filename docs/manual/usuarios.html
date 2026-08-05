@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Usuarios — Manual Ruka</title>
+  <link rel="stylesheet" href="assets/manual.css">
+</head>
+<body>
+
+<nav class="top">
+  <a href="index.html" class="logo">✦ <span>Ruka</span> Manual</a>
+  <a href="index.html">Inicio</a>
+  <a href="usuarios.html" class="active">Usuarios</a>
+  <a href="cotizacion.html">Cotización</a>
+  <a href="compra.html">Compra</a>
+  <a href="arquitectura.html">Arquitectura</a>
+</nav>
+
+<div class="page">
+  <aside>
+    <h4>En esta página</h4>
+    <ul>
+      <li><a href="#actores">Actores del sistema</a></li>
+      <li><a href="#roles">Roles autenticados</a></li>
+      <li><a href="#estados">Estados del productor</a></li>
+      <li><a href="#redirect">Redirección al login</a></li>
+      <li><a href="#permisos">Matriz de permisos</a></li>
+      <li><a href="#registro">Registro y aprobación</a></li>
+      <li><a href="#tenant">Multi-tenancy</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <div class="hero">
+      <div class="badge">Capítulo 1</div>
+      <h1>Tipos de usuario</h1>
+      <p>Quién puede hacer qué en Ruka: roles internos, productores afiliados y clientes finales sin cuenta.</p>
+    </div>
+
+    <section id="actores">
+      <h2>Actores del sistema</h2>
+      <p class="subtitle">Cuatro tipos de participantes interactúan con la plataforma.</p>
+
+      <div class="mermaid">
+flowchart TB
+  subgraph humanos["Usuarios humanos"]
+    SA["Super Admin<br/><small>Equipo Ruka</small>"]
+    PR["Productor<br/><small>Agente de seguros</small>"]
+    CL["Cliente / Visitante<br/><small>Sin cuenta</small>"]
+  end
+
+  subgraph sistema["Sistemas externos"]
+    AL["Aliado (aseguradora)<br/><small>API + webhooks</small>"]
+  end
+
+  SA -->|"/admin"| ADM[Panel administración]
+  PR -->|"/producer"| PRO[Panel productor]
+  CL -->|"/cotizar/:slug"| LAN[Landing pública]
+  CL -->|"/public/quotes/:token"| LINK[Link compartido]
+  AL -->|POST /webhooks/:slug| WH[WebhookProcessorJob]
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Super Admin</h3>
+          <ul class="plain">
+            <li><strong>Quién:</strong> equipo interno de Ruka</li>
+            <li><strong>Login:</strong> Devise, <code>role: super_admin</code></li>
+            <li><strong>Tenant:</strong> opera sin company (<code>ActsAsTenant.current_tenant = nil</code>)</li>
+            <li><strong>Panel:</strong> <code>/admin</code> + Mission Control Jobs en <code>/jobs</code></li>
+            <li><strong>Hace:</strong> activar proveedores, aprobar productores, ver pólizas globales</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Productor</h3>
+          <ul class="plain">
+            <li><strong>Quién:</strong> agente de seguros afiliado</li>
+            <li><strong>Login:</strong> Devise, <code>role: producer</code></li>
+            <li><strong>Tenant:</strong> pertenece a una <code>Company</code></li>
+            <li><strong>Panel:</strong> <code>/producer</code> (solo si <code>status: active</code>)</li>
+            <li><strong>Hace:</strong> cotizar, gestionar viajeros, ver sus pólizas</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Cliente / visitante</h3>
+          <ul class="plain">
+            <li><strong>Quién:</strong> persona que quiere asegurar un viaje</li>
+            <li><strong>Login:</strong> no tiene cuenta en Ruka</li>
+            <li><strong>Entrada:</strong> landing <code>/cotizar/ruka</code> o link del productor</li>
+            <li><strong>Hace:</strong> busca precios, compara planes, completa checkout</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Aliado (aseguradora)</h3>
+          <ul class="plain">
+            <li><strong>Quién:</strong> AssistCard, Omint, etc.</li>
+            <li><strong>Login:</strong> no — integración por API y webhooks</li>
+            <li><strong>Entrada:</strong> Ruka llama su API; ellos llaman <code>/webhooks/:slug</code></li>
+            <li><strong>Hace:</strong> cotiza, cobra (en su pasarela), emite póliza</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="roles">
+      <h2>Roles autenticados (User)</h2>
+      <p class="subtitle">Enum <code>role</code> en el modelo <code>User</code>.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Valor</th>
+            <th>Nombre</th>
+            <th>Namespace</th>
+            <th>Company</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>0</code></td>
+            <td><code>producer</code></td>
+            <td><code>/producer/*</code></td>
+            <td>Obligatoria (salvo casos legacy)</td>
+          </tr>
+          <tr>
+            <td><code>1</code></td>
+            <td><code>super_admin</code></td>
+            <td><code>/admin/*</code></td>
+            <td>Opcional / sin tenant</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="estados">
+      <h2>Estados del productor</h2>
+      <p class="subtitle">Enum <code>status</code> — solo aplica a usuarios con <code>role: producer</code>.</p>
+
+      <div class="mermaid">
+stateDiagram-v2
+  [*] --> pending: Registro vía /users/sign_up
+  pending --> active: Super admin aprueba
+  pending --> suspended: Rechazado / suspendido
+  active --> suspended: Super admin suspende
+  suspended --> active: Super admin reactiva
+  active --> [*]: Usa la plataforma
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Estado</th>
+            <th>¿Puede loguearse?</th>
+            <th>¿Qué ve?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>pending</code></td>
+            <td>Sí</td>
+            <td>Pantalla de espera <code>/account/pending</code></td>
+          </tr>
+          <tr>
+            <td><code>active</code></td>
+            <td>Sí</td>
+            <td>Panel productor completo</td>
+          </tr>
+          <tr>
+            <td><code>suspended</code></td>
+            <td>No — se cierra sesión</td>
+            <td>Redirect a login con alerta</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="redirect">
+      <h2>Redirección al entrar (<code>/</code>)</h2>
+      <p class="subtitle">Comportamiento de <code>HomeController#index</code>.</p>
+
+      <div class="mermaid">
+flowchart TD
+  A[GET /] --> B{¿Usuario logueado?}
+  B -->|No| C[Render landing pública<br/>Company slug ruka]
+  B -->|Sí| D{¿Rol?}
+  D -->|super_admin| E[Redirect /admin/dashboard]
+  D -->|producer active| F[Redirect /producer/dashboard]
+  D -->|producer pending| G[Redirect /account/pending]
+  D -->|producer suspended| H[Sign out + login]
+      </div>
+    </section>
+
+    <section id="permisos">
+      <h2>Matriz de permisos</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Funcionalidad</th>
+            <th>Super Admin</th>
+            <th>Productor active</th>
+            <th>Productor pending</th>
+            <th>Cliente anónimo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Gestionar proveedores y planes</td>
+            <td>✅</td><td>❌</td><td>❌</td><td>❌</td>
+          </tr>
+          <tr>
+            <td>Aprobar / suspender productores</td>
+            <td>✅</td><td>❌</td><td>❌</td><td>❌</td>
+          </tr>
+          <tr>
+            <td>Ver todas las pólizas (admin)</td>
+            <td>✅</td><td>❌</td><td>❌</td><td>❌</td>
+          </tr>
+          <tr>
+            <td>Crear y cotizar (Quote)</td>
+            <td>❌</td><td>✅</td><td>❌</td><td>✅ (landing)</td>
+          </tr>
+          <tr>
+            <td>Comparar QuoteResults</td>
+            <td>❌</td><td>✅</td><td>❌</td><td>✅ (landing)</td>
+          </tr>
+          <tr>
+            <td>Gestionar Travelers</td>
+            <td>❌</td><td>✅</td><td>❌</td><td>❌</td>
+          </tr>
+          <tr>
+            <td>Ver pólizas propias</td>
+            <td>❌</td><td>✅</td><td>❌</td><td>❌</td>
+          </tr>
+          <tr>
+            <td>Completar cotización vía link</td>
+            <td>❌</td><td>❌</td><td>❌</td><td>✅</td>
+          </tr>
+          <tr>
+            <td>Checkout / compra en landing</td>
+            <td>❌</td><td>❌</td><td>❌</td><td>✅</td>
+          </tr>
+          <tr>
+            <td>Mission Control Jobs</td>
+            <td>✅</td><td>❌</td><td>❌</td><td>❌</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>Autenticación:</strong> los namespaces <code>/admin</code> y <code>/producer</code> usan <code>authenticate_super_admin!</code> y <code>authenticate_active_producer!</code> respectivamente. Las rutas públicas y webhooks no requieren login.
+      </div>
+    </section>
+
+    <section id="registro">
+      <h2>Registro y aprobación de productores</h2>
+
+      <div class="mermaid">
+sequenceDiagram
+  actor P as Productor
+  participant D as Devise /users/sign_up
+  participant DB as Base de datos
+  actor SA as Super Admin
+
+  P->>D: Completa registro
+  D->>DB: User role=producer, status=pending
+  D->>DB: Company nueva (tenant)
+  P->>P: Redirect /account/pending
+  SA->>DB: PATCH /admin/users/:id/approve
+  DB->>DB: status → active
+  P->>P: Próximo login → /producer/dashboard
+      </div>
+    </section>
+
+    <section id="tenant">
+      <h2>Multi-tenancy y venta directa</h2>
+      <p class="subtitle">Cómo encaja la landing pública de Ruka en el modelo de companies.</p>
+
+      <div class="card">
+        <p>Existe una company reservada con <code>slug: "ruka"</code> (<code>Company::RUKA_DIRECT_SLUG</code>). Los visitantes anónimos de <code>/</code> ven su landing de cotización. Cada búsqueda crea un <code>Quote</code> asignado a un productor in-house de esa company (el primero activo, o vía parámetro <code>?ref=</code> para atribución futura).</p>
+      </div>
+
+      <div class="warn-box">
+        <strong>Nota de diseño:</strong> el modelo de negocio real es una sola Ruka con N productores afiliados, pero técnicamente cada productor pertenece a una <code>Company</code> vía <code>acts_as_tenant</code>. La venta directa reutiliza el mismo esquema tenant/producer que cualquier agencia.
+      </div>
+    </section>
+  </main>
+</div>
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, theme: 'dark', securityLevel: 'loose' });
+</script>
+</body>
+</html>

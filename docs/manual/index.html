@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruka — Manual del sistema</title>
+  <link rel="stylesheet" href="assets/manual.css">
+</head>
+<body>
+
+<nav class="top">
+  <a href="index.html" class="logo">✦ <span>Ruka</span> Manual</a>
+  <a href="index.html" class="active">Inicio</a>
+  <a href="usuarios.html">Usuarios</a>
+  <a href="cotizacion.html">Cotización</a>
+  <a href="compra.html">Compra</a>
+  <a href="arquitectura.html">Arquitectura</a>
+</nav>
+
+<div class="page">
+  <aside>
+    <h4>Manual</h4>
+    <ul>
+      <li><a href="index.html" class="active">Inicio</a></li>
+      <li><a href="usuarios.html">Tipos de usuario</a></li>
+      <li><a href="cotizacion.html">Flujo de cotización</a></li>
+      <li><a href="compra.html">Flujo de compra</a></li>
+      <li><a href="arquitectura.html">Arquitectura técnica</a></li>
+    </ul>
+    <h4>Referencia</h4>
+    <ul>
+      <li><a href="../sistema.html">Doc legacy (sistema.html)</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <div class="hero">
+      <div class="badge">Actualizado · Agosto 2026</div>
+      <h1>Manual de Ruka</h1>
+      <p>Documentación visual de cómo funciona la plataforma hoy: quién usa qué, cómo fluye una cotización, cómo se diseña la compra y qué piezas técnicas la sostienen.</p>
+    </div>
+
+    <section>
+      <h2>¿Qué es Ruka?</h2>
+      <p class="subtitle">Plataforma SaaS multi-tenant para cotizar, comparar y vender seguros de viaje.</p>
+
+      <div class="card">
+        <p>Un visitante o un productor arma una búsqueda de viaje. Ruka consulta en paralelo a varias aseguradoras aliadas (<strong>providers</strong>), persiste cada respuesta como un <code>QuoteResult</code>, y muestra un comparador. Cuando alguien compra, el sistema debe terminar con una <code>Policy</code> real asociada al plan elegido.</p>
+      </div>
+
+      <div class="mermaid">
+flowchart LR
+  subgraph actores["Actores"]
+    SA[Super Admin]
+    PR[Productor]
+    CL[Cliente / visitante]
+    AL[Aliado aseguradora]
+  end
+
+  subgraph ruka["Ruka"]
+    Q[Quote]
+    QR[QuoteResult]
+    P[Policy]
+  end
+
+  PR --> Q
+  CL --> Q
+  Q --> QR
+  AL -.->|API cotización| QR
+  QR --> P
+  AL -.->|webhook o emisión| P
+  SA -->|gestiona| AL
+      </div>
+    </section>
+
+    <section>
+      <h2>Capítulos del manual</h2>
+      <div class="manual-cards">
+        <a href="usuarios.html" class="manual-card">
+          <div class="icon">👥</div>
+          <h3>Tipos de usuario</h3>
+          <p>Super admin, productor, cliente anónimo. Roles, estados, permisos y a dónde redirige cada uno al entrar.</p>
+        </a>
+        <a href="cotizacion.html" class="manual-card">
+          <div class="icon">🔍</div>
+          <h3>Flujo de cotización</h3>
+          <p>Cómo pasa un Quote por draft → quoting → quoted. Jobs, Turbo Streams y los tres escenarios de uso.</p>
+        </a>
+        <a href="compra.html" class="manual-card">
+          <div class="icon">💳</div>
+          <h3>Flujo de compra</h3>
+          <p>Estado actual vs diseño objetivo. Aliado cobra vs Ruka cobra. PolicyIssuer, webhooks y venta directa.</p>
+        </a>
+        <a href="arquitectura.html" class="manual-card">
+          <div class="icon">🏗</div>
+          <h3>Arquitectura técnica</h3>
+          <p>Stack, multi-tenancy, modelo de datos, rutas, jobs y patrón Strategy de proveedores.</p>
+        </a>
+      </div>
+    </section>
+
+    <section>
+      <h2>Mapa rápido de la app</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Área</th>
+            <th>Ruta</th>
+            <th>Quién entra</th>
+            <th>Para qué sirve</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Home / landing</td>
+            <td><code>/</code> · <code>/cotizar/:slug</code></td>
+            <td>Visitante anónimo</td>
+            <td>Cotizar y comprar seguro de viaje (venta directa Ruka)</td>
+          </tr>
+          <tr>
+            <td>Panel productor</td>
+            <td><code>/producer/*</code></td>
+            <td>Productor activo</td>
+            <td>Gestionar cotizaciones, viajeros y pólizas propias</td>
+          </tr>
+          <tr>
+            <td>Panel admin</td>
+            <td><code>/admin/*</code></td>
+            <td>Super admin</td>
+            <td>Proveedores, planes, usuarios, pólizas globales</td>
+          </tr>
+          <tr>
+            <td>Link compartido</td>
+            <td><code>/public/quotes/:token</code></td>
+            <td>Cliente (sin login)</td>
+            <td>Completar datos de una cotización que armó el productor</td>
+          </tr>
+          <tr>
+            <td>Webhooks</td>
+            <td><code>POST /webhooks/:slug</code></td>
+            <td>Aliados</td>
+            <td>Confirmar emisión de póliza tras el pago en su pasarela</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Estado de implementación (resumen)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Funcionalidad</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Motor de cotización async (QuoteJob + ProviderQuoteJob)</td>
+            <td><span class="badge-status done">Implementado</span></td>
+          </tr>
+          <tr>
+            <td>Comparador en landing pública y panel productor</td>
+            <td><span class="badge-status done">Implementado</span></td>
+          </tr>
+          <tr>
+            <td>Checkout venta directa (ruka.com)</td>
+            <td><span class="badge-status partial">Parcial — emite Policy local sin pago ni aliado</span></td>
+          </tr>
+          <tr>
+            <td>Compra vía productor (redirect a pasarela del aliado)</td>
+            <td><span class="badge-status planned">Diseñado — UI deshabilitada</span></td>
+          </tr>
+          <tr>
+            <td>Webhooks → PolicyIssuer</td>
+            <td><span class="badge-status done">Implementado</span></td>
+          </tr>
+          <tr>
+            <td>Ruka cobra y emite en el aliado</td>
+            <td><span class="badge-status none">No implementado</span></td>
+          </tr>
+          <tr>
+            <td>Integración Omint (cotización)</td>
+            <td><span class="badge-status partial">Parcial — solo quote, API test inestable</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</div>
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, theme: 'dark', securityLevel: 'loose' });
+</script>
+</body>
+</html>

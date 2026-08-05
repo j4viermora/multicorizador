@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cotización — Manual Ruka</title>
+  <link rel="stylesheet" href="assets/manual.css">
+</head>
+<body>
+
+<nav class="top">
+  <a href="index.html" class="logo">✦ <span>Ruka</span> Manual</a>
+  <a href="index.html">Inicio</a>
+  <a href="usuarios.html">Usuarios</a>
+  <a href="cotizacion.html" class="active">Cotización</a>
+  <a href="compra.html">Compra</a>
+  <a href="arquitectura.html">Arquitectura</a>
+</nav>
+
+<div class="page">
+  <aside>
+    <h4>En esta página</h4>
+    <ul>
+      <li><a href="#motor">Motor único</a></li>
+      <li><a href="#estados">Estados del Quote</a></li>
+      <li><a href="#jobs">Jobs async</a></li>
+      <li><a href="#escenario-a">Escenario A — Productor</a></li>
+      <li><a href="#escenario-b">Escenario B — Link al cliente</a></li>
+      <li><a href="#escenario-c">Escenario C — Landing pública</a></li>
+      <li><a href="#comparador">Comparador</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <div class="hero">
+      <div class="badge">Capítulo 2</div>
+      <h1>Flujo de cotización</h1>
+      <p>Desde que alguien ingresa origen, destino y fechas hasta que aparecen precios comparables de cada aseguradora.</p>
+    </div>
+
+    <section id="motor">
+      <h2>Motor único de cotización</h2>
+      <p class="subtitle">Producer y landing pública usan el mismo pipeline async.</p>
+
+      <div class="success-box">
+        Tanto <code>/producer/quotes</code> como <code>/cotizar/:slug</code> persisten un <code>Quote</code> y encolan <code>QuoteJob</code>. No hay un segundo camino síncrono.
+      </div>
+
+      <div class="mermaid">
+sequenceDiagram
+  autonumber
+  actor U as Usuario
+  participant C as Controller
+  participant DB as Quote
+  participant QJ as QuoteJob
+  participant PQ as ProviderQuoteJob ×N
+  participant API as Aliados
+  participant TS as Turbo Stream
+
+  U->>C: Envía búsqueda
+  C->>DB: Quote status=draft
+  C->>QJ: perform_later(quote_id)
+  C-->>U: Redirect / resultados (token)
+  QJ->>DB: status=quoting
+  loop Por cada Provider.active
+    QJ->>PQ: perform_later
+    PQ->>API: client.quote(quote)
+    API-->>PQ: hash normalizado (1 o N planes)
+    PQ->>DB: QuoteResult(s) success/error
+    PQ->>TS: broadcast resultados
+  end
+  PQ->>DB: status=quoted (si hay éxitos)
+      </div>
+    </section>
+
+    <section id="estados">
+      <h2>Estados del Quote</h2>
+
+      <div class="mermaid">
+stateDiagram-v2
+  [*] --> draft
+  draft --> quoting: QuoteJob
+  client_pending --> quoting: Cliente completa link
+  quoting --> quoted: ≥1 QuoteResult exitoso
+  quoting --> no_results: Todos fallaron
+  quoted --> pending_payment: Link de pago generado (futuro)
+  quoted --> purchased: Compra completada
+  pending_payment --> purchased: Webhook / checkout
+  draft --> cancelled: Productor descarta
+  quoted --> cancelled: Productor descarta
+  purchased --> [*]
+  cancelled --> [*]
+  no_results --> [*]
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Estado</th>
+            <th>Significado</th>
+            <th>¿Editable?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>draft</code></td><td>Armando la cotización</td><td>✅</td></tr>
+          <tr><td><code>client_pending</code></td><td>Esperando datos del cliente vía link</td><td>✅</td></tr>
+          <tr><td><code>quoting</code></td><td>Consultando APIs en paralelo</td><td>❌</td></tr>
+          <tr><td><code>quoted</code></td><td>Hay al menos un precio exitoso</td><td>✅</td></tr>
+          <tr><td><code>no_results</code></td><td>Ningún proveedor respondió bien</td><td>✅</td></tr>
+          <tr><td><code>pending_payment</code></td><td>Link de pago generado (reservado)</td><td>✅</td></tr>
+          <tr><td><code>purchased</code></td><td>Póliza emitida — inmutable</td><td>❌</td></tr>
+          <tr><td><code>cancelled</code></td><td>Descartada por el productor</td><td>❌</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>Regla:</strong> <code>quoted</code> solo se alcanza si existe al menos un <code>QuoteResult</code> con <code>status: success</code>. Si todos los proveedores fallan → <code>no_results</code>.
+      </div>
+    </section>
+
+    <section id="jobs">
+      <h2>Jobs en background</h2>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>QuoteJob</h3>
+          <ul class="plain">
+            <li><strong>Input:</strong> <code>quote_id</code></li>
+            <li><strong>Hace:</strong> pasa Quote a <code>quoting</code>, encola un ProviderQuoteJob por cada <code>Provider.active</code></li>
+            <li><strong>Edge case:</strong> sin proveedores activos → <code>no_results</code> inmediato</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>ProviderQuoteJob</h3>
+          <ul class="plain">
+            <li><strong>Input:</strong> <code>quote_id</code>, <code>provider_id</code></li>
+            <li><strong>Hace:</strong> llama <code>InsuranceProviders.for(provider).quote(quote)</code></li>
+            <li><strong>Retry:</strong> 3× con 5s backoff en <code>ProviderError</code></li>
+            <li><strong>UI:</strong> re-renderiza comparador vía Turbo Stream en cada respuesta</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mermaid">
+flowchart LR
+  subgraph paralelo["Hasta 3 threads (Solid Queue)"]
+    P1[ProviderQuoteJob<br/>AssistCard]
+    P2[ProviderQuoteJob<br/>TravelAce]
+    P3[ProviderQuoteJob<br/>Omint]
+  end
+  QJ[QuoteJob] --> P1
+  QJ --> P2
+  QJ --> P3
+  P1 --> QR[(QuoteResults)]
+  P2 --> QR
+  P3 --> QR
+      </div>
+    </section>
+
+    <section id="escenario-a">
+      <h2>Escenario A — Productor completa todo</h2>
+      <p class="subtitle">El agente tiene los datos del viajero y dispara la cotización desde su panel.</p>
+
+      <div class="mermaid">
+flowchart TD
+  A[Productor crea/selecciona Traveler] --> B[Completa Quote en /producer/quotes/new]
+  B --> C[QuoteJob → ProviderQuoteJob ×N]
+  C --> D[Comparador en /producer/quotes/:id]
+  D --> E{¿Compra?}
+  E -->|Hoy| F[Botón Seleccionar deshabilitado]
+  E -->|Diseño| G[purchase_url → pasarela aliado]
+      </div>
+
+      <ol style="color:var(--muted);padding-left:20px;font-size:14px;line-height:2">
+        <li>Productor autenticado en <code>/producer</code></li>
+        <li>Crea <code>Traveler</code> (cliente) si no existe</li>
+        <li>Arma <code>Quote</code> con origen, destino, fechas, cantidad de viajeros</li>
+        <li>Al guardar/enviar → <code>QuoteJob.perform_later</code></li>
+        <li>Ve resultados en tiempo real (Turbo Streams)</li>
+        <li>Selecciona plan → <em>(pendiente de implementar)</em> redirect al checkout del aliado</li>
+      </ol>
+    </section>
+
+    <section id="escenario-b">
+      <h2>Escenario B — Cliente completa vía link</h2>
+      <p class="subtitle">El productor comparte un link; el cliente carga sus datos personales.</p>
+
+      <div class="mermaid">
+sequenceDiagram
+  actor PR as Productor
+  actor CL as Cliente
+  participant L as Link
+  participant Q as Quote
+  participant J as QuoteJob
+
+  PR->>Q: Quote con datos mínimos del viaje
+  PR->>L: create_share_link! (7 días)
+  PR->>CL: Envía URL /public/quotes/:token
+  CL->>L: GET show (registra acceso)
+  CL->>Q: PATCH con traveler + datos
+  Q->>J: perform_later
+  Note over CL: Mismo flujo async que Escenario A
+      </div>
+
+      <div class="card">
+        <h3>Sistema de Links</h3>
+        <ul class="plain">
+          <li><strong>Token:</strong> <code>SecureRandom.urlsafe_base64(24)</code></li>
+          <li><strong>Expiración:</strong> 7 días por defecto</li>
+          <li><strong>Estados:</strong> <code>active</code>, <code>expired</code>, <code>revoked</code></li>
+          <li><strong>Trackeo:</strong> <code>access_count</code>, <code>last_accessed_at</code></li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="escenario-c">
+      <h2>Escenario C — Landing pública (venta directa)</h2>
+      <p class="subtitle">Visitante anónimo en <code>/cotizar/ruka</code> o <code>/</code>.</p>
+
+      <div class="mermaid">
+flowchart TD
+  V[Visitante en /cotizar/ruka] --> F[Formulario de búsqueda]
+  F --> Q[Quote creado created_by=client]
+  Q --> J[QuoteJob]
+  J --> R[/cotizar/ruka/resultados/:token]
+  R --> W[Espera vía Turbo Stream]
+  W --> CMP[Comparador por proveedor]
+  CMP --> BUY[Seleccionar plan → comprar → checkout]
+      </div>
+
+      <div class="info-box">
+        La landing usa el mismo <code>QuoteJob</code> que el productor. La UX muestra un spinner mientras <code>status = quoting</code> y se actualiza sola cuando llegan resultados — no hace falta recargar la página.
+      </div>
+    </section>
+
+    <section id="comparador">
+      <h2>Comparador de resultados</h2>
+      <p class="subtitle">Cómo se presentan los <code>QuoteResult</code> exitosos.</p>
+
+      <div class="card">
+        <h3>Layout: una fila por proveedor</h3>
+        <p style="color:var(--muted);font-size:14px;margin-bottom:12px">Cada proveedor puede devolver varios niveles de plan (Básico, Estándar, Premium). Se agrupan en una fila horizontal; las filas se ordenan por la opción más barata de cada proveedor.</p>
+        <ul class="plain">
+          <li><strong>Método:</strong> <code>Quote#offers_by_provider</code></li>
+          <li><strong>Errores:</strong> <code>Quote#failed_providers</code> — se muestran aparte, no bloquean al resto</li>
+          <li><strong>Proveedores fake:</strong> AssistCard, UniversalAssistance, TravelAce (4 tiers cada uno)</li>
+          <li><strong>Real:</strong> Omint (cotización B2B, múltiples productos por llamada)</li>
+        </ul>
+      </div>
+
+      <div class="mermaid">
+flowchart TB
+  subgraph fila1["Fila: TravelAce"]
+    T1[Plan Light]
+    T2[Plan Standard]
+    T3[Plan Premium]
+    T4[Plan Max]
+  end
+  subgraph fila2["Fila: AssistCard"]
+    A1[Plan Light]
+    A2[Plan Standard]
+  end
+  fila1 --> |"ordenada por precio mínimo"| fila2
+      </div>
+    </section>
+  </main>
+</div>
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, theme: 'dark', securityLevel: 'loose' });
+</script>
+</body>
+</html>

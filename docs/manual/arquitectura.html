@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arquitectura — Manual Ruka</title>
+  <link rel="stylesheet" href="assets/manual.css">
+</head>
+<body>
+
+<nav class="top">
+  <a href="index.html" class="logo">✦ <span>Ruka</span> Manual</a>
+  <a href="index.html">Inicio</a>
+  <a href="usuarios.html">Usuarios</a>
+  <a href="cotizacion.html">Cotización</a>
+  <a href="compra.html">Compra</a>
+  <a href="arquitectura.html" class="active">Arquitectura</a>
+</nav>
+
+<div class="page">
+  <aside>
+    <h4>En esta página</h4>
+    <ul>
+      <li><a href="#stack">Stack</a></li>
+      <li><a href="#tenancy">Multi-tenancy</a></li>
+      <li><a href="#datos">Modelo de datos</a></li>
+      <li><a href="#rutas">Rutas</a></li>
+      <li><a href="#jobs">Jobs</a></li>
+      <li><a href="#providers">Proveedores</a></li>
+      <li><a href="#deploy">Deploy</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <div class="hero">
+      <div class="badge">Capítulo 4</div>
+      <h1>Arquitectura técnica</h1>
+      <p>Stack, base de datos, namespaces, background jobs e integración con aseguradoras.</p>
+    </div>
+
+    <section id="stack">
+      <h2>Stack tecnológico</h2>
+
+      <div class="grid-3">
+        <div class="card">
+          <h3>Backend</h3>
+          <ul class="plain">
+            <li><strong>Rails 8</strong> — módulo <code>Ruka</code></li>
+            <li><strong>MariaDB</strong> — dev/test en Docker, prod vía <code>APP_DATABASE_URL</code></li>
+            <li><strong>Solid Queue</strong> — jobs en la misma DB</li>
+            <li><strong>Devise</strong> — autenticación</li>
+            <li><strong>acts_as_tenant</strong> — multi-tenancy</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Frontend</h3>
+          <ul class="plain">
+            <li><strong>Hotwire</strong> — Turbo + Stimulus</li>
+            <li><strong>TailwindCSS 4</strong> — sin Node</li>
+            <li><strong>Flowbite</strong> — componentes UI</li>
+            <li><strong>Tabler Icons</strong> — iconografía</li>
+            <li><strong>simple_form</strong> — formularios</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Infra</h3>
+          <ul class="plain">
+            <li><strong>Dokploy</strong> — deploy (no Kamal)</li>
+            <li><strong>Cloudflare R2</strong> — storage (<code>AWS_*</code> vars)</li>
+            <li><strong>Resend</strong> — email producción</li>
+            <li><strong>Puma + Solid Queue</strong> — <code>SOLID_QUEUE_IN_PUMA=true</code></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="tenancy">
+      <h2>Multi-tenancy</h2>
+
+      <div class="mermaid">
+erDiagram
+  Company ||--o{ User : has
+  Company ||--o{ Quote : scopes
+  Company ||--o{ Traveler : scopes
+  Company ||--o{ Policy : scopes
+  User ||--o{ Quote : "as producer"
+  Quote ||--o{ QuoteResult : has
+  Quote ||--o{ Link : has
+  QuoteResult ||--o| Policy : has
+  Provider ||--o{ QuoteResult : provides
+  Provider ||--o{ InsurancePlan : has
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Con tenant (<code>acts_as_tenant :company</code>)</h3>
+          <p style="font-size:13px;color:var(--muted)">Quote, QuoteResult, Policy, Traveler, Link</p>
+        </div>
+        <div class="card">
+          <h3>Globales (sin tenant)</h3>
+          <p style="font-size:13px;color:var(--muted)">Provider, InsurancePlan, Company. Super admin opera con <code>ActsAsTenant.current_tenant = nil</code>.</p>
+        </div>
+      </div>
+
+      <div class="warn-box">
+        Los background jobs no tienen contexto HTTP. Patrón: <code>ActsAsTenant.without_tenant { Quote.find }</code> → <code>ActsAsTenant.with_tenant(quote.company) { ... }</code>.
+      </div>
+    </section>
+
+    <section id="datos">
+      <h2>Modelo de datos — entidades clave</h2>
+
+      <table>
+        <thead>
+          <tr><th>Modelo</th><th>Propósito</th><th>Campos importantes</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>Quote</code></td>
+            <td>Búsqueda de seguro de un viaje</td>
+            <td><code>status</code>, <code>origin/destination</code>, fechas, <code>public_token</code>, <code>created_by</code></td>
+          </tr>
+          <tr>
+            <td><code>QuoteResult</code></td>
+            <td>Respuesta de un aliado (un plan)</td>
+            <td><code>external_quote_id</code>, <code>price</code>, <code>raw_response</code>, <code>status</code></td>
+          </tr>
+          <tr>
+            <td><code>Policy</code></td>
+            <td>Póliza emitida (venta cerrada)</td>
+            <td><code>policy_number</code>, <code>sold_via</code>, premium, fechas, <code>webhook_payload</code></td>
+          </tr>
+          <tr>
+            <td><code>Traveler</code></td>
+            <td>Datos del viajero / cliente</td>
+            <td>nombre, documento, email, <code>birth_date</code></td>
+          </tr>
+          <tr>
+            <td><code>Provider</code></td>
+            <td>Aliado aseguradora (config global)</td>
+            <td><code>slug</code>, <code>status</code>, <code>config</code> JSON</td>
+          </tr>
+          <tr>
+            <td><code>Link</code></td>
+            <td>URL compartible con token</td>
+            <td><code>token</code>, <code>expires_at</code>, <code>purpose</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        Columnas JSON en MariaDB requieren <code>attribute :campo, :json</code> en el modelo. Los fixtures deben usar strings JSON, no hashes YAML.
+      </div>
+    </section>
+
+    <section id="rutas">
+      <h2>Mapa de rutas</h2>
+
+      <div class="mermaid">
+flowchart TB
+  subgraph auth["Autenticado"]
+    AD["/admin/*<br/>super_admin"]
+    PR["/producer/*<br/>producer active"]
+  end
+  subgraph public["Público"]
+    HO["/ → landing ruka"]
+    CO["/cotizar/:slug"]
+    RE["/cotizar/:slug/resultados/:token"]
+    PU["/cotizar/:slug/comprar|checkout"]
+    LK["/public/quotes/:token"]
+  end
+  subgraph ext["Externo"]
+    WH["POST /webhooks/:slug"]
+  end
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Método</th><th>Ruta</th><th>Controller</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>GET</td><td><code>/admin/dashboard</code></td><td>Admin::DashboardController</td></tr>
+          <tr><td>CRUD</td><td><code>/admin/providers</code></td><td>Admin::ProvidersController</td></tr>
+          <tr><td>CRUD</td><td><code>/producer/quotes</code></td><td>Producer::QuotesController</td></tr>
+          <tr><td>GET</td><td><code>/cotizar/:slug</code></td><td>Public::LandingController#show</td></tr>
+          <tr><td>POST</td><td><code>/cotizar/:slug</code></td><td>Public::LandingController#create → QuoteJob</td></tr>
+          <tr><td>POST</td><td><code>/cotizar/:slug/checkout</code></td><td>Public::LandingController#checkout → PolicyIssuer</td></tr>
+          <tr><td>GET/PATCH</td><td><code>/public/quotes/:token</code></td><td>Public::QuotesController</td></tr>
+          <tr><td>POST</td><td><code>/webhooks/:provider_slug</code></td><td>WebhooksController → WebhookProcessorJob</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="jobs">
+      <h2>Background jobs</h2>
+
+      <div class="mermaid">
+flowchart LR
+  QJ[QuoteJob]
+  PQ[ProviderQuoteJob]
+  WP[WebhookProcessorJob]
+  SQ[(Solid Queue<br/>MariaDB)]
+
+  QJ --> SQ
+  PQ --> SQ
+  WP --> SQ
+
+  QJ -->|encola N| PQ
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Job</th><th>Trigger</th><th>Efecto</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>QuoteJob</code></td>
+            <td>Crear/enviar Quote</td>
+            <td><code>quoting</code> + encola ProviderQuoteJob por provider activo</td>
+          </tr>
+          <tr>
+            <td><code>ProviderQuoteJob</code></td>
+            <td>QuoteJob</td>
+            <td>Crea QuoteResult(s), broadcast Turbo, cierra a <code>quoted</code></td>
+          </tr>
+          <tr>
+            <td><code>WebhookProcessorJob</code></td>
+            <td>POST webhook</td>
+            <td>PolicyIssuer → Policy + <code>purchased</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="card">
+        <h3>Concurrencia y pool de DB</h3>
+        <p style="color:var(--muted);font-size:14px"><code>config/queue.yml</code> corre 3 threads. El pool en <code>database.yml</code> incluye <code>+5</code> extra para workers + dispatcher + supervisor de Solid Queue. Si subís threads, subí el pool proporcionalmente.</p>
+      </div>
+    </section>
+
+    <section id="providers">
+      <h2>Integración con proveedores (Strategy)</h2>
+
+      <div class="mermaid">
+classDiagram
+  class BaseProvider {
+    +quote(quote) Hash|Array
+    +purchase_url(quote_result) String
+    +parse_webhook(payload) Hash
+    +valid_webhook?(request) Boolean
+  }
+  class AssistCardFake
+  class TravelAceFake
+  class UniversalAssistanceFake
+  class ExampleProvider
+  class OmintProvider
+
+  BaseProvider <|-- AssistCardFake
+  BaseProvider <|-- TravelAceFake
+  BaseProvider <|-- UniversalAssistanceFake
+  BaseProvider <|-- ExampleProvider
+  BaseProvider <|-- OmintProvider
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Provider</th><th>Slug</th><th>quote</th><th>purchase_url</th><th>webhook</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>AssistCard Fake</td><td><code>assist_card_fake</code></td><td>✅ 4 planes</td><td><code>#</code></td><td>—</td></tr>
+          <tr><td>TravelAce Fake</td><td><code>travel_ace_fake</code></td><td>✅ 4 planes</td><td><code>#</code></td><td>—</td></tr>
+          <tr><td>Universal Assistance Fake</td><td><code>universal_assistance_fake</code></td><td>✅ 4 planes</td><td><code>#</code></td><td>—</td></tr>
+          <tr><td>Example</td><td><code>example_seguros</code></td><td>✅</td><td>✅ URL mock</td><td>✅ (ref.)</td></tr>
+          <tr><td>Omint</td><td><code>omint</code></td><td>✅ B2B</td><td>❌ NotImplemented</td><td>—</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        Registro en <code>config/initializers/insurance_providers.rb</code> dentro de <code>to_prepare</code>. El <code>slug</code> de la clase debe coincidir exactamente con <code>Provider#slug</code> en la base de datos.
+      </div>
+    </section>
+
+    <section id="deploy">
+      <h2>Deploy y entorno</h2>
+
+      <div class="card">
+        <h3>Variables críticas</h3>
+        <table>
+          <thead><tr><th>Variable</th><th>Uso</th></tr></thead>
+          <tbody>
+            <tr><td><code>RAILS_MASTER_KEY</code></td><td>Credentials</td></tr>
+            <tr><td><code>APP_DATABASE_URL</code></td><td>MariaDB producción (no usar <code>DATABASE_URL</code>)</td></tr>
+            <tr><td><code>SOLID_QUEUE_IN_PUMA=true</code></td><td>Jobs dentro de Puma</td></tr>
+            <tr><td><code>AWS_*</code></td><td>Cloudflare R2 storage</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="warn-box">
+        El deploy va por <strong>Dokploy</strong>, no Kamal. Los archivos <code>config/deploy.yml</code> y <code>bin/kamal</code> vienen con Rails 8 pero no se usan en producción.
+      </div>
+    </section>
+  </main>
+</div>
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, theme: 'dark', securityLevel: 'loose' });
+</script>
+</body>
+</html>

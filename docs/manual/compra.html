@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compra — Manual Ruka</title>
+  <link rel="stylesheet" href="assets/manual.css">
+</head>
+<body>
+
+<nav class="top">
+  <a href="index.html" class="logo">✦ <span>Ruka</span> Manual</a>
+  <a href="index.html">Inicio</a>
+  <a href="usuarios.html">Usuarios</a>
+  <a href="cotizacion.html">Cotización</a>
+  <a href="compra.html" class="active">Compra</a>
+  <a href="arquitectura.html">Arquitectura</a>
+</nav>
+
+<div class="page">
+  <aside>
+    <h4>En esta página</h4>
+    <ul>
+      <li><a href="#resumen">Resumen ejecutivo</a></li>
+      <li><a href="#modelos">Dos modelos de compra</a></li>
+      <li><a href="#actual-directo">Hoy: venta directa</a></li>
+      <li><a href="#actual-productor">Hoy: flujo productor</a></li>
+      <li><a href="#diseno-passthrough">Diseño: aliado cobra</a></li>
+      <li><a href="#diseno-ruka-cobra">Diseño: Ruka cobra</a></li>
+      <li><a href="#policy-issuer">PolicyIssuer</a></li>
+      <li><a href="#webhooks">Webhooks</a></li>
+      <li><a href="#sold-via">Canal sold_via</a></li>
+      <li><a href="#roadmap">Roadmap</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <div class="hero">
+      <div class="badge">Capítulo 3 · Diseño + estado actual</div>
+      <h1>Flujo de compra</h1>
+      <p>Cómo pasa un plan elegido a una póliza emitida: qué existe hoy, qué está diseñado y qué falta construir.</p>
+    </div>
+
+    <section id="resumen">
+      <h2>Resumen ejecutivo</h2>
+
+      <div class="card">
+        <p>Toda compra completada debe terminar en un registro <code>Policy</code> real. El servicio compartido <code>PolicyIssuer</code> es el punto único de emisión: marca el <code>Quote</code> como <code>purchased</code> y crea la póliza (idempotente por <code>policy_number</code>).</p>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Camino</th>
+            <th>Quién cobra</th>
+            <th>Quién emite la póliza</th>
+            <th>Estado en código</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>A — Passthrough</strong><br><small>Aliado cobra en su pasarela</small></td>
+            <td>Aliado (aseguradora)</td>
+            <td>Aliado → webhook → Ruka</td>
+            <td><span class="badge-status planned">Diseñado, UI productor pendiente</span></td>
+          </tr>
+          <tr>
+            <td><strong>B — Ruka merchant</strong><br><small>Ruka cobra y emite en el aliado</small></td>
+            <td>Ruka (MP, Stripe, etc.)</td>
+            <td>Ruka llama API de emisión del aliado</td>
+            <td><span class="badge-status none">No implementado</span></td>
+          </tr>
+          <tr>
+            <td><strong>C — Venta directa (actual)</strong><br><small>Checkout en landing</small></td>
+            <td>Nadie (sin pasarela)</td>
+            <td>Ruka genera número local RK-…</td>
+            <td><span class="badge-status partial">Stub funcional para demo/MVP</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="modelos">
+      <h2>Los dos modelos de negocio (tu intuición)</h2>
+      <p class="subtitle">Así encajan los dos casos que planteaste con la arquitectura de Ruka.</p>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Modelo 1 — Aliado cobra (passthrough)</h3>
+          <p style="color:var(--muted);font-size:14px;margin-bottom:12px">Ruka cotiza y redirige al checkout del aliado. El aliado procesa el pago, emite la póliza en sus sistemas y notifica a Ruka por webhook.</p>
+          <ul class="plain">
+            <li><strong>Ventaja:</strong> Ruka no es merchant of record</li>
+            <li><strong>Interfaz:</strong> <code>purchase_url(quote_result)</code></li>
+            <li><strong>Confirmación:</strong> <code>POST /webhooks/:slug</code></li>
+            <li><strong>Canal:</strong> <code>sold_via: "producer"</code></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Modelo 2 — Ruka cobra (merchant)</h3>
+          <p style="color:var(--muted);font-size:14px;margin-bottom:12px">El cliente paga en una pasarela de Ruka. Tras confirmar el pago, Ruka llama al endpoint de emisión del aliado (ej. Omint <code>CreateComplete</code>) y crea la Policy con la respuesta.</p>
+          <ul class="plain">
+            <li><strong>Ventaja:</strong> UX unificada, control del checkout</li>
+            <li><strong>Requiere:</strong> pasarela propia + API de emisión por aliado</li>
+            <li><strong>Canal:</strong> <code>sold_via: "direct"</code> (venta Ruka)</li>
+            <li><strong>Estado:</strong> no existe todavía</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mermaid">
+flowchart TB
+  subgraph hoy["Implementado hoy"]
+    QR1[QuoteResult elegido]
+    CH[Checkout landing]
+    PI[PolicyIssuer]
+    POL1[Policy RK-XXXX]
+    QR1 --> CH --> PI --> POL1
+  end
+
+  subgraph diseno1["Diseño: aliado cobra"]
+    QR2[QuoteResult elegido]
+    PU[purchase_url]
+    PG[Pasarela aliado]
+    WH[Webhook]
+    PI2[PolicyIssuer]
+    POL2[Policy real del aliado]
+    QR2 --> PU --> PG --> WH --> PI2 --> POL2
+  end
+
+  subgraph futuro["Futuro: Ruka cobra"]
+    QR3[QuoteResult elegido]
+    MP[Pasarela Ruka]
+    EM[API emisión aliado]
+    PI3[PolicyIssuer]
+    POL3[Policy del aliado]
+    QR3 --> MP --> EM --> PI3 --> POL3
+  end
+      </div>
+    </section>
+
+    <section id="actual-directo">
+      <h2>Hoy: venta directa en la landing</h2>
+      <p class="subtitle">Rutas <code>/cotizar/:slug/comprar</code> y <code>/cotizar/:slug/checkout</code>.</p>
+
+      <div class="mermaid">
+sequenceDiagram
+  actor U as Visitante
+  participant LC as LandingController
+  participant T as Traveler
+  participant PI as PolicyIssuer
+  participant DB as Policy
+
+  U->>LC: POST comprar (elige plan)
+  LC-->>U: Formulario pasajeros + contacto
+  U->>LC: POST checkout
+  LC->>T: Traveler.create!
+  LC->>LC: quote.update!(metadata pasajeros)
+  LC->>PI: call quote_result, policy_number=RK-…
+  PI->>DB: Policy sold_via=direct
+  PI->>LC: Quote → purchased
+  LC-->>U: Confirmación
+      </div>
+
+      <div class="warn-box">
+        <strong>Importante:</strong> este camino <em>no</em> llama al API del aliado, <em>no</em> procesa pago real y genera un <code>policy_number</code> local (<code>RK-#{SecureRandom.hex(6)}</code>). Sirve para cerrar el funnel de venta directa mientras no hay integraciones reales de pago/emisión.
+      </div>
+
+      <div class="card">
+        <h3>Archivos clave</h3>
+        <ul class="plain">
+          <li><code>app/controllers/public/landing_controller.rb</code> → <code>complete_purchase!</code></li>
+          <li><code>app/services/policy_issuer.rb</code></li>
+          <li><code>test/integration/direct_sale_checkout_test.rb</code></li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="actual-productor">
+      <h2>Hoy: flujo productor</h2>
+      <p class="subtitle">Infraestructura lista, UI de compra no cableada.</p>
+
+      <div class="danger-box">
+        En <code>app/views/producer/quotes/_offer_option.html.erb</code> el botón "Seleccionar" apunta a <code>#</code> y está deshabilitado. El flujo de compra del productor <strong>todavía no existe en la interfaz</strong>.
+      </div>
+
+      <div class="mermaid">
+flowchart LR
+  subgraph listo["✅ Implementado"]
+    WHC[WebhooksController]
+    WPJ[WebhookProcessorJob]
+    PI[PolicyIssuer]
+    PAR[parse_webhook por provider]
+  end
+  subgraph falta["❌ Falta"]
+    BTN[Botón Seleccionar]
+    RED[Redirect purchase_url]
+    PP[pending_payment status]
+  end
+  BTN --> RED --> PP
+  PP -.->|cliente paga afuera| WHC
+      </div>
+    </section>
+
+    <section id="diseno-passthrough">
+      <h2>Diseño objetivo: aliado cobra (Modelo 1)</h2>
+      <p class="subtitle">Flujo completo que la plataforma está preparada para soportar.</p>
+
+      <div class="mermaid">
+sequenceDiagram
+  autonumber
+  actor PR as Productor
+  actor CL as Cliente
+  participant R as Ruka
+  participant AL as Aliado
+  participant PG as Pasarela del aliado
+
+  PR->>R: Selecciona QuoteResult
+  R->>R: provider.purchase_url(quote_result)
+  R->>R: Quote → pending_payment
+  R->>CL: URL de checkout (email / WhatsApp / redirect)
+  CL->>PG: Paga
+  PG->>AL: Confirma pago
+  AL->>AL: Emite póliza en sus sistemas
+  AL->>R: POST /webhooks/:slug
+  R->>R: valid_webhook? → WebhookProcessorJob
+  R->>R: parse_webhook → PolicyIssuer
+  Note over R: Policy creada, Quote → purchased
+      </div>
+
+      <div class="card">
+        <h3>Contrato del proveedor (BaseProvider)</h3>
+        <table>
+          <thead>
+            <tr><th>Método</th><th>Responsabilidad</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>purchase_url(quote_result)</code></td>
+              <td>Devuelve URL de checkout del aliado con <code>external_quote_id</code> y callback</td>
+            </tr>
+            <tr>
+              <td><code>parse_webhook(payload)</code></td>
+              <td>Normaliza a <code>external_quote_id</code>, <code>policy_number</code>, fechas, montos</td>
+            </tr>
+            <tr>
+              <td><code>valid_webhook?(request)</code></td>
+              <td>Valida token/firma HMAC del aliado</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="info-box">
+        <strong>Regla crítica:</strong> <code>parse_webhook</code> <em>debe</em> devolver <code>external_quote_id</code>. <code>WebhookProcessorJob</code> busca el <code>QuoteResult</code> por ese ID; si falta, el webhook se descarta silenciosamente.
+      </div>
+    </section>
+
+    <section id="diseno-ruka-cobra">
+      <h2>Diseño futuro: Ruka cobra (Modelo 2)</h2>
+      <p class="subtitle">Cuando Ruka quiera ser merchant of record en la venta directa.</p>
+
+      <div class="mermaid">
+sequenceDiagram
+  autonumber
+  actor U as Cliente
+  participant R as Ruka
+  participant MP as Pasarela Ruka
+  participant AL as Aliado API
+
+  U->>R: Checkout landing (plan + pasajeros)
+  R->>MP: Crear intención de pago
+  MP-->>U: Formulario de pago
+  U->>MP: Confirma pago
+  MP->>R: Webhook pago OK
+  R->>AL: POST emisión (CreateComplete u equivalente)
+  AL-->>R: policy_number, fechas, PDF
+  R->>R: PolicyIssuer.call(...)
+  R-->>U: Póliza confirmada
+      </div>
+
+      <div class="card">
+        <h3>Piezas a construir</h3>
+        <ul class="plain">
+          <li><strong>Pasarela:</strong> MercadoPago, Stripe, o similar — webhook de pago confirmado</li>
+          <li><strong>Emisión por aliado:</strong> método nuevo en cada provider, ej. <code>issue_policy(quote_result, travelers)</code></li>
+          <li><strong>Estado intermedio:</strong> <code>pending_payment</code> mientras espera confirmación de pago</li>
+          <li><strong>Rollback:</strong> qué hacer si el pago OK pero la emisión en el aliado falla</li>
+          <li><strong>Omint:</strong> endpoint <code>CreateComplete</code> — hoy <code>purchase_url</code> lanza <code>NotImplementedError</code></li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="policy-issuer">
+      <h2>PolicyIssuer — servicio compartido</h2>
+      <p class="subtitle">Un solo lugar crea pólizas, sin importar el camino de compra.</p>
+
+      <div class="mermaid">
+flowchart TD
+  subgraph entradas["Quién invoca PolicyIssuer"]
+    WH[WebhookProcessorJob<br/>sold_via=producer]
+    CH[LandingController#checkout<br/>sold_via=direct]
+    FUT[Pago confirmado futuro<br/>sold_via=direct]
+  end
+  PI[PolicyIssuer.call]
+  POL[(Policy)]
+  Q[Quote → purchased]
+
+  WH --> PI
+  CH --> PI
+  FUT --> PI
+  PI --> POL
+  PI --> Q
+      </div>
+
+      <div class="card">
+        <h3>Comportamiento</h3>
+        <ul class="plain">
+          <li><strong>Idempotencia:</strong> si ya existe <code>Policy</code> con ese <code>policy_number</code>, la retorna sin duplicar</li>
+          <li><strong>Crea:</strong> <code>Policy</code> con premium, fechas, <code>webhook_payload</code> (si aplica)</li>
+          <li><strong>Actualiza:</strong> <code>quote.update!(status: "purchased")</code></li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="webhooks">
+      <h2>Procesamiento de webhooks</h2>
+
+      <div class="mermaid">
+sequenceDiagram
+  participant AL as Aliado
+  participant WC as WebhooksController
+  participant WJ as WebhookProcessorJob
+  participant CL as Provider client
+  participant PI as PolicyIssuer
+
+  AL->>WC: POST /webhooks/:provider_slug
+  WC->>CL: valid_webhook?(request)
+  alt Token inválido
+    WC-->>AL: 401 Unauthorized
+  else OK
+    WC->>WJ: perform_later(slug, payload)
+    WC-->>AL: 202 Accepted
+    WJ->>CL: parse_webhook(payload)
+    WJ->>WJ: QuoteResult.find_by(external_quote_id)
+    WJ->>PI: call(sold_via: producer)
+  end
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Paso</th><th>Detalle</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Respuesta rápida</td><td>202 Accepted — el procesamiento es async</td></tr>
+          <tr><td>CSRF</td><td>Desactivado en WebhooksController</td></tr>
+          <tr><td>Duplicados</td><td>Idempotencia por <code>policy_number</code></td></tr>
+          <tr><td>Errores</td><td>No responder 5xx al aliado; loggear internamente</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="sold-via">
+      <h2>Canal de venta: <code>sold_via</code></h2>
+      <p class="subtitle">Campo en <code>Policy</code> para distinguir origen comercial.</p>
+
+      <table>
+        <thead>
+          <tr><th>Valor</th><th>Significado</th><th>Origen típico</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>direct</code></td>
+            <td>Venta directa de Ruka (landing pública)</td>
+            <td><code>LandingController#checkout</code></td>
+          </tr>
+          <tr>
+            <td><code>producer</code></td>
+            <td>Venta gestionada por un productor afiliado</td>
+            <td><code>WebhookProcessorJob</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        Vive en <code>Policy</code> y no en <code>Quote</code> porque la póliza es el evento de negocio real (ingreso/comisión). Un Quote puede tener intentos fallidos que no deberían contar para atribución.
+      </div>
+    </section>
+
+    <section id="roadmap">
+      <h2>Roadmap sugerido</h2>
+
+      <div class="mermaid">
+gantt
+  title Implementación flujo de compra
+  dateFormat YYYY-MM-DD
+  section Corto plazo
+    Cablear botón Seleccionar productor     :a1, 2026-08-01, 14d
+    purchase_url en providers fake          :a2, after a1, 7d
+    pending_payment al generar link         :a3, after a1, 7d
+  section Mediano plazo
+    Omint CreateComplete (emisión)          :b1, 2026-09-01, 30d
+    Webhook real Omint                      :b2, after b1, 14d
+  section Largo plazo
+    Pasarela Ruka (Modelo 2)                :c1, 2026-10-01, 45d
+    Comisiones por sold_via                 :c2, after c1, 30d
+      </div>
+
+      <table>
+        <thead>
+          <tr><th>Prioridad</th><th>Tarea</th><th>Desbloquea</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Habilitar "Seleccionar" en panel productor → redirect <code>purchase_url</code></td>
+            <td>Flujo passthrough end-to-end con providers fake</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Implementar emisión Omint + webhook</td>
+            <td>Primer aliado real en producción</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Reemplazar stub de checkout directo por pasarela + emisión</td>
+            <td>Modelo 2 en venta directa</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</div>
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, theme: 'dark', securityLevel: 'loose' });
+</script>
+</body>
+</html>
