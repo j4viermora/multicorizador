@@ -1,0 +1,35 @@
+<%# Asesor asignado (o atención al cliente si no vino por un link con ref) %>
+<% if producer %>
+  <div class="sec">
+    <div class="producer-contact">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="producer-avatar">
+          <%= producer.first_name&.first&.upcase %><%= producer.last_name&.first&.upcase %>
+        </div>
+        <div class="min-w-0">
+          <p class="text-[0.65rem] font-bold uppercase tracking-widest" style="color: var(--wz-ink-muted);">
+            <%= ref.present? ? "Tu asesor" : "Atención al cliente" %>
+          </p>
+          <p class="font-bold text-sm truncate" style="color: var(--wz-ink);"><%= producer.full_name %></p>
+          <p class="text-xs" style="color: var(--wz-ink-muted);">Asesor de seguros</p>
+        </div>
+      </div>
+      <% if producer.email.present? || producer.phone.present? %>
+        <div class="flex flex-wrap gap-x-4 gap-y-1 sm:justify-end">
+          <% if producer.email.present? %>
+            <a href="mailto:<%= producer.email %>" class="producer-contact-link">
+              <i class="ti ti-mail text-sm"></i>
+              <%= producer.email %>
+            </a>
+          <% end %>
+          <% if producer.phone.present? %>
+            <a href="https://wa.me/<%= producer.phone.gsub(/\D/, '') %>" target="_blank" rel="noopener" class="producer-contact-link">
+              <i class="ti ti-brand-whatsapp text-sm"></i>
+              <%= producer.phone %>
+            </a>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

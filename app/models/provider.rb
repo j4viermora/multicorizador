@@ -3,6 +3,9 @@ class Provider < ApplicationRecord
   # plain string and store `to_s` output. Declare the cast explicitly.
   attribute :config, :json
 
+  # Logo que se muestra en la landing pública; sin él se cae al monograma.
+  has_one_attached :logo
+
   has_many :insurance_plans, dependent: :destroy
   has_many :quote_results, dependent: :nullify
 

@@ -1,0 +1,55 @@
+<%# Pie de la landing pública %>
+<div class="site-footer">
+  <div class="site-footer-inner">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div>
+        <div class="flex items-center gap-2">
+          <div style="width: 1.75rem; height: 1.75rem; border-radius: 0.4rem; background: var(--wz-blue); display: flex; align-items: center; justify-content: center;">
+            <i class="ti ti-shield-check text-sm text-white"></i>
+          </div>
+          <span class="font-extrabold"><%= company.name %></span>
+        </div>
+        <p class="text-sm mt-3 leading-relaxed" style="color: oklch(0.82 0.03 215);">
+          Comparamos asistencia al viajero de varias compañías en un solo lugar, para que elijas
+          la cobertura que necesitás al mejor precio.
+        </p>
+      </div>
+
+      <div>
+        <% if links.any? %>
+          <p class="site-footer-head">Cotizá</p>
+          <ul class="space-y-1.5 text-sm">
+            <% links.each do |link| %>
+              <li><%= link_to link.label, link.url %></li>
+            <% end %>
+          </ul>
+        <% end %>
+      </div>
+
+      <div>
+        <p class="site-footer-head">Medios de pago</p>
+        <div class="flex flex-wrap gap-2">
+          <% %w[Visa Mastercard Amex Transferencia].each do |method| %>
+            <span class="text-xs font-bold px-2.5 py-1.5 rounded"
+                  style="background: oklch(1 0 0 / 0.1); color: white;">
+              <%= method %>
+            </span>
+          <% end %>
+        </div>
+        <p class="text-xs mt-3" style="color: oklch(0.72 0.03 215);">
+          Los medios disponibles dependen de la compañía que elijas.
+        </p>
+      </div>
+    </div>
+
+    <div class="mt-8 pt-5 flex flex-col md:flex-row items-center justify-between gap-3"
+         style="border-top: 1px solid oklch(1 0 0 / 0.12);">
+      <p class="text-xs" style="color: oklch(0.72 0.03 215);">
+        &copy; <%= Date.current.year %> <%= company.name %> &middot; Cotizador de seguros de viaje
+      </p>
+      <p class="text-xs" style="color: oklch(0.72 0.03 215);">
+        Powered by Ruka &middot; Datos protegidos
+      </p>
+    </div>
+  </div>
+</div>

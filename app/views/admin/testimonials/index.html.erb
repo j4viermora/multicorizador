@@ -1,0 +1,72 @@
+<div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+  <div>
+    <h1 class="text-3xl font-bold">Reseñas</h1>
+    <p class="text-gray-500 mt-1 text-sm">
+      Se muestran en la landing pública, ordenadas por posición. Sólo las publicadas.
+    </p>
+  </div>
+
+  <%= link_to new_admin_testimonial_path, class: "btn btn-primary !mb-0" do %>
+    <i class="ti ti-plus"></i>Nueva reseña
+  <% end %>
+</div>
+
+<% if @testimonials.empty? %>
+  <div class="card p-8 text-center text-gray-500">
+    <i class="ti ti-message-star text-3xl"></i>
+    <p class="mt-2 text-sm">Todavía no cargaste ninguna reseña.</p>
+  </div>
+<% else %>
+  <div class="overflow-x-auto card">
+    <table class="table table-zebra">
+      <thead>
+        <tr>
+          <th>Pos.</th>
+          <th>Autor</th>
+          <th>Puntaje</th>
+          <th>Reseña</th>
+          <th>Origen</th>
+          <th>Estado</th>
+          <th class="text-right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @testimonials.each do |testimonial| %>
+          <tr class="<%= "opacity-60" unless testimonial.published? %>">
+            <td class="text-gray-500"><%= testimonial.position %></td>
+            <td class="font-medium text-gray-900">
+              <%= testimonial.author_name %>
+              <% if testimonial.location.present? %>
+                <span class="block text-xs text-gray-500"><%= testimonial.location %></span>
+              <% end %>
+            </td>
+            <td class="whitespace-nowrap text-orange-500">
+              <%= "★" * testimonial.rating %><span class="text-gray-300"><%= "★" * (5 - testimonial.rating) %></span>
+            </td>
+            <td class="max-w-md text-sm text-gray-600"><%= truncate(testimonial.body, length: 90) %></td>
+            <td class="text-sm"><%= testimonial.source.presence || "—" %></td>
+            <td>
+              <span class="badge <%= testimonial.published? ? "badge-success" : "badge-ghost" %>">
+                <%= testimonial.published? ? "Publicada" : "Oculta" %>
+              </span>
+            </td>
+            <td class="text-right whitespace-nowrap">
+              <%= button_to toggle_published_admin_testimonial_path(testimonial), method: :patch,
+                    class: "btn btn-ghost btn-sm !mb-0" do %>
+                <i class="ti <%= testimonial.published? ? "ti-eye-off" : "ti-eye" %>"></i>
+              <% end %>
+              <%= link_to edit_admin_testimonial_path(testimonial), class: "btn btn-ghost btn-sm !mb-0" do %>
+                <i class="ti ti-pencil"></i>
+              <% end %>
+              <%= button_to admin_testimonial_path(testimonial), method: :delete,
+                    class: "btn btn-ghost btn-sm !mb-0 text-red-600",
+                    form: { data: { turbo_confirm: "¿Eliminar la reseña de #{testimonial.author_name}?" } } do %>
+                <i class="ti ti-trash"></i>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

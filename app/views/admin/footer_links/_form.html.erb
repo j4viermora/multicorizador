@@ -1,0 +1,14 @@
+<%= simple_form_for [:admin, footer_link], html: { class: "card p-6 max-w-2xl" } do |f| %>
+  <%= f.input :label, label: "Texto del enlace", hint: "Ej: Seguro de viaje a Europa." %>
+  <%= f.input :url, label: "URL", hint: "Puede ser interna (/cotizar/mi-empresa) o externa (https://…)." %>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+    <%= f.input :position, label: "Posición", hint: "Menor número, más arriba." %>
+    <%= f.input :published, label: "Visible en el pie" %>
+  </div>
+
+  <div class="flex gap-2 mt-4">
+    <%= f.button :submit, "Guardar", class: "btn btn-primary" %>
+    <%= link_to "Cancelar", admin_footer_links_path, class: "btn btn-ghost" %>
+  </div>
+<% end %>

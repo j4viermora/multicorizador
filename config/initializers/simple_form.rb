@@ -71,6 +71,8 @@ SimpleForm.setup do |config|
   end
 
   # ── Input pelado, para agrupar varios bajo una misma etiqueta :qbar ──
+  # También lo usa el buscador de la landing, donde la tarjeta blanca, la
+  # etiqueta y el icono los arma la vista alrededor del input.
   config.wrappers :qbar_plain, class: "qbar-plain" do |b|
     b.use :html5
     b.use :placeholder

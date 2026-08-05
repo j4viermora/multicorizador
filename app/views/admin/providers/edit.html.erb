@@ -6,6 +6,20 @@
   <%= f.input :status, collection: %w[active inactive], include_blank: false %>
 
   <div class="mb-4">
+    <label class="label-text">Logo</label>
+    <% if @provider.logo.attached? %>
+      <div class="flex items-center gap-3 mb-2">
+        <%= image_tag @provider.logo, class: "h-10 w-auto object-contain" %>
+        <span class="text-xs text-gray-500">Subí otro archivo para reemplazarlo.</span>
+      </div>
+    <% end %>
+    <%= f.file_field :logo, accept: "image/png,image/jpeg,image/svg+xml,image/webp", class: "input" %>
+    <p class="text-xs text-gray-500 mt-1">
+      Se muestra en la landing pública. Sin logo se usa el monograma del nombre.
+    </p>
+  </div>
+
+  <div class="mb-4">
     <label class="label-text">Configuración (JSON)</label>
     <%= f.text_area :config, value: @provider.config.to_json, class: "textarea font-mono", rows: 5 %>
   </div>

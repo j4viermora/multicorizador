@@ -12,9 +12,11 @@
   <a href="index.html" class="logo">✦ <span>Ruka</span> Manual</a>
   <a href="index.html">Inicio</a>
   <a href="usuarios.html" class="active">Usuarios</a>
+  <a href="landing.html">Landing</a>
   <a href="cotizacion.html">Cotización</a>
   <a href="compra.html">Compra</a>
   <a href="arquitectura.html">Arquitectura</a>
+  <a href="deploy.html">Deploy</a>
 </nav>
 
 <div class="page">
@@ -24,7 +26,7 @@
       <li><a href="#actores">Actores del sistema</a></li>
       <li><a href="#roles">Roles autenticados</a></li>
       <li><a href="#estados">Estados del productor</a></li>
-      <li><a href="#redirect">Redirección al login</a></li>
+      <li><a href="#redirect">La raíz (/) y los paneles</a></li>
       <li><a href="#permisos">Matriz de permisos</a></li>
       <li><a href="#registro">Registro y aprobación</a></li>
       <li><a href="#tenant">Multi-tenancy</a></li>
@@ -169,25 +171,30 @@ stateDiagram-v2
           <tr>
             <td><code>suspended</code></td>
             <td>No — se cierra sesión</td>
-            <td>Redirect a login con alerta</td>
+            <td>Se cierra la sesión y vuelve al login con alerta (al intentar entrar a un panel)</td>
           </tr>
         </tbody>
       </table>
     </section>
 
     <section id="redirect">
-      <h2>Redirección al entrar (<code>/</code>)</h2>
+      <h2>La raíz (<code>/</code>) y los paneles</h2>
       <p class="subtitle">Comportamiento de <code>HomeController#index</code>.</p>
+
+      <div class="card">
+        <p><strong>La raíz es siempre la landing pública</strong> de venta directa (empresa con slug <code>ruka</code>): se entra sin sesión y <em>nunca</em> muestra la pantalla de login ni redirige a un panel, ni siquiera con un usuario logueado. A cada panel se entra por su propia ruta, y ahí sí se exige login.</p>
+      </div>
 
       <div class="mermaid">
 flowchart TD
-  A[GET /] --> B{¿Usuario logueado?}
-  B -->|No| C[Render landing pública<br/>Company slug ruka]
-  B -->|Sí| D{¿Rol?}
-  D -->|super_admin| E[Redirect /admin/dashboard]
-  D -->|producer active| F[Redirect /producer/dashboard]
-  D -->|producer pending| G[Redirect /account/pending]
-  D -->|producer suspended| H[Sign out + login]
+  A[GET /] --> C[Render landing pública<br/>Company slug ruka]
+  X[GET /admin/*] --> Y{¿super_admin?}
+  Y -->|Sí| Z[Panel admin]
+  Y -->|No| L[Login]
+  M[GET /producer/*] --> N{¿producer active?}
+  N -->|Sí| O[Panel productor]
+  N -->|pending| G[/account/pending/]
+  N -->|suspended o sin sesión| L
       </div>
     </section>
 

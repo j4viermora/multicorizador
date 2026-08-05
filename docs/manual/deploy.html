@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruka — Deploy y puesta en marcha</title>
+  <link rel="stylesheet" href="assets/manual.css">
+</head>
+<body>
+
+<nav class="top">
+  <a href="index.html" class="logo">✦ <span>Ruka</span> Manual</a>
+  <a href="index.html">Inicio</a>
+  <a href="usuarios.html">Usuarios</a>
+  <a href="landing.html">Landing</a>
+  <a href="cotizacion.html">Cotización</a>
+  <a href="compra.html">Compra</a>
+  <a href="arquitectura.html">Arquitectura</a>
+  <a href="deploy.html" class="active">Deploy</a>
+</nav>
+
+<div class="page">
+  <aside>
+    <h4>Manual</h4>
+    <ul>
+      <li><a href="index.html">Inicio</a></li>
+      <li><a href="usuarios.html">Tipos de usuario</a></li>
+      <li><a href="landing.html">Landing pública</a></li>
+      <li><a href="cotizacion.html">Flujo de cotización</a></li>
+      <li><a href="compra.html">Flujo de compra</a></li>
+      <li><a href="arquitectura.html">Arquitectura técnica</a></li>
+      <li><a href="deploy.html" class="active">Deploy y puesta en marcha</a></li>
+    </ul>
+    <h4>En esta página</h4>
+    <ul>
+      <li><a href="#resumen">Resumen en 5 pasos</a></li>
+      <li><a href="#env">Variables de entorno</a></li>
+      <li><a href="#primer-arranque">Qué pasa al arrancar</a></li>
+      <li><a href="#seeds-prod">⚠ Seeds en producción</a></li>
+      <li><a href="#admin">Crear el super admin</a></li>
+      <li><a href="#que-puede">Qué puede hacer</a></li>
+      <li><a href="#productores">Alta de productores</a></li>
+      <li><a href="#checklist">Checklist post-deploy</a></li>
+      <li><a href="#problemas">Si algo falla</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <div class="hero">
+      <div class="badge">Operaciones · Agosto 2026</div>
+      <h1>Deploy y puesta en marcha</h1>
+      <p>Qué hacer cuando la app ya está corriendo en el servidor: crear el usuario administrador "jefe jefe", entender qué usuarios quedaron creados solos, y cómo se dan de alta los productores.</p>
+    </div>
+
+    <section id="resumen">
+      <h2>Resumen en 5 pasos</h2>
+      <p class="subtitle">El camino corto. Cada paso está explicado en detalle más abajo.</p>
+
+      <table>
+        <thead>
+          <tr><th>#</th><th>Paso</th><th>Dónde</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Cargar las variables de entorno (<code>RAILS_MASTER_KEY</code>, <code>APP_DATABASE_URL</code>, etc.)</td>
+            <td>Panel de Dokploy</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Deploy. Al arrancar, el contenedor corre <code>db:prepare</code> solo</td>
+            <td>Automático</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><strong>Borrar los usuarios de demo</strong> que el seed pudo haber creado</td>
+            <td>Consola del contenedor</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Crear tu super admin real: <code>bin/rails admin:create</code></td>
+            <td>Consola del contenedor</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Entrar a <code>/users/sign_in</code> y luego a <code>/admin/dashboard</code></td>
+            <td>Navegador</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>Dokploy, no Kamal.</strong> El deploy se dispara desde el panel de Dokploy. <code>config/deploy.yml</code> y <code>bin/kamal</code> siguen en el repo porque vienen con Rails 8, pero no se usan: editarlos no cambia nada.
+      </div>
+    </section>
+
+    <section id="env">
+      <h2>Variables de entorno</h2>
+      <p class="subtitle">Se cargan en el panel de Dokploy, nunca en el repositorio.</p>
+
+      <table>
+        <thead>
+          <tr><th>Variable</th><th>¿Obligatoria?</th><th>Para qué</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>RAILS_MASTER_KEY</code></td>
+            <td><span class="badge-status done">Sí</span></td>
+            <td>Descifrar <code>credentials.yml.enc</code>. Sin esto la app no bootea.</td>
+          </tr>
+          <tr>
+            <td><code>APP_DATABASE_URL</code></td>
+            <td><span class="badge-status done">Sí</span></td>
+            <td>Conexión a MariaDB.</td>
+          </tr>
+          <tr>
+            <td><code>SOLID_QUEUE_IN_PUMA</code></td>
+            <td><span class="badge-status done">Sí</span></td>
+            <td><code>true</code>. Corre el worker de jobs dentro de Puma; sin esto las cotizaciones nunca se procesan.</td>
+          </tr>
+          <tr>
+            <td><code>APP_HOST</code></td>
+            <td><span class="badge-status partial">Recomendada</span></td>
+            <td>Hostname público, usado para armar links en los emails.</td>
+          </tr>
+          <tr>
+            <td><code>AWS_ACCESS_KEY_ID</code>, <code>AWS_SECRET_ACCESS_KEY</code>, <code>AWS_ENDPOINT</code>, <code>AWS_BUCKET</code>, <code>AWS_REGION</code></td>
+            <td><span class="badge-status partial">Si hay uploads</span></td>
+            <td>Active Storage contra Cloudflare R2 (logos de proveedores, imágenes). <code>AWS_REGION</code> debe ser <code>auto</code>.</td>
+          </tr>
+          <tr>
+            <td><code>RESEND_API_KEY</code></td>
+            <td><span class="badge-status none">Opcional</span></td>
+            <td>Email transaccional.</td>
+          </tr>
+          <tr>
+            <td><code>OMINT_CLIENT_SECRET</code></td>
+            <td><span class="badge-status none">Opcional</span></td>
+            <td>Credencial del proveedor Omint. Se lee en los seeds.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="warn-box">
+        <strong>No la llames <code>DATABASE_URL</code>.</strong> Rails fusiona automáticamente esa variable en la configuración primaria y deja que el esquema de la URL pise el adapter, lo que rompe con URLs <code>mariadb://</code>. Por eso el nombre es <code>APP_DATABASE_URL</code>. Está explicado en el comentario de <code>config/database.yml</code>.
+      </div>
+
+      <div class="info-box">
+        <strong>Nombres <code>AWS_*</code> a propósito.</strong> El proveedor real es Cloudflare R2, pero es S3-compatible y el SDK espera esos nombres. No los renombres a <code>R2_*</code>.
+      </div>
+    </section>
+
+    <section id="primer-arranque">
+      <h2>Qué pasa cuando el contenedor arranca</h2>
+      <p class="subtitle">Nadie ejecuta migraciones a mano: el entrypoint lo hace solo.</p>
+
+      <p><code>bin/docker-entrypoint</code> detecta que el comando es <code>./bin/rails server</code> y ejecuta <code>./bin/rails db:prepare</code> antes de levantar Puma.</p>
+
+      <div class="mermaid">
+flowchart TD
+  A[Contenedor arranca] --> B{¿Existe la tabla<br/>schema_migrations?}
+  B -->|No — base vacía| C[Carga db/schema.rb]
+  C --> D[Ejecuta db/seeds.rb]
+  D --> F[Puma levanta]
+  B -->|Sí — ya inicializada| E[Corre migraciones pendientes]
+  E --> F
+  F --> G[App disponible]
+      </div>
+
+      <p>La diferencia importante: <strong>los seeds sólo corren la primera vez</strong>, cuando la base todavía no tiene <code>schema_migrations</code>. En los deploys siguientes sólo se aplican migraciones.</p>
+    </section>
+
+    <section id="seeds-prod">
+      <h2>⚠ Los seeds corren en producción en el primer deploy</h2>
+
+      <div class="danger-box">
+        <strong>Esto es lo más importante de esta página.</strong> <code>db/seeds.rb</code> no tiene ninguna guarda de entorno. Si Dokploy crea una base vacía, el primer arranque la siembra con <strong>usuarios de demo con contraseña <code>password123</code></strong> — incluido un super admin con acceso total.
+      </div>
+
+      <p>Lo que queda creado en ese primer arranque:</p>
+
+      <table>
+        <thead>
+          <tr><th>Email</th><th>Rol</th><th>Estado</th><th>Contraseña</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>admin@ruka.com</code></td><td>super_admin</td><td>active</td><td><code>password123</code></td></tr>
+          <tr><td><code>producer@ruka.com</code></td><td>producer</td><td>active</td><td><code>password123</code></td></tr>
+          <tr><td><code>ventas@ruka.com</code></td><td>producer</td><td>active</td><td><code>password123</code></td></tr>
+          <tr><td><code>pending@ruka.com</code></td><td>producer</td><td>pending</td><td><code>password123</code></td></tr>
+          <tr><td><code>suspended@ruka.com</code></td><td>producer</td><td>suspended</td><td><code>password123</code></td></tr>
+        </tbody>
+      </table>
+
+      <p>También quedan creados los proveedores <em>fake</em> (Assist Card, Universal Assistance, Travel Ace) que devuelven cotizaciones inventadas, y están <strong>activos</strong> por defecto.</p>
+
+      <h3>Qué hacer</h3>
+      <p>Apenas termina el primer deploy, abrí la consola del contenedor y limpiá:</p>
+
+      <pre><code>bin/rails console
+
+# Borrar los usuarios de demo
+User.where(email: %w[
+  admin@ruka.com producer@ruka.com ventas@ruka.com
+  pending@ruka.com suspended@ruka.com
+]).destroy_all
+
+# Desactivar los proveedores fake (no los borres si querés poder probar)
+Provider.where(slug: %w[
+  example_seguros assist_card_fake
+  universal_assistance_fake travel_ace_fake
+]).update_all(status: "inactive")</code></pre>
+
+      <div class="warn-box">
+        <strong>Orden recomendado:</strong> creá primero tu super admin real (siguiente sección) y recién después borrá <code>admin@ruka.com</code>. Si borrás primero y algo falla al crear el nuevo, te quedás sin forma de entrar al panel.
+      </div>
+    </section>
+
+    <section id="admin">
+      <h2>Crear el super admin (el "jefe jefe")</h2>
+      <p class="subtitle">No hay pantalla de registro para admins. Se crea por consola, y es intencional.</p>
+
+      <p>El formulario público de registro (<code>/users/sign_up</code>) <strong>siempre</strong> crea un usuario con rol <code>producer</code> y estado <code>pending</code> — el rol viene forzado en el código, no se puede elegir. Así que el primer super admin necesariamente se crea desde la consola del servidor.</p>
+
+      <h3>Opción A — interactiva (recomendada)</h3>
+      <p>Abrí una terminal en el contenedor desde el panel de Dokploy y corré:</p>
+
+      <pre><code>bin/rails admin:create</code></pre>
+
+      <p>Te va a pedir tres cosas por teclado:</p>
+      <pre><code>Crear super admin
+Email: jefe@tuempresa.com
+Contraseña:            &lt;- no se ve mientras escribís
+Confirmar contraseña:
+Super admin creado: jefe@tuempresa.com</code></pre>
+
+      <div class="info-box">
+        La contraseña se pide sin eco en pantalla, así que <strong>no queda en el historial de la terminal ni en los logs</strong>. Por eso esta opción es preferible a la B.
+      </div>
+
+      <h3>Opción B — no interactiva</h3>
+      <p>Para scripts, o si la consola del panel no te da entrada de teclado:</p>
+
+      <pre><code>EMAIL=jefe@tuempresa.com PASSWORD='una-clave-larga' bin/rails admin:create</code></pre>
+
+      <div class="warn-box">
+        La contraseña queda visible en el historial de shell y puede aparecer en logs del panel. Si usás esta variante, cambiá la contraseña desde la app apenas entres.
+      </div>
+
+      <h3>Qué hace la tarea por dentro</h3>
+      <ul>
+        <li>Crea (o reutiliza) una <code>Company</code> llamada <strong>"Ruka Admin"</strong> con moneda ARS.</li>
+        <li>Crea el <code>User</code> con <code>role: :super_admin</code> y <code>status: :active</code>, nombre "Super Admin".</li>
+        <li>Corre dentro de <code>ActsAsTenant.without_tenant</code>, porque los super admins operan sin tenant.</li>
+        <li>Si el email ya existe o la contraseña es muy corta, aborta mostrando el error de validación y no crea nada.</li>
+      </ul>
+
+      <p>Podés correrla las veces que quieras para crear varios super admins; todos comparten la misma company "Ruka Admin".</p>
+
+      <div class="info-box">
+        <strong>El nombre de la company debe coincidir con el de <code>db/seeds.rb</code>.</strong> Si alguien cambia uno de los dos, correr el seed y la tarea deja dos companies de admin distintas conviviendo.
+      </div>
+
+      <h3>Entrar</h3>
+      <p>Andá a <code>/users/sign_in</code>, iniciá sesión, y vas a caer en <code>/admin/dashboard</code>. Ojo: <strong>la raíz <code>/</code> nunca muestra el login</strong> — siempre es la landing pública, incluso con la sesión abierta.</p>
+    </section>
+
+    <section id="que-puede">
+      <h2>Qué puede hacer el super admin</h2>
+
+      <table>
+        <thead>
+          <tr><th>Sección</th><th>Ruta</th><th>Para qué</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Dashboard</td><td><code>/admin/dashboard</code></td><td>Métricas generales y accesos rápidos</td></tr>
+          <tr><td>Productores</td><td><code>/admin/users</code></td><td>Ver, aprobar, suspender y editar productores y sus companies</td></tr>
+          <tr><td>Proveedores</td><td><code>/admin/providers</code></td><td>Alta de aseguradoras, credenciales de API, logo, activar/desactivar</td></tr>
+          <tr><td>Planes</td><td><code>/admin/insurance_plans</code></td><td>Planes de seguro asociados a cada proveedor</td></tr>
+          <tr><td>Pólizas</td><td><code>/admin/policies</code></td><td>Todas las pólizas del sistema, filtrables por venta directa o vía productor</td></tr>
+          <tr><td>Reseñas</td><td><code>/admin/testimonials</code></td><td>Testimonios que se muestran en la landing pública</td></tr>
+          <tr><td>Pie de página</td><td><code>/admin/footer_links</code></td><td>Enlaces del footer de la landing</td></tr>
+          <tr><td>Jobs</td><td><code>/jobs</code></td><td>Mission Control: cola de Solid Queue, jobs fallidos, reintentos</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info-box">
+        <strong>Sin tenant.</strong> El super admin opera con <code>ActsAsTenant.current_tenant = nil</code>, por eso ve los datos de todas las companies. Un productor sólo ve los de la suya.
+      </div>
+    </section>
+
+    <section id="productores">
+      <h2>Cómo se da de alta un productor</h2>
+      <p class="subtitle">El admin no crea productores: los aprueba.</p>
+
+      <p>No hay un botón "nuevo productor" en <code>/admin/users</code>. El flujo es de auto-registro con aprobación:</p>
+
+      <div class="mermaid">
+flowchart TD
+  A[Productor entra a /users/sign_up] --> B[Completa email, nombre,<br/>apellido, teléfono, contraseña]
+  B --> C[Se crea User<br/>role: producer · status: pending]
+  C --> D[Se crea automáticamente una Company<br/>llamada 'Empresa de su-email']
+  D --> E[Queda en /account/pending<br/>no puede entrar al panel]
+  E --> F[Admin lo ve en /admin/users]
+  F --> G[Admin toca 'Aprobar']
+  G --> H[status: active]
+  H --> I[Ya entra a /producer/dashboard]
+      </div>
+
+      <h3>Paso a paso del lado del admin</h3>
+      <ol>
+        <li>Entrá a <code>/admin/users</code>. Lista todos los productores, más recientes primero.</li>
+        <li>Los pendientes muestran el botón <strong>Aprobar</strong>. Un click pasa el estado a <code>active</code>.</li>
+        <li>Entrá a <strong>Editar</strong> para corregir nombre, apellido, teléfono, y sobre todo el <strong>nombre y slug de la company</strong> — que por defecto queda como "Empresa de juan@ejemplo.com", feo para mostrar.</li>
+        <li>Desde ese mismo formulario podés cambiar el estado a <code>suspended</code> para cortarle el acceso sin borrar nada.</li>
+      </ol>
+
+      <div class="info-box">
+        <strong>El slug importa.</strong> Es lo que arma la URL de la landing propia del productor: <code>/cotizar/:slug</code>. Conviene definirlo al aprobar y no cambiarlo después, porque los links ya compartidos dejarían de funcionar.
+      </div>
+
+      <h3>Qué ve el productor según su estado</h3>
+      <table>
+        <thead>
+          <tr><th>Estado</th><th>Qué pasa al intentar entrar</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>pending</code></td><td>Lo desloguea y lo manda a <code>/account/pending</code></td></tr>
+          <tr><td><code>active</code></td><td>Entra normalmente a <code>/producer/dashboard</code></td></tr>
+          <tr><td><code>suspended</code></td><td>Devise le bloquea el login directamente</td></tr>
+        </tbody>
+      </table>
+
+      <div class="warn-box">
+        <strong>No hay aviso automático.</strong> La app todavía no manda emails: el productor no se entera de que fue aprobado, y vos no te enterás de que alguien se registró. Por ahora hay que revisar <code>/admin/users</code> a mano y avisarle por fuera.
+      </div>
+    </section>
+
+    <section id="checklist">
+      <h2>Checklist post-deploy</h2>
+
+      <div class="card">
+        <ol>
+          <li>La app responde y <code>/</code> muestra la landing pública.</li>
+          <li>Creaste tu super admin real con <code>bin/rails admin:create</code> y podés entrar a <code>/admin/dashboard</code>.</li>
+          <li>Borraste los cinco usuarios <code>@ruka.com</code> de demo.</li>
+          <li>Desactivaste (o borraste) los proveedores fake, para que la landing no cotice con datos inventados.</li>
+          <li>Diste de alta los proveedores reales en <code>/admin/providers</code> con sus credenciales.</li>
+          <li>Cargaste reseñas y enlaces del pie en <code>/admin/testimonials</code> y <code>/admin/footer_links</code>.</li>
+          <li>Verificaste en <code>/jobs</code> que Solid Queue esté procesando — si no aparece nada, falta <code>SOLID_QUEUE_IN_PUMA=true</code>.</li>
+          <li>Hiciste una cotización de punta a punta desde la landing para confirmar que el fan-out funciona.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="problemas">
+      <h2>Si algo falla</h2>
+
+      <h3><code>errno: 150 "Foreign key constraint is incorrectly formed"</code></h3>
+      <p>Alguien dumpeó <code>db/schema.rb</code> desde SQLite. SQLite no distingue <code>INTEGER</code> de <code>BIGINT</code>, así que reescribe cada foreign key como <code>t.integer</code>, y contra claves primarias <code>BIGINT</code> de MariaDB eso no valida. Se arregla regenerando el schema desde MariaDB, no en el servidor.</p>
+
+      <h3>La app entra en loop de arranque con <code>Cannot delete or update a parent row</code></h3>
+      <p>Un <code>db:schema:load</code> que falló a mitad de camino dejó la base a medias: las tablas quedaron, pero <code>schema_migrations</code> nunca se escribió. En cada arranque <code>db:prepare</code> cree que la base está vacía y vuelve a intentar, y los <code>DROP</code> con <code>force: :cascade</code> fallan contra las foreign keys que quedaron.</p>
+
+      <pre><code>DISABLE_DATABASE_ENVIRONMENT_CHECK=1 bin/rails db:reset_hard</code></pre>
+
+      <div class="danger-box">
+        <strong>Destructivo.</strong> Borra todas las tablas y recarga el schema. Es una herramienta de recuperación, no de mantenimiento — y en producción te lleva puestos los datos reales. Sacá un backup antes.
+      </div>
+
+      <h3>Las cotizaciones se quedan en "consultando proveedores" para siempre</h3>
+      <p>El worker de jobs no está corriendo. En producción no hay proceso separado: Solid Queue vive dentro de Puma y depende de <code>SOLID_QUEUE_IN_PUMA=true</code>. Revisá esa variable y mirá <code>/jobs</code>.</p>
+
+      <h3>Solid Queue no bootea y se lleva puesto a Puma</h3>
+      <p>Pasa si alguien subió <code>threads</code> en <code>config/queue.yml</code> sin subir el <code>+5</code> del <code>pool</code> en <code>config/database.yml</code>. Comparten el pool de conexiones: el <code>+5</code> actual cubre exactamente 3 workers + 1 dispatcher + 1 supervisor.</p>
+    </section>
+  </main>
+</div>
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, theme: 'dark', securityLevel: 'loose' });
+</script>
+</body>
+</html>

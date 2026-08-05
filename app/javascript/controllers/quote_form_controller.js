@@ -1,35 +1,53 @@
 import { Controller } from "@hotwired/stimulus"
 
+const BOX_SELECTOR = ".qsearch-field, .qsearch-age, .qbar-field, .qbar-age"
+const MAX_AGES = 6
+const DEFAULT_AGES = 4
+
 // Formulario de cotización en una sola pantalla.
-// Las edades son inputs fijos: al menos uno debe completarse; el resto es opcional.
-// `travelers_count` se sincroniza con la cantidad de edades informadas.
+// Las edades son casillas en línea: al menos una debe completarse; el resto es
+// opcional. `travelers_count` se sincroniza con la cantidad de edades informadas.
+//
+// En la landing arrancan visibles DEFAULT_AGES casillas y el botón (+) revela
+// las siguientes; el target `addAge` es opcional, así el mismo controlador
+// sigue sirviendo al formulario del productor, donde están todas a la vista.
 export default class extends Controller {
-  static targets = ["ages", "count"]
+  static targets = ["ages", "count", "addAge"]
 
   connect() {
-    this.sync()
+    this.visibleAges = Math.max(DEFAULT_AGES, this.filledAges.length)
+    this.render()
+  }
+
+  addAge() {
+    this.visibleAges = Math.min(MAX_AGES, this.visibleAges + 1)
+    this.render()
   }
 
   sync() {
-    const fields = this.ageFields
-    let filledCount = 0
+    this.render()
+  }
 
-    fields.forEach((field, index) => {
+  render() {
+    if (!this.hasAgesTarget) return
+
+    this.ageFields.forEach((field, index) => {
       const input = field.querySelector("input")
-      if (!input) return
+      if (input) input.setAttribute("aria-label", `Edad del pasajero ${index + 1}`)
 
-      input.setAttribute("aria-label", `Edad del pasajero ${index + 1}`)
-      if (input.value.trim()) filledCount += 1
+      // Sólo se ocultan donde hay botón (+): sin él todas están a la vista
+      if (this.hasAddAgeTarget) field.classList.toggle("hidden", index >= this.visibleAges)
     })
 
-    if (this.hasCountTarget) this.countTarget.value = filledCount
+    if (this.hasCountTarget) this.countTarget.value = this.filledAges.length
+    if (this.hasAddAgeTarget) this.addAgeTarget.disabled = this.visibleAges >= MAX_AGES
   }
 
   clearError(event) {
-    const agesBox = this.hasAgesTarget ? this.agesTarget.closest(".qbar-field") : null
+    const agesBox = this.hasAgesTarget ? this.agesTarget.closest(BOX_SELECTOR) : null
     if (agesBox) agesBox.classList.remove("qbar-invalid")
 
-    const box = event.target.closest(".qbar-field, .qbar-age")
+    const box = event.target.closest(BOX_SELECTOR)
     if (box) box.classList.remove("qbar-invalid")
     event.target.classList.remove("qbar-invalid")
   }
@@ -37,23 +55,15 @@ export default class extends Controller {
   validate(event) {
     let firstInvalid = null
 
-    if (this.hasAgesTarget) {
-      const ageInputs = this.ageFields.map((field) => field.querySelector("input")).filter(Boolean)
-      const filledCount = ageInputs.filter((input) => input.value.trim()).length
-      const agesBox = this.agesTarget.closest(".qbar-field")
-
-      if (filledCount === 0) {
-        agesBox?.classList.add("qbar-invalid")
-        firstInvalid = ageInputs[0]
-      } else {
-        agesBox?.classList.remove("qbar-invalid")
-      }
+    if (this.hasAgesTarget && this.filledAges.length === 0) {
+      this.agesTarget.closest(BOX_SELECTOR)?.classList.add("qbar-invalid")
+      firstInvalid = this.ageInputs[0]
     }
 
     this.element.querySelectorAll("[required]").forEach((input) => {
       if (input.closest("[data-age-field]")) return
 
-      const box = input.closest(".qbar-field, .qbar-age") || input
+      const box = input.closest(BOX_SELECTOR) || input
       if (input.value.trim()) {
         box.classList.remove("qbar-invalid")
         return
@@ -64,7 +74,7 @@ export default class extends Controller {
     })
 
     if (!firstInvalid) {
-      this.sync()
+      this.render()
       return
     }
 
@@ -73,6 +83,17 @@ export default class extends Controller {
   }
 
   get ageFields() {
-    return Array.from(this.agesTarget.querySelectorAll("[data-age-field]"))
+    return this.hasAgesTarget ? Array.from(this.agesTarget.querySelectorAll("[data-age-field]")) : []
+  }
+
+  get ageInputs() {
+    return this.ageFields.map((field) => field.querySelector("input")).filter(Boolean)
+  }
+
+  get filledAges() {
+    return this.ageFields
+      .filter((field) => !this.hasAddAgeTarget || !field.classList.contains("hidden"))
+      .map((field) => field.querySelector("input")?.value.trim())
+      .filter(Boolean)
   }
 }

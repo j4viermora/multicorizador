@@ -1,0 +1,61 @@
+<div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+  <div>
+    <h1 class="text-3xl font-bold">Enlaces del pie</h1>
+    <p class="text-gray-500 mt-1 text-sm">
+      Aparecen en la columna &laquo;Cotizá&raquo; del pie de la landing pública.
+    </p>
+  </div>
+
+  <%= link_to new_admin_footer_link_path, class: "btn btn-primary !mb-0" do %>
+    <i class="ti ti-plus"></i>Nuevo enlace
+  <% end %>
+</div>
+
+<% if @footer_links.empty? %>
+  <div class="card p-8 text-center text-gray-500">
+    <i class="ti ti-link text-3xl"></i>
+    <p class="mt-2 text-sm">Sin enlaces cargados: el pie muestra sólo los datos de la empresa.</p>
+  </div>
+<% else %>
+  <div class="overflow-x-auto card">
+    <table class="table table-zebra">
+      <thead>
+        <tr>
+          <th>Pos.</th>
+          <th>Texto</th>
+          <th>URL</th>
+          <th>Estado</th>
+          <th class="text-right">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @footer_links.each do |link| %>
+          <tr class="<%= "opacity-60" unless link.published? %>">
+            <td class="text-gray-500"><%= link.position %></td>
+            <td class="font-medium text-gray-900"><%= link.label %></td>
+            <td><code class="text-xs"><%= link.url %></code></td>
+            <td>
+              <span class="badge <%= link.published? ? "badge-success" : "badge-ghost" %>">
+                <%= link.published? ? "Visible" : "Oculto" %>
+              </span>
+            </td>
+            <td class="text-right whitespace-nowrap">
+              <%= button_to toggle_published_admin_footer_link_path(link), method: :patch,
+                    class: "btn btn-ghost btn-sm !mb-0" do %>
+                <i class="ti <%= link.published? ? "ti-eye-off" : "ti-eye" %>"></i>
+              <% end %>
+              <%= link_to edit_admin_footer_link_path(link), class: "btn btn-ghost btn-sm !mb-0" do %>
+                <i class="ti ti-pencil"></i>
+              <% end %>
+              <%= button_to admin_footer_link_path(link), method: :delete,
+                    class: "btn btn-ghost btn-sm !mb-0 text-red-600",
+                    form: { data: { turbo_confirm: "¿Eliminar el enlace #{link.label}?" } } do %>
+                <i class="ti ti-trash"></i>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

@@ -1,0 +1,40 @@
+<%# Preguntas frecuentes %>
+<%
+  faqs = [
+    { q: "¿Por qué es importante el seguro de viaje?",
+      a: "Porque la atención médica en el exterior se paga de tu bolsillo y en muchos destinos una internación cuesta más que el viaje entero. La asistencia cubre esos gastos y además te da un teléfono al que llamar en el momento, en español." },
+    { q: "¿Es obligatorio el seguro de asistencia al viajero?",
+      a: "Depende del destino. El espacio Schengen exige una cobertura mínima de 30.000 € para otorgar el visado, y varios países la piden como condición de ingreso. Aun donde no es obligatorio, suele exigirlo la universidad, el programa de intercambio o el empleador." },
+    { q: "¿Cuánto cuesta un seguro de viajero internacional?",
+      a: "El precio depende de cuatro cosas: el destino, la cantidad de días, la edad de cada pasajero y el monto de cobertura. Por eso el cotizador pide esos datos: recién con ellos las compañías devuelven un precio real, no una estimación." },
+    { q: "¿Cuál es la diferencia entre asistencia al viajero y seguro de viaje?",
+      a: "La asistencia al viajero resuelve el problema en el momento: te coordina el médico, la farmacia o el traslado. El seguro de viaje indemniza después, contra comprobantes. La mayoría de los planes que vas a ver combinan las dos cosas." },
+    { q: "¿Puedo contratar si ya estoy de viaje?",
+      a: "Algunas compañías lo permiten, casi siempre con un período de carencia de unos días y sin cubrir lo que haya pasado antes de la contratación. Conviene contratar antes de salir." },
+    { q: "¿Qué pasa si tengo una enfermedad preexistente?",
+      a: "Se puede viajar igual, pero la cobertura suele limitarse a la crisis aguda y con un tope menor al general. Compará ese ítem en particular antes de elegir el plan." }
+  ]
+%>
+
+<div class="sec">
+  <h2 class="sec-title">Preguntas frecuentes</h2>
+
+  <div class="mt-6" data-accordion="collapse">
+    <% faqs.each_with_index do |item, i| %>
+      <div class="acc-item">
+        <h3 id="faq-head-<%= i %>">
+          <button type="button" class="acc-btn"
+                  data-accordion-target="#faq-body-<%= i %>"
+                  aria-expanded="false"
+                  aria-controls="faq-body-<%= i %>">
+            <span><%= item[:q] %></span>
+            <i class="ti ti-chevron-down acc-chevron"></i>
+          </button>
+        </h3>
+        <div id="faq-body-<%= i %>" class="hidden" aria-labelledby="faq-head-<%= i %>">
+          <p class="acc-body"><%= item[:a] %></p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

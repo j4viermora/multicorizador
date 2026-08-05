@@ -1,0 +1,22 @@
+<%= simple_form_for [:admin, testimonial], html: { class: "card p-6 max-w-2xl" } do |f| %>
+  <%= f.input :author_name, label: "Nombre del cliente" %>
+  <%= f.input :location, label: "Ciudad o país", hint: "Opcional. Ej: Córdoba, Argentina." %>
+  <%= f.input :rating, collection: Testimonial::RATINGS, include_blank: false,
+      label: "Puntaje (estrellas)" %>
+  <%= f.input :body, as: :text, input_html: { rows: 4 }, label: "Texto de la reseña" %>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+    <%= f.input :source, label: "Origen", hint: "Ej: Trustpilot, Google, WhatsApp." %>
+    <%= f.input :source_url, label: "Link a la reseña", hint: "Opcional." %>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
+    <%= f.input :position, label: "Posición", hint: "Menor número, más arriba." %>
+    <%= f.input :published, label: "Publicada en la landing" %>
+  </div>
+
+  <div class="flex gap-2 mt-4">
+    <%= f.button :submit, "Guardar", class: "btn btn-primary" %>
+    <%= link_to "Cancelar", admin_testimonials_path, class: "btn btn-ghost" %>
+  </div>
+<% end %>

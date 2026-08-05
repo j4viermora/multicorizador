@@ -1,0 +1,34 @@
+<%# Reseñas cargadas desde /admin/testimonials. Sin reseñas, la sección no existe. %>
+<% if testimonials.any? %>
+  <div class="sec">
+    <h2 class="sec-title">Lo que opinan nuestros viajeros</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+      <% testimonials.each do |testimonial| %>
+        <div class="review-card">
+          <%# ★ en vez del icono: el webfont de Tabler no trae la variante rellena %>
+          <div class="review-stars" aria-label="<%= testimonial.rating %> de 5 estrellas">
+            <%= "★" * testimonial.rating %><span style="color: var(--wz-border);"><%= "★" * (5 - testimonial.rating) %></span>
+          </div>
+          <p class="review-body">&ldquo;<%= testimonial.body %>&rdquo;</p>
+          <div class="review-foot">
+            <span class="font-bold"><%= testimonial.author_name %></span>
+            <% if testimonial.location.present? %>
+              <span style="color: var(--wz-ink-muted);"> &middot; <%= testimonial.location %></span>
+            <% end %>
+            <% if testimonial.source.present? %>
+              <div class="mt-0.5">
+                <% if testimonial.source_url.present? %>
+                  <a href="<%= testimonial.source_url %>" target="_blank" rel="noopener nofollow"
+                     class="review-source"><%= testimonial.source %> <i class="ti ti-external-link"></i></a>
+                <% else %>
+                  <span class="review-source"><%= testimonial.source %></span>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,22 @@
+<%# Compañías con las que cotizamos %>
+<% if providers.any? %>
+  <div class="sec--tint sec">
+    <div class="sec-inner">
+      <h2 class="sec-title">Trabajamos sólo con las mejores asistencias al viajero</h2>
+      <p class="sec-sub">Cotizamos en simultáneo con cada compañía y te mostramos todas las opciones.</p>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mt-6">
+        <% providers.each do |provider| %>
+          <div class="prov-card">
+            <% if provider.logo.attached? %>
+              <%= image_tag provider.logo, alt: provider.name, class: "prov-logo-img" %>
+            <% else %>
+              <div class="prov-logo"><%= provider.name.split.first(2).map { |w| w[0] }.join.upcase %></div>
+            <% end %>
+            <p class="font-bold text-sm" style="color: var(--wz-ink);"><%= provider.name %></p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

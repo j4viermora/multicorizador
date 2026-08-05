@@ -12,9 +12,11 @@
   <a href="index.html" class="logo">✦ <span>Ruka</span> Manual</a>
   <a href="index.html">Inicio</a>
   <a href="usuarios.html">Usuarios</a>
+  <a href="landing.html">Landing</a>
   <a href="cotizacion.html">Cotización</a>
   <a href="compra.html">Compra</a>
   <a href="arquitectura.html" class="active">Arquitectura</a>
+  <a href="deploy.html">Deploy</a>
 </nav>
 
 <div class="page">
@@ -138,7 +140,17 @@ erDiagram
           <tr>
             <td><code>Provider</code></td>
             <td>Aliado aseguradora (config global)</td>
-            <td><code>slug</code>, <code>status</code>, <code>config</code> JSON</td>
+            <td><code>slug</code>, <code>status</code>, <code>config</code> JSON, adjunto <code>logo</code> (Active Storage)</td>
+          </tr>
+          <tr>
+            <td><code>Testimonial</code></td>
+            <td>Reseña mostrada en la landing (global, sin tenant)</td>
+            <td><code>author_name</code>, <code>rating</code>, <code>body</code>, <code>source</code>, <code>position</code>, <code>published</code></td>
+          </tr>
+          <tr>
+            <td><code>FooterLink</code></td>
+            <td>Enlace de la columna «Cotizá» del pie (global, sin tenant)</td>
+            <td><code>label</code>, <code>url</code>, <code>position</code>, <code>published</code></td>
           </tr>
           <tr>
             <td><code>Link</code></td>
@@ -180,7 +192,10 @@ flowchart TB
         </thead>
         <tbody>
           <tr><td>GET</td><td><code>/admin/dashboard</code></td><td>Admin::DashboardController</td></tr>
-          <tr><td>CRUD</td><td><code>/admin/providers</code></td><td>Admin::ProvidersController</td></tr>
+          <tr><td>CRUD</td><td><code>/admin/providers</code></td><td>Admin::ProvidersController (incluye el logo)</td></tr>
+          <tr><td>CRUD</td><td><code>/admin/testimonials</code></td><td>Admin::TestimonialsController</td></tr>
+          <tr><td>CRUD</td><td><code>/admin/footer_links</code></td><td>Admin::FooterLinksController</td></tr>
+          <tr><td>GET</td><td><code>/</code></td><td>HomeController#index → landing pública, sin login</td></tr>
           <tr><td>CRUD</td><td><code>/producer/quotes</code></td><td>Producer::QuotesController</td></tr>
           <tr><td>GET</td><td><code>/cotizar/:slug</code></td><td>Public::LandingController#show</td></tr>
           <tr><td>POST</td><td><code>/cotizar/:slug</code></td><td>Public::LandingController#create → QuoteJob</td></tr>
@@ -297,6 +312,10 @@ classDiagram
 
       <div class="warn-box">
         El deploy va por <strong>Dokploy</strong>, no Kamal. Los archivos <code>config/deploy.yml</code> y <code>bin/kamal</code> vienen con Rails 8 pero no se usan en producción.
+      </div>
+
+      <div class="info-box">
+        <strong>Para poner la app en marcha</strong> — crear el super admin, limpiar los usuarios de demo que siembra el primer arranque y dar de alta productores — ver <a href="deploy.html">Deploy y puesta en marcha</a>.
       </div>
     </section>
   </main>

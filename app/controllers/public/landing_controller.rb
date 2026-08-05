@@ -4,7 +4,9 @@ class Public::LandingController < ActionController::Base
   def show
     @company = Company.find_by!(slug: params[:slug])
     @producer = resolve_producer
-    @providers = Provider.active
+    @providers = Provider.active.with_attached_logo
+    @testimonials = Testimonial.published.ordered
+    @footer_links = FooterLink.published.ordered
     @quote = Quote.new(trip_type: "single")
   end
 
@@ -20,7 +22,9 @@ class Public::LandingController < ActionController::Base
     if @quote.persisted?
       redirect_to public_landing_results_path(@company.slug, @quote.public_token, ref: params[:ref])
     else
-      @providers = Provider.active
+      @providers = Provider.active.with_attached_logo
+      @testimonials = Testimonial.published.ordered
+      @footer_links = FooterLink.published.ordered
       render :show, status: :unprocessable_entity
     end
   end

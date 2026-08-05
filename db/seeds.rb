@@ -52,6 +52,26 @@ ruka_producer = User.find_or_create_by!(email: "ventas@ruka.com") do |user|
 end
 puts "Productor directo de Ruka creado: #{ruka_producer.email} / password123"
 
+# Productores en los otros dos estados. `pending` y `suspended` tienen
+# comportamiento propio (ApplicationController los desloguea y redirige al
+# login), así que conviene tenerlos sembrados en vez de cambiarle el status al
+# productor activo cada vez que hay que probar ese camino.
+[
+  { email: "pending@ruka.com", status: :pending, first_name: "Pedro", last_name: "Pendiente" },
+  { email: "suspended@ruka.com", status: :suspended, first_name: "Sofía", last_name: "Suspendida" }
+].each do |attrs|
+  user = User.find_or_create_by!(email: attrs[:email]) do |u|
+    u.password = "password123"
+    u.password_confirmation = "password123"
+    u.role = :producer
+    u.status = attrs[:status]
+    u.first_name = attrs[:first_name]
+    u.last_name = attrs[:last_name]
+    u.company = demo_company
+  end
+  puts "Productor #{attrs[:status]} creado: #{user.email} / password123"
+end
+
 # Proveedor de ejemplo
 example_provider = Provider.find_or_create_by!(slug: "example_seguros") do |p|
   p.name = "Example Seguros"

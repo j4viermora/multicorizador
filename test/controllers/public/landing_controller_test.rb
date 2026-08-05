@@ -7,7 +7,8 @@ class Public::LandingControllerTest < ActionDispatch::IntegrationTest
     get public_landing_path(@company.slug)
 
     assert_response :success
-    assert_select ".qbar-field", minimum: 6
+    assert_select ".qsearch-field", minimum: 6
+    assert_select "[data-quote-form-target=addAge]", 1, "el (+) agrega la siguiente casilla de edad"
     assert_select "[data-quote-form-target=ages] [data-age-field]", 6
     assert_select "input[name=?]", "quote[metadata][ages][]"
     assert_select ".wizard-stepper", 0, "el stepper de dos pasos ya no existe"

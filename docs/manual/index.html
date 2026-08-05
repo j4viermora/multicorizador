@@ -12,9 +12,11 @@
   <a href="index.html" class="logo">✦ <span>Ruka</span> Manual</a>
   <a href="index.html" class="active">Inicio</a>
   <a href="usuarios.html">Usuarios</a>
+  <a href="landing.html">Landing</a>
   <a href="cotizacion.html">Cotización</a>
   <a href="compra.html">Compra</a>
   <a href="arquitectura.html">Arquitectura</a>
+  <a href="deploy.html">Deploy</a>
 </nav>
 
 <div class="page">
@@ -23,9 +25,11 @@
     <ul>
       <li><a href="index.html" class="active">Inicio</a></li>
       <li><a href="usuarios.html">Tipos de usuario</a></li>
+      <li><a href="landing.html">Landing pública</a></li>
       <li><a href="cotizacion.html">Flujo de cotización</a></li>
       <li><a href="compra.html">Flujo de compra</a></li>
       <li><a href="arquitectura.html">Arquitectura técnica</a></li>
+      <li><a href="deploy.html">Deploy y puesta en marcha</a></li>
     </ul>
     <h4>Referencia</h4>
     <ul>
@@ -81,6 +85,11 @@ flowchart LR
           <h3>Tipos de usuario</h3>
           <p>Super admin, productor, cliente anónimo. Roles, estados, permisos y a dónde redirige cada uno al entrar.</p>
         </a>
+        <a href="landing.html" class="manual-card">
+          <div class="icon">🧭</div>
+          <h3>Landing pública</h3>
+          <p>El buscador de seguros, las secciones de la página y qué contenido se carga desde /admin: reseñas, logos y enlaces del pie.</p>
+        </a>
         <a href="cotizacion.html" class="manual-card">
           <div class="icon">🔍</div>
           <h3>Flujo de cotización</h3>
@@ -95,6 +104,11 @@ flowchart LR
           <div class="icon">🏗</div>
           <h3>Arquitectura técnica</h3>
           <p>Stack, multi-tenancy, modelo de datos, rutas, jobs y patrón Strategy de proveedores.</p>
+        </a>
+        <a href="deploy.html" class="manual-card">
+          <div class="icon">🚀</div>
+          <h3>Deploy y puesta en marcha</h3>
+          <p>Qué hacer una vez que la app está corriendo: crear el super admin, limpiar los usuarios de demo y aprobar productores.</p>
         </a>
       </div>
     </section>
@@ -115,7 +129,7 @@ flowchart LR
             <td>Home / landing</td>
             <td><code>/</code> · <code>/cotizar/:slug</code></td>
             <td>Visitante anónimo</td>
-            <td>Cotizar y comprar seguro de viaje (venta directa Ruka)</td>
+            <td>Cotizar y comprar seguro de viaje (venta directa Ruka). <strong>La raíz nunca pide login</strong>, ni siquiera con sesión abierta.</td>
           </tr>
           <tr>
             <td>Panel productor</td>
@@ -127,7 +141,7 @@ flowchart LR
             <td>Panel admin</td>
             <td><code>/admin/*</code></td>
             <td>Super admin</td>
-            <td>Proveedores, planes, usuarios, pólizas globales</td>
+            <td>Proveedores (y sus logos), planes, usuarios, pólizas globales, reseñas y enlaces del pie</td>
           </tr>
           <tr>
             <td>Link compartido</td>
@@ -170,6 +184,18 @@ flowchart LR
           <tr>
             <td>Compra vía productor (redirect a pasarela del aliado)</td>
             <td><span class="badge-status planned">Diseñado — UI deshabilitada</span></td>
+          </tr>
+          <tr>
+            <td>Landing pública completa (buscador + secciones)</td>
+            <td><span class="badge-status done">Implementado</span></td>
+          </tr>
+          <tr>
+            <td>Contenido editable en /admin (reseñas, logos, pie)</td>
+            <td><span class="badge-status done">Implementado</span></td>
+          </tr>
+          <tr>
+            <td>Sincronización automática con Trustpilot</td>
+            <td><span class="badge-status none">No implementado — las reseñas se cargan a mano</span></td>
           </tr>
           <tr>
             <td>Webhooks → PolicyIssuer</td>

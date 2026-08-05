@@ -11,6 +11,13 @@ Rails.application.routes.draw do
       member { patch :toggle_active }
     end
     resources :insurance_plans
+    # Contenido de la landing pública
+    resources :testimonials, except: [ :show ] do
+      member { patch :toggle_published }
+    end
+    resources :footer_links, except: [ :show ] do
+      member { patch :toggle_published }
+    end
     resources :policies, only: [ :index, :show ]
     resources :users, only: [ :index, :show, :edit, :update ] do
       member { patch :approve }

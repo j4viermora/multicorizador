@@ -28,7 +28,9 @@ end
 
 def admin_create_super_admin!(email:, password:)
   ActsAsTenant.without_tenant do
-    company = Company.find_or_create_by!(name: "Asisto Admin") { |c| c.currency = "ARS" }
+    # Mismo nombre que en db/seeds.rb: si difieren, correr el seed y la task
+    # deja dos companies de admin distintas.
+    company = Company.find_or_create_by!(name: "Ruka Admin") { |c| c.currency = "ARS" }
 
     User.create!(
       email: email,

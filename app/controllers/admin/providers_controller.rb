@@ -59,6 +59,6 @@ class Admin::ProvidersController < ApplicationController
   end
 
   def provider_params
-    params.require(:provider).permit(:name, :slug, :status, config: {})
+    params.require(:provider).permit(:name, :slug, :status, :logo, config: {})
   end
 end

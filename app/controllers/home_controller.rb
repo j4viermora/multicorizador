@@ -1,23 +1,18 @@
 class HomeController < ApplicationController
   layout "public"
 
+  # La raíz es SIEMPRE la landing pública de venta directa: se entra sin sesión
+  # y nunca redirige al login ni a un panel, aunque haya un usuario logueado.
+  # Cada panel se alcanza por su propia ruta (/admin, /producer).
   def index
-    if current_user.nil?
-      @company = Company.find_by!(slug: Company::RUKA_DIRECT_SLUG)
-      @producer = resolve_producer
-      @providers = Provider.active
-      @quote = Quote.new(trip_type: "single")
-      render "public/landing/show"
-    elsif current_user.super_admin?
-      redirect_to admin_dashboard_path
-    elsif current_user.producer? && current_user.active?
-      redirect_to producer_dashboard_path
-    elsif current_user.producer? && current_user.pending?
-      redirect_to account_pending_path
-    else
-      sign_out current_user
-      redirect_to new_user_session_path, alert: "Tu cuenta ha sido suspendida."
-    end
+    @company = Company.find_by!(slug: Company::RUKA_DIRECT_SLUG)
+    @producer = resolve_producer
+    @providers = Provider.active.with_attached_logo
+    @testimonials = Testimonial.published.ordered
+    @footer_links = FooterLink.published.ordered
+    @quote = Quote.new(trip_type: "single")
+
+    render "public/landing/show"
   end
 
   private

@@ -1,0 +1,29 @@
+<%# Tipos de viaje: la misma grilla de categorías del comparador %>
+<%
+  needs = [
+    { icon: "ti-heart-handshake", label: "Voluntariado" },
+    { icon: "ti-briefcase",       label: "Work and Travel" },
+    { icon: "ti-baby-carriage",   label: "Embarazadas" },
+    { icon: "ti-calendar-x",      label: "Cancelación de viaje" },
+    { icon: "ti-sun",             label: "Working Holidays" },
+    { icon: "ti-luggage",         label: "Equipaje" },
+    { icon: "ti-backpack",        label: "Mochileros" },
+    { icon: "ti-users-group",     label: "Familias" }
+  ]
+%>
+
+<div class="sec--tint sec">
+  <div class="sec-inner">
+    <h2 class="sec-title">Conocé los seguros de viaje según tu necesidad</h2>
+    <p class="sec-sub">Cada viaje pide una cobertura distinta. Contános el tuyo y lo cotizamos.</p>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
+      <% needs.each do |need| %>
+        <div class="need-card">
+          <i class="ti <%= need[:icon] %>"></i>
+          <p><%= need[:label] %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

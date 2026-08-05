@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Landing pública — Manual Ruka</title>
+  <link rel="stylesheet" href="assets/manual.css">
+</head>
+<body>
+
+<nav class="top">
+  <a href="index.html" class="logo">✦ <span>Ruka</span> Manual</a>
+  <a href="index.html">Inicio</a>
+  <a href="usuarios.html">Usuarios</a>
+  <a href="landing.html" class="active">Landing</a>
+  <a href="cotizacion.html">Cotización</a>
+  <a href="compra.html">Compra</a>
+  <a href="arquitectura.html">Arquitectura</a>
+  <a href="deploy.html">Deploy</a>
+</nav>
+
+<div class="page">
+  <aside>
+    <h4>En esta página</h4>
+    <ul>
+      <li><a href="#estructura">Estructura de la página</a></li>
+      <li><a href="#buscador">El buscador</a></li>
+      <li><a href="#secciones">Secciones y partials</a></li>
+      <li><a href="#editable">Contenido editable desde /admin</a></li>
+      <li><a href="#resenas">Cargar reseñas</a></li>
+      <li><a href="#logos">Cargar logos de compañías</a></li>
+      <li><a href="#pie">Enlaces del pie</a></li>
+      <li><a href="#estilos">Colores y estilos</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <div class="hero">
+      <div class="badge">Capítulo 2</div>
+      <h1>Landing pública</h1>
+      <p>La página que ve un cliente en <code>/cotizar/:slug</code> (y en <code>/</code> para la venta directa de Ruka): el buscador de seguros y todo el contenido que lo acompaña.</p>
+    </div>
+
+    <section id="estructura">
+      <h2>Estructura de la página</h2>
+      <p class="subtitle">Un hero con el buscador arriba, y debajo las secciones de contenido en franjas alternadas.</p>
+
+      <div class="mermaid">
+flowchart TB
+  H["Hero oscuro<br/>título + BUSCADOR"] --> PR["Compañías con las que cotizamos"]
+  PR --> BE["4 beneficios"]
+  BE --> ST["Contratá en simples pasos"]
+  ST --> CO["¿Qué debe tener un seguro? (acordeón)"]
+  CO --> NE["Seguros según tu necesidad"]
+  NE --> RE["Reseñas de clientes"]
+  RE --> FA["Preguntas frecuentes (acordeón)"]
+  FA --> AD["Asesor / atención al cliente"]
+  AD --> FO["Pie: empresa, enlaces, medios de pago"]
+      </div>
+
+      <div class="card">
+        <p>La vista raíz es <code>app/views/public/landing/show.html.erb</code>: contiene el hero, el buscador y los estilos de la landing, y arma el resto con partials. El controlador es <code>Public::LandingController#show</code>; <code>HomeController#index</code> renderiza la misma vista para la venta directa, así que <strong>toda variable de instancia nueva hay que setearla en los dos</strong>.</p>
+      </div>
+    </section>
+
+    <section id="buscador">
+      <h2>El buscador</h2>
+      <p class="subtitle">Una sola fila, al estilo de los comparadores de seguros de viaje.</p>
+
+      <table>
+        <thead>
+          <tr><th>Campo</th><th>Cómo funciona</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>País de origen · Destino</td><td>Autocompletado propio (controlador Stimulus <code>country-autocomplete</code>), no es un <code>select</code>.</td></tr>
+          <tr><td>Edades</td><td>Casillas chicas en línea; el botón <strong>⊕</strong> revela la siguiente (arranca en 4, tope 6). Las vacías se descartan en el servidor y <code>travelers_count</code> se sincroniza solo.</td></tr>
+          <tr><td>Fecha de viaje</td><td>Salida → regreso con el datepicker de Flowbite, en español y con valores ISO <code>yyyy-mm-dd</code>.</td></tr>
+          <tr><td>WhatsApp</td><td><code>intl-tel-input</code>; el número completo con prefijo viaja en un campo oculto.</td></tr>
+          <tr><td>Email</td><td>Obligatorio: es a dónde se manda la cotización.</td></tr>
+          <tr><td>COTIZAR</td><td>Valida en cliente (controlador <code>quote-form</code>) y postea a <code>POST /cotizar/:slug</code>.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="card">
+        <p><strong>Regla de diseño:</strong> el cotizador va en una sola pantalla, sin wizard ni pasos. Las clases viven en <code>app/assets/stylesheets/application.css</code> bajo el prefijo <code>.qsearch-*</code>; el marco de color es <code>.qsearch__frame</code> y el botón <code>.qsearch-submit</code>.</p>
+      </div>
+    </section>
+
+    <section id="secciones">
+      <h2>Secciones y partials</h2>
+      <p class="subtitle">Cada sección es un partial en <code>app/views/public/landing/</code>.</p>
+
+      <table>
+        <thead>
+          <tr><th>Sección</th><th>Partial</th><th>De dónde sale el contenido</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Compañías</td><td><code>_providers</code></td><td><code>Provider.active</code> + logo adjunto</td></tr>
+          <tr><td>Beneficios</td><td><code>_benefits</code></td><td>Fijo en la vista</td></tr>
+          <tr><td>Pasos</td><td><code>_steps</code></td><td>Fijo en la vista</td></tr>
+          <tr><td>Coberturas</td><td><code>_coverages</code></td><td>Fijo en la vista (acordeón Flowbite)</td></tr>
+          <tr><td>Categorías</td><td><code>_needs</code></td><td>Fijo en la vista</td></tr>
+          <tr><td>Reseñas</td><td><code>_reviews</code></td><td><code>Testimonial</code> — editable en /admin</td></tr>
+          <tr><td>FAQ</td><td><code>_faq</code></td><td>Fijo en la vista (acordeón Flowbite)</td></tr>
+          <tr><td>Asesor</td><td><code>_advisor</code></td><td>Productor del link <code>?ref=</code></td></tr>
+          <tr><td>Pie</td><td><code>_footer</code></td><td><code>FooterLink</code> — editable en /admin</td></tr>
+        </tbody>
+      </table>
+
+      <div class="card">
+        <p>Las secciones que dependen de datos <strong>desaparecen si no hay nada cargado</strong>: sin reseñas no se dibuja el bloque de reseñas, y sin enlaces el pie muestra sólo la empresa y los medios de pago. No hay contenido de relleno.</p>
+      </div>
+    </section>
+
+    <section id="editable">
+      <h2>Contenido editable desde /admin</h2>
+      <p class="subtitle">Tres cosas se cargan sin tocar código, con el usuario super admin.</p>
+
+      <table>
+        <thead>
+          <tr><th>Qué</th><th>Dónde</th><th>Modelo</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Reseñas de clientes</td><td><code>/admin/testimonials</code></td><td><code>Testimonial</code></td></tr>
+          <tr><td>Logos de las compañías</td><td><code>/admin/providers</code> → editar</td><td>Adjunto <code>logo</code> en <code>Provider</code></td></tr>
+          <tr><td>Enlaces del pie</td><td><code>/admin/footer_links</code></td><td><code>FooterLink</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="card">
+        <p><strong>Son globales, no por empresa.</strong> Igual que los proveedores, estos registros no llevan <code>acts_as_tenant</code>: lo que cargue el super admin se ve en todas las landings. Si en algún momento cada empresa necesita las suyas, hay que agregar <code>company_id</code> y filtrar por tenant en los tres lugares.</p>
+      </div>
+    </section>
+
+    <section id="resenas">
+      <h2>Cargar reseñas</h2>
+
+      <table>
+        <thead>
+          <tr><th>Campo</th><th>Para qué sirve</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Nombre del cliente</td><td>Obligatorio. Se muestra al pie de la tarjeta.</td></tr>
+          <tr><td>Ciudad o país</td><td>Opcional, va al lado del nombre.</td></tr>
+          <tr><td>Puntaje</td><td>1 a 5; se dibujan las estrellas.</td></tr>
+          <tr><td>Texto</td><td>Obligatorio. Se muestra entre comillas.</td></tr>
+          <tr><td>Origen</td><td>Trustpilot, Google, WhatsApp… Se muestra como etiqueta.</td></tr>
+          <tr><td>Link a la reseña</td><td>Opcional. Si está, el origen se vuelve un link (<code>rel="nofollow"</code>).</td></tr>
+          <tr><td>Posición</td><td>Menor número, más arriba.</td></tr>
+          <tr><td>Publicada</td><td>Ocultar sin borrar: el ojo en la lista alterna el estado.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="card">
+        <p><strong>Sobre Trustpilot:</strong> hoy las reseñas se cargan a mano; no hay sincronización con su API. El campo <em>Origen</em> es sólo una etiqueta. Cargá únicamente reseñas reales.</p>
+      </div>
+    </section>
+
+    <section id="logos">
+      <h2>Cargar logos de compañías</h2>
+      <p class="subtitle">En <code>/admin/providers</code> → <em>editar</em> hay un campo <strong>Logo</strong>.</p>
+
+      <div class="card">
+        <p>Acepta PNG, JPG, SVG y WebP, y se guarda con Active Storage (disco local en desarrollo, Cloudflare R2 en producción vía las variables <code>AWS_*</code>). En la landing se muestra a 44&nbsp;px de alto con <code>object-fit: contain</code>, así que conviene subirlo con fondo transparente. <strong>Sin logo, la tarjeta cae al monograma</strong> con las iniciales del nombre.</p>
+      </div>
+    </section>
+
+    <section id="pie">
+      <h2>Enlaces del pie</h2>
+      <p class="subtitle">La columna «Cotizá» del pie sale de <code>/admin/footer_links</code>.</p>
+
+      <div class="card">
+        <p>Cada enlace tiene texto, URL (interna o externa), posición y un interruptor de visibilidad. Si no hay ninguno publicado, la columna entera no se dibuja.</p>
+      </div>
+    </section>
+
+    <section id="estilos">
+      <h2>Colores y estilos</h2>
+
+      <table>
+        <thead>
+          <tr><th>Qué</th><th>Dónde se cambia</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Paleta general</td><td>Variables <code>--wz-*</code> al inicio de <code>app/assets/stylesheets/application.css</code></td></tr>
+          <tr><td>Marco del buscador</td><td><code>.qsearch__frame { background }</code></td></tr>
+          <tr><td>Botón COTIZAR</td><td><code>.qsearch-submit { background }</code></td></tr>
+          <tr><td>Hero y pie</td><td><code>--wz-hero</code></td></tr>
+          <tr><td>Secciones de la landing</td><td><code>&lt;style&gt;</code> al inicio de <code>show.html.erb</code> (<code>.sec</code>, <code>.prov-card</code>, <code>.review-card</code>, <code>.acc-btn</code>…)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="card">
+        <p>Iconos: siempre <a href="https://tabler.io/icons">Tabler Icons</a> por webfont (<code>&lt;i class="ti ti-…"&gt;</code>). Ojo: el webfont no trae las variantes rellenas, por eso las estrellas de las reseñas son el carácter <code>★</code> y no un icono.</p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, theme: 'dark', securityLevel: 'loose' });
+</script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<%# Qué mirar antes de elegir una asistencia %>
+<%
+  coverages = [
+    { icon: "ti-first-aid-kit", title: "Asistencia médica por accidente o enfermedad",
+      body: "Es el corazón de la asistencia: consultas, internación y estudios en el exterior. Fijate el monto máximo de cobertura, porque varía muchísimo entre planes y según el destino." },
+    { icon: "ti-pill", title: "Medicamentos",
+      body: "Los remedios recetados durante la asistencia suelen reintegrarse hasta un tope. Revisá si es un porcentaje del gasto médico o un monto aparte." },
+    { icon: "ti-dental", title: "Odontología de urgencia",
+      body: "Cubre dolor agudo, infecciones y extracciones. No incluye tratamientos programados ni estética dental." },
+    { icon: "ti-calendar-x", title: "Cancelación de viaje",
+      body: "Reintegra lo que perdés si tenés que cancelar por un motivo previsto en las condiciones. Suele contratarse aparte y tiene plazos: conviene sumarla apenas comprás los pasajes." },
+    { icon: "ti-luggage", title: "Equipaje",
+      body: "Compensación por demora, pérdida o daño del equipaje despachado. Es un complemento de lo que ya responde la aerolínea, no un reemplazo." },
+    { icon: "ti-stethoscope", title: "Enfermedades preexistentes",
+      body: "Muchos planes cubren sólo la crisis aguda de una condición previa, con un tope menor. Si viajás con una preexistencia, es lo primero que hay que comparar." }
+  ]
+%>
+
+<div class="sec">
+  <h2 class="sec-title">¿Qué debe tener un seguro de viaje internacional?</h2>
+  <p class="sec-sub">Las coberturas que conviene comparar antes de elegir un plan.</p>
+
+  <div class="mt-6" data-accordion="collapse">
+    <% coverages.each_with_index do |item, i| %>
+      <div class="acc-item">
+        <h3 id="cov-head-<%= i %>">
+          <button type="button" class="acc-btn"
+                  data-accordion-target="#cov-body-<%= i %>"
+                  aria-expanded="<%= i.zero? %>"
+                  aria-controls="cov-body-<%= i %>">
+            <span class="flex items-center gap-2">
+              <i class="ti <%= item[:icon] %>"></i>
+              <%= item[:title] %>
+            </span>
+            <i class="ti ti-chevron-down acc-chevron"></i>
+          </button>
+        </h3>
+        <div id="cov-body-<%= i %>" class="<%= "hidden" unless i.zero? %>" aria-labelledby="cov-head-<%= i %>">
+          <p class="acc-body"><%= item[:body] %></p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

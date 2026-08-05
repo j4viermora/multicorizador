@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_22_163917) do
+ActiveRecord::Schema[8.0].define(version: 2026_08_05_200914) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body"
@@ -56,6 +56,16 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_22_163917) do
     t.string "currency", default: "ARS", null: false
     t.string "slug"
     t.index ["slug"], name: "index_companies_on_slug", unique: true
+  end
+
+  create_table "footer_links", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.string "label", null: false
+    t.string "url", null: false
+    t.integer "position", default: 0, null: false
+    t.boolean "published", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["published", "position"], name: "index_footer_links_on_published_and_position"
   end
 
   create_table "insurance_plans", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -304,6 +314,20 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_22_163917) do
     t.index ["expires_at"], name: "index_solid_queue_semaphores_on_expires_at"
     t.index ["key", "value"], name: "index_solid_queue_semaphores_on_key_and_value"
     t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
+  end
+
+  create_table "testimonials", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.string "author_name", null: false
+    t.string "location"
+    t.string "source"
+    t.string "source_url"
+    t.integer "rating", default: 5, null: false
+    t.text "body", null: false
+    t.integer "position", default: 0, null: false
+    t.boolean "published", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["published", "position"], name: "index_testimonials_on_published_and_position"
   end
 
   create_table "travelers", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
