@@ -27,25 +27,50 @@
     opacity: 0.35;
   }
 
-  /* ── Producer card ── */
-  .producer-card {
-    background: var(--wz-hero-soft);
-    border: 1px solid var(--wz-hero-line);
-    border-radius: 0.5rem;
+  /* ── Producer contact (fuera del hero) ── */
+  .producer-contact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    background: white;
+    border: 1px solid var(--wz-border);
+    border-radius: 0.75rem;
+    padding: 1rem 1.15rem;
   }
+
+  @media (min-width: 640px) {
+    .producer-contact {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
   .producer-avatar {
     width: 2.5rem;
     height: 2.5rem;
-    border-radius: 0.4rem;
+    border-radius: 0.5rem;
     background: var(--wz-teal);
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
     font-weight: 700;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     flex-shrink: 0;
   }
+
+  .producer-contact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--wz-ink-soft);
+    transition: color 0.15s ease;
+  }
+
+  .producer-contact-link:hover { color: var(--wz-teal); }
 
   /* ── Trust bar ── */
   .trust-bar {
@@ -127,35 +152,6 @@
           <%= @company.name %> &middot; compará todas las opciones y elegí la que te sirve
         </p>
       </div>
-
-      <%# Productor (si viene el parámetro ref) %>
-      <% if @producer %>
-        <div class="producer-card px-4 py-3 max-w-md mx-auto mb-5 land-in d1">
-          <div class="flex items-center gap-3 mb-2">
-            <div class="producer-avatar">
-              <%= @producer.first_name&.first&.upcase %><%= @producer.last_name&.first&.upcase %>
-            </div>
-            <div>
-              <p class="text-white font-bold text-sm leading-tight"><%= @producer.full_name %></p>
-              <p class="text-xs font-medium" style="color: oklch(0.75 0.04 195);">Asesor de seguros</p>
-            </div>
-          </div>
-          <div class="flex flex-wrap gap-x-4 gap-y-1 ml-1" style="color: oklch(0.82 0.03 195);">
-            <% if @producer.email.present? %>
-              <a href="mailto:<%= @producer.email %>" class="flex items-center gap-1.5 text-xs font-medium hover:underline" style="color: oklch(0.82 0.03 195);">
-                <i class="ti ti-mail text-sm"></i>
-                <%= @producer.email %>
-              </a>
-            <% end %>
-            <% if @producer.phone.present? %>
-              <a href="https://wa.me/<%= @producer.phone.gsub(/\D/, '') %>" target="_blank" class="flex items-center gap-1.5 text-xs font-medium hover:underline" style="color: oklch(0.82 0.03 195);">
-                <i class="ti ti-brand-whatsapp text-sm"></i>
-                <%= @producer.phone %>
-              </a>
-            <% end %>
-          </div>
-        </div>
-      <% end %>
 
       <%# ── Cotizador hero ── %>
       <div class="quote-search land-in d2" data-controller="quote-form">
@@ -309,7 +305,7 @@
   <%# ══════════════════════════════════════════════ %>
   <%# BENEFITS                                      %>
   <%# ══════════════════════════════════════════════ %>
-  <div class="max-w-2xl lg:max-w-4xl mx-auto mt-8 land-in d5">
+  <div class="max-w-2xl lg:max-w-4xl mx-auto mt-8 <%= @producer && @providers.any? ? 'land-in d5' : (@producer || @providers.any? ? 'land-in d4' : 'land-in d5') %>">
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-5">
       <div class="benefit-card">
         <div class="benefit-icon" style="background: var(--wz-teal-light); color: var(--wz-teal);">
@@ -341,6 +337,43 @@
       </div>
     </div>
   </div>
+  <%# ══════════════════════════════════════════════ %>
+  <%# ASESOR — fuera del buscador, al pie de la página %>
+  <%# ══════════════════════════════════════════════ %>
+  <% if @producer %>
+    <div class="max-w-2xl lg:max-w-4xl mx-auto mt-8 land-in d5">
+      <div class="producer-contact">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="producer-avatar">
+            <%= @producer.first_name&.first&.upcase %><%= @producer.last_name&.first&.upcase %>
+          </div>
+          <div class="min-w-0">
+            <p class="text-[0.65rem] font-bold uppercase tracking-widest" style="color: var(--wz-ink-muted);">
+              <%= params[:ref].present? ? "Tu asesor" : "Atención al cliente" %>
+            </p>
+            <p class="font-bold text-sm truncate" style="color: var(--wz-ink);"><%= @producer.full_name %></p>
+            <p class="text-xs" style="color: var(--wz-ink-muted);">Asesor de seguros</p>
+          </div>
+        </div>
+        <% if @producer.email.present? || @producer.phone.present? %>
+          <div class="flex flex-wrap gap-x-4 gap-y-1 sm:justify-end">
+            <% if @producer.email.present? %>
+              <a href="mailto:<%= @producer.email %>" class="producer-contact-link">
+                <i class="ti ti-mail text-sm"></i>
+                <%= @producer.email %>
+              </a>
+            <% end %>
+            <% if @producer.phone.present? %>
+              <a href="https://wa.me/<%= @producer.phone.gsub(/\D/, '') %>" target="_blank" rel="noopener" class="producer-contact-link">
+                <i class="ti ti-brand-whatsapp text-sm"></i>
+                <%= @producer.phone %>
+              </a>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
   <%# ══════════════════════════════════════════════ %>
   <%# FOOTER                                        %>
   <%# ══════════════════════════════════════════════ %>
