@@ -8,6 +8,7 @@
         <th>Email</th>
         <th>Empresa / Slug</th>
         <th>Página pública</th>
+        <th>Login producer</th>
         <th>Estado</th>
         <th>Acciones</th>
       </tr>
@@ -38,6 +39,17 @@
             <% else %>
               <span class="text-gray-400">Sin slug</span>
             <% end %>
+          </td>
+          <td>
+            <% login_url = new_user_session_url %>
+            <div class="flex items-center gap-2">
+              <%= link_to login_url, target: "_blank", class: "link link-primary text-sm truncate max-w-48" do %>
+                /users/sign_in
+              <% end %>
+              <button class="btn btn-xs btn-ghost"
+                      onclick="navigator.clipboard.writeText('<%= login_url %>').then(() => { this.textContent = '✓'; setTimeout(() => this.textContent = '⎘', 1200) })"
+                      title="Copiar enlace">⎘</button>
+            </div>
           </td>
           <td>
             <span class="badge badge-<%= user.pending? ? 'warning' : user.active? ? 'success' : 'error' %>">

@@ -1,5 +1,24 @@
 <h1 class="text-3xl font-bold mb-6">Dashboard</h1>
 
+<% if current_user.company&.slug.present? %>
+  <% sell_url = public_landing_url(slug: current_user.company.slug) %>
+  <div class="card mb-6">
+    <div class="card-body flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div>
+        <div class="card-title text-base">Tu link para vender</div>
+        <div class="text-sm text-gray-500 truncate max-w-md"><%= sell_url %></div>
+      </div>
+      <div class="flex items-center gap-2">
+        <%= link_to "Abrir", sell_url, target: "_blank", class: "btn btn-sm btn-outline" %>
+        <button class="btn btn-sm btn-primary"
+                onclick="navigator.clipboard.writeText('<%= sell_url %>').then(() => { this.textContent = '✓ Copiado'; setTimeout(() => this.textContent = 'Copiar link', 1200) })">
+          Copiar link
+        </button>
+      </div>
+    </div>
+  </div>
+<% end %>
+
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
   <div class="stat">
     <div class="stat-title">Cotizaciones</div>
